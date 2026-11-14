@@ -9,7 +9,7 @@ status: draft
 Aggregates multiple collectors and produces unified `SimulationData`. Automatically invalidates cached data when any collector receives new entries.
 
 ```python
-from faran import collectors
+from faran.numpy import collectors
 
 registry = collectors.registry(state_collector, obstacle_collector)
 data = registry.data  # SimulationData dict

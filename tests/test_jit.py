@@ -1,4 +1,5 @@
 from typing import Sequence, Callable, Protocol
+from functools import partial
 
 from faran import (
     mppi as create_mppi,
@@ -8,7 +9,9 @@ from faran import (
     risk as create_risk,
     trajectory as create_trajectory,
     types,
+    UntracedStateError,
 )
+from faran.jax import register
 
 from numtypes import array
 
@@ -16,9 +19,10 @@ import numpy as np
 from numpy.typing import ArrayLike
 import jax
 import jax.numpy as jnp
+from flax import nnx
 
 from tests.dsl import mppi as data, costs, stubs
-from pytest import mark
+from pytest import mark, raises
 
 
 class CompileFunction(Protocol):
@@ -652,3 +656,93 @@ class test_that_types_can_be_used_in_compiled_functions:
         expected: ArrayLike,
     ) -> None:
         assert np.allclose(compile(operation)(value), expected)
+
+
+class test_that_compiled_components_return_the_same_results_as_the_uncompiled_components:
+    @staticmethod
+    def cases(create_obstacles, create_trajectory, types, data) -> Sequence[tuple]:
+        def waypoints_trajectory() -> tuple:
+            return (
+                create_trajectory.waypoints(
+                    points=array([[1.0, 2.0], [5.0, 3.0], [10.0, 7.0]], shape=(3, 2)),
+                    path_length=20.0,
+                ),
+                call := lambda trajectory: trajectory.query(
+                    types.path_parameters(
+                        array([[0.0, 5.0], [10.0, 20.0]], shape=(T := 2, M := 2))
+                    )
+                ),
+                before_each_call := [lambda: None],
+            )
+
+        def obstacle_state_provider() -> tuple:
+            return (
+                provider := create_obstacles.provider.predicting(
+                    predictor=stubs.EchoingObstacleMotionPredictor.create(),
+                    history=types.obstacle_states_running_history.empty(
+                        creator=types.obstacle_2d_poses,
+                        horizon=1,
+                        obstacle_count=(K := 2),
+                    ),
+                ),
+                call := lambda provider: provider(),
+                before_each_call := [
+                    partial(
+                        provider.observe,
+                        data.obstacle_2d_poses_for_time_step(
+                            x=np.random.rand(K),
+                            y=np.random.rand(K),
+                            heading=np.random.rand(K),
+                        ),
+                    )
+                    for _ in range(2)
+                ],
+            )
+
+        return [waypoints_trajectory(), obstacle_state_provider()]
+
+    @mark.parametrize(
+        ["component", "call", "before_each_call"],
+        cases(
+            create_obstacles=create_obstacles.jax,
+            create_trajectory=create_trajectory.jax,
+            types=types.jax,
+            data=data.jax,
+        ),
+    )
+    def test[ComponentT, ResultT: ArrayLike](
+        self,
+        component: ComponentT,
+        call: Callable[[ComponentT], ResultT],
+        before_each_call: Sequence[Callable[[], None]],
+    ) -> None:
+        register(component)
+        compiled_call = nnx.jit(call)
+
+        for prepare in before_each_call:
+            prepare()
+
+            assert np.allclose(compiled_call(component), call(component))
+
+
+class test_that_components_with_state_raise_an_error_when_compiled_in_a_closure:
+    @staticmethod
+    def cases(create_obstacles, types) -> Sequence[tuple]:
+        return [
+            (call := lambda: provider(),)
+            for provider in [
+                create_obstacles.provider.predicting(
+                    predictor=stubs.EchoingObstacleMotionPredictor.create(),
+                    history=types.obstacle_states_running_history.empty(
+                        creator=types.obstacle_2d_poses
+                    ),
+                )
+            ]
+        ]
+
+    @mark.parametrize(
+        ["call"], cases(create_obstacles=create_obstacles.jax, types=types.jax)
+    )
+    def test(self, call: Callable[[], object]) -> None:
+        with raises(UntracedStateError):
+            jax.jit(call)()

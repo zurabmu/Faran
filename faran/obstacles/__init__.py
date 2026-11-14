@@ -1,4 +1,7 @@
-from .common import PredictingObstacleStateProvider as PredictingObstacleStateProvider
+from .provider import (
+    PredictingObstacleStateProvider as PredictingObstacleStateProvider,
+    JaxPredictingObstacleStateProvider as JaxPredictingObstacleStateProvider,
+)
 from .basic import (
     NumPySampledObstacle2dPoses as NumPySampledObstacle2dPoses,
     NumPyObstacle2dPoses as NumPyObstacle2dPoses,

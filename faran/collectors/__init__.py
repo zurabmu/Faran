@@ -8,6 +8,10 @@ from .obstacles import (
     ObstacleForecastCollector as ObstacleForecastCollector,
 )
 from .risk import RiskCollector as RiskCollector
+from .accelerated import (
+    JaxRiskCollector as JaxRiskCollector,
+    JaxObstacleForecastCollector as JaxObstacleForecastCollector,
+)
 from .state import (
     StateCollector as StateCollector,
     ControlCollector as ControlCollector,

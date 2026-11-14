@@ -12,16 +12,31 @@ from faran.collectors.state import (
     ControlCollector,
     TrajectoryCollector,
 )
+from faran.collectors.accelerated import (
+    JaxRiskCollector,
+    JaxObstacleForecastCollector,
+)
 
 
 class collectors:
     """Factory namespace for creating simulation data collectors."""
 
-    states: Final = StateCollector
-    controls: Final = ControlCollector
-    trajectories: Final = TrajectoryCollector
-    risk: Final = RiskCollector
-    obstacle_states: Final = ObstacleStateCollector
-    obstacle_observations: Final = ObstacleObservationCollector
-    obstacle_forecasts: Final = ObstacleForecastCollector
-    registry: Final = CollectorRegistry.of
+    class numpy:
+        states: Final = StateCollector
+        controls: Final = ControlCollector
+        trajectories: Final = TrajectoryCollector
+        risk: Final = RiskCollector
+        obstacle_states: Final = ObstacleStateCollector
+        obstacle_observations: Final = ObstacleObservationCollector
+        obstacle_forecasts: Final = ObstacleForecastCollector
+        registry: Final = CollectorRegistry.of
+
+    class jax:
+        states: Final = StateCollector
+        controls: Final = ControlCollector
+        trajectories: Final = TrajectoryCollector
+        risk: Final = JaxRiskCollector
+        obstacle_states: Final = ObstacleStateCollector
+        obstacle_observations: Final = ObstacleObservationCollector
+        obstacle_forecasts: Final = JaxObstacleForecastCollector
+        registry: Final = CollectorRegistry.of

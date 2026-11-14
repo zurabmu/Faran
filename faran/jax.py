@@ -20,6 +20,8 @@ from faran.samplers import sampler as _sampler
 from faran.trajectories import trajectory as _trajectory
 from faran.states import extract as _extract
 from faran.filters import noise as _noise
+from faran.collectors import collectors as _collectors
+from faran.mppi import register as _register
 
 types: TypeAlias = _types.jax
 classes: Final = _classes.jax
@@ -37,4 +39,6 @@ predictor: Final = _predictor.jax
 sampler: Final = _sampler.jax
 trajectory: Final = _trajectory.jax
 noise: Final = _noise.jax
+collectors: Final = _collectors.jax
 extract: Final = _extract
+register: Final = _register

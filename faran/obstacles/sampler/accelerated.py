@@ -1,7 +1,6 @@
-from typing import cast
 from dataclasses import dataclass
 
-from faran.types import JaxObstacleStateSampler
+from faran.types import JaxObstacleStateSampler, Variable
 from faran.obstacles.accelerated import JaxSampledObstacle2dPoses, JaxObstacle2dPoses
 
 from jaxtyping import PRNGKeyArray
@@ -11,29 +10,31 @@ import jax
 import jax.numpy as jnp
 
 
-@dataclass
+@dataclass(frozen=True)
 class JaxGaussianObstacle2dPoseSampler(
     JaxObstacleStateSampler[JaxObstacle2dPoses, JaxSampledObstacle2dPoses]
 ):
     """Samples obstacle poses from a Gaussian distribution parameterized by predicted covariances."""
 
-    key: PRNGKeyArray
+    key: Variable[PRNGKeyArray]
 
     @staticmethod
     def create(*, seed: int = 42) -> "JaxGaussianObstacle2dPoseSampler":
-        return JaxGaussianObstacle2dPoseSampler(key=jax.random.key(seed))
+        return JaxGaussianObstacle2dPoseSampler(
+            key=Variable.create(jax.random.key(seed))
+        )
 
     def __call__(
         self, states: JaxObstacle2dPoses, *, count: int
     ) -> JaxSampledObstacle2dPoses:
         if states.count == 0:
-            return cast(JaxSampledObstacle2dPoses, states.single())
+            return states.single()
 
         if (covariance := states.covariance_array) is None:
             assert count == 1, (
                 "It's pointless to take multiple samples, when covariance information is not available."
             )
-            return cast(JaxSampledObstacle2dPoses, states.single())
+            return states.single()
 
         T, D_O, _, K = covariance.shape
 
@@ -42,10 +43,10 @@ class JaxGaussianObstacle2dPoseSampler(
         flat_mean = mean.transpose(0, 2, 1).reshape(-1, D_O)
 
         gaussian = distribution.jax.gaussian(
-            mean=flat_mean, covariance=flat_covariance, key=self.key
+            mean=flat_mean, covariance=flat_covariance, key=self.key.get()
         )
         samples = gaussian.sample(count=count)
-        self.key = gaussian.key
+        self.key.set(gaussian.key)
 
         samples = samples.reshape(T, K, D_O, count).transpose(0, 2, 1, 3)
 

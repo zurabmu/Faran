@@ -16,10 +16,10 @@ from faran import (
     MetricRegistry,
     MpccErrorMetric,
     CollisionMetric,
-    collectors,
     metrics,
 )
 from faran.jax import (
+    collectors,
     mppi,
     filters,
     model,

@@ -5,7 +5,14 @@ from .array import (
     HasShape as HasShape,
     jaxtyped as jaxtyped,
     pytree as pytree,
+    Variable as Variable,
+    UntracedStateError as UntracedStateError,
     place as place,
+)
+from .records import (
+    Receiver as Receiver,
+    record as record,
+    recording as recording,
 )
 from .mppi import (
     State as State,

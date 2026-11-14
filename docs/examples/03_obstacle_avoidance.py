@@ -11,8 +11,9 @@ from math import pi
 from numtypes import array
 from tqdm.auto import tqdm
 
-from faran import Circles, MpccErrorMetricResult, access, collectors, metrics
+from faran import Circles, MpccErrorMetricResult, access, metrics
 from faran.numpy import (
+    collectors,
     boundary,
     costs,
     distance,

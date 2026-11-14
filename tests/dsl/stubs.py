@@ -1,7 +1,8 @@
-from typing import Protocol, NamedTuple, Sequence, Any
+from typing import Protocol, NamedTuple, Sequence, Any, Callable
 from dataclasses import dataclass
 
 from faran import (
+    record,
     State,
     StateSequence,
     StateBatch,
@@ -16,6 +17,8 @@ from faran import (
     BoundaryDistance,
     Control,
     DebugData,
+    Costs,
+    CostFunction as CostFunctionLike,
     Sampler as SamplerLike,
     ObstacleMotionPredictor as ObstacleMotionPredictorLike,
     ObstacleStateProvider as ObstacleStateProviderLike,
@@ -34,6 +37,41 @@ from faran import (
 import numpy as np
 
 
+@dataclass(frozen=True, eq=False)
+class Expectation:
+    holds: Callable[[Any, Any], bool]
+    message: str
+
+    def receive(self, values: tuple[Any, Any], /) -> None:
+        expected, actual = values
+        assert self.holds(expected, actual), (
+            f"{self.message} Expected: {expected}, Got: {actual}"
+        )
+
+
+class check:
+    """Assertions that can be executed in compiled components (e.g. JAX JIT compiled functions)."""
+
+    @staticmethod
+    def equal(*, expected: Any, actual: Any, message: str) -> None:
+        check.that(np.array_equal, expected=expected, actual=actual, message=message)
+
+    @staticmethod
+    def close(*, expected: Any, actual: Any, message: str) -> None:
+        check.that(
+            lambda expected, actual: np.allclose(expected, actual, atol=1e-6),
+            expected=expected,
+            actual=actual,
+            message=message,
+        )
+
+    @staticmethod
+    def that(
+        holds: Callable[[Any, Any], bool], *, expected: Any, actual: Any, message: str
+    ) -> None:
+        record(Expectation(holds, message), (expected.array, actual.array))
+
+
 @dataclass(frozen=True)
 class Sampler[SequenceT: ControlInputSequence, BatchT: ControlInputBatch](
     SamplerLike[SequenceT, BatchT]
@@ -50,9 +88,10 @@ class Sampler[SequenceT: ControlInputSequence, BatchT: ControlInputBatch](
         )
 
     def sample(self, *, around: SequenceT) -> BatchT:
-        assert np.array_equal(self.expected_nominal_input, around), (
-            f"Sampler received an unexpected nominal input. "
-            f"Expected: {self.expected_nominal_input}, Got: {around}"
+        check.equal(
+            expected=self.expected_nominal_input,
+            actual=around,
+            message="Sampler received an unexpected nominal input.",
         )
         return self.samples
 
@@ -83,13 +122,15 @@ class UpdateFunction[SequenceT: ControlInputSequence](UpdateFunctionLike[Sequenc
     def __call__(
         self, *, nominal_input: SequenceT, optimal_input: SequenceT
     ) -> SequenceT:
-        assert np.array_equal(self.expected_nominal_input, nominal_input), (
-            f"UpdateFunction received an unexpected nominal input. "
-            f"Expected: {self.expected_nominal_input}, Got: {nominal_input}"
+        check.equal(
+            expected=self.expected_nominal_input,
+            actual=nominal_input,
+            message="UpdateFunction received an unexpected nominal input.",
         )
-        assert np.allclose(self.expected_optimal_input, optimal_input, atol=1e-6), (
-            f"UpdateFunction received an unexpected optimal input. "
-            f"Expected: {self.expected_optimal_input}, Got: {optimal_input}"
+        check.close(
+            expected=self.expected_optimal_input,
+            actual=optimal_input,
+            message="UpdateFunction received an unexpected optimal input.",
         )
         return self.result
 
@@ -116,9 +157,10 @@ class PaddingFunction[NominalT: ControlInputSequence, PaddingT: ControlInputSequ
         )
 
     def __call__(self, *, nominal_input: NominalT, padding_size: int) -> PaddingT:
-        assert np.array_equal(self.expected_nominal_input, nominal_input), (
-            f"PaddingFunction received an unexpected nominal input. "
-            f"Expected: {self.expected_nominal_input}, Got: {nominal_input}"
+        check.equal(
+            expected=self.expected_nominal_input,
+            actual=nominal_input,
+            message="PaddingFunction received an unexpected nominal input.",
         )
         assert self.expected_padding_size == padding_size, (
             f"PaddingFunction received an unexpected padding size. "
@@ -144,9 +186,10 @@ class FilterFunction[SequenceT: ControlInputSequence](FilterFunctionLike[Sequenc
         )
 
     def __call__(self, *, optimal_input: SequenceT) -> SequenceT:
-        assert np.allclose(self.expected_optimal_input, optimal_input, atol=1e-6), (
-            f"FilterFunction received an unexpected optimal input. "
-            f"Expected: {self.expected_optimal_input}, Got: {optimal_input}"
+        check.close(
+            expected=self.expected_optimal_input,
+            actual=optimal_input,
+            message="FilterFunction received an unexpected optimal input.",
         )
         return self.result
 
@@ -180,13 +223,15 @@ class DynamicalModel[
     def simulate(
         self, inputs: ControlInputBatchT, initial_state: StateT
     ) -> StateBatchT:
-        assert np.array_equal(self.expected_control_inputs, inputs), (
-            f"Dynamical model received unexpected control inputs. "
-            f"Expected: {self.expected_control_inputs}, Got: {inputs}"
+        check.equal(
+            expected=self.expected_control_inputs,
+            actual=inputs,
+            message="Dynamical model received unexpected control inputs.",
         )
-        assert np.array_equal(self.expected_initial_state, initial_state), (
-            f"Dynamical model received an unexpected initial state. "
-            f"Expected: {self.expected_initial_state}, Got: {initial_state}"
+        check.equal(
+            expected=self.expected_initial_state,
+            actual=initial_state,
+            message="Dynamical model received an unexpected initial state.",
         )
         return self.rollouts
 
@@ -283,6 +328,20 @@ class ObstacleMotionPredictor[
             f"Expected: {self.expected_history}, Got: {history}"
         )
         return self.result
+
+
+@dataclass(frozen=True)
+class EchoingObstacleMotionPredictor[StatesT: ObstacleStates](
+    ObstacleMotionPredictorLike[StatesT, StatesT]
+):
+    """Returns the history as the prediction."""
+
+    @staticmethod
+    def create[S: ObstacleStates]() -> "EchoingObstacleMotionPredictor[S]":
+        return EchoingObstacleMotionPredictor()
+
+    def predict(self, *, history: StatesT) -> StatesT:
+        return history
 
 
 @dataclass(frozen=True)
@@ -426,6 +485,54 @@ class RiskMetric[RiskT](RiskMetricLike[Any, Any, Any, Any, RiskT]):
     @property
     def name(self) -> str:
         return "Stub"
+
+
+@dataclass(frozen=True)
+class RiskComputingCostFunction[
+    InputBatchT: ControlInputBatch,
+    StateBatchT: StateBatch,
+    CostsT: Costs,
+](CostFunctionLike[InputBatchT, StateBatchT, CostsT]):
+    inner: CostFunctionLike[InputBatchT, StateBatchT, CostsT]
+    risk_metric: RiskMetricLike[Any, StateBatchT, None, None, Any]
+
+    @staticmethod
+    def wrapping[IB: ControlInputBatch, SB: StateBatch, C: Costs](
+        inner: CostFunctionLike[IB, SB, C],
+        *,
+        computing_risk_with: RiskMetricLike[Any, SB, None, None, Any],
+    ) -> "RiskComputingCostFunction[IB, SB, C]":
+        return RiskComputingCostFunction(inner=inner, risk_metric=computing_risk_with)
+
+    def __call__(self, *, inputs: InputBatchT, states: StateBatchT) -> CostsT:
+        self.risk_metric.compute(
+            self.inner, states=states, obstacle_states=None, sampler=None
+        )
+        return self.inner(inputs=inputs, states=states)
+
+
+@dataclass(frozen=True)
+class ObstacleStatesReadingCostFunction[
+    InputBatchT: ControlInputBatch,
+    StateBatchT: StateBatch,
+    CostsT: Costs,
+](CostFunctionLike[InputBatchT, StateBatchT, CostsT]):
+    inner: CostFunctionLike[InputBatchT, StateBatchT, CostsT]
+    obstacle_states: ObstacleStateProviderLike[Any]
+
+    @staticmethod
+    def wrapping[IB: ControlInputBatch, SB: StateBatch, C: Costs](
+        inner: CostFunctionLike[IB, SB, C],
+        *,
+        reading_obstacle_states_from: ObstacleStateProviderLike[Any],
+    ) -> "ObstacleStatesReadingCostFunction[IB, SB, C]":
+        return ObstacleStatesReadingCostFunction(
+            inner=inner, obstacle_states=reading_obstacle_states_from
+        )
+
+    def __call__(self, *, inputs: InputBatchT, states: StateBatchT) -> CostsT:
+        self.obstacle_states()
+        return self.inner(inputs=inputs, states=states)
 
 
 @dataclass(frozen=True)

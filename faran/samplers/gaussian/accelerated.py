@@ -1,7 +1,7 @@
-from typing import Final
 from dataclasses import dataclass
 
 from faran.types import (
+    Variable,
     jaxtyped,
     JaxControlInputBatchCreator,
     JaxControlInputSequence,
@@ -16,18 +16,17 @@ import jax
 import jax.random as jrandom
 
 
-@dataclass(kw_only=True)
+@dataclass(frozen=True, kw_only=True)
 class JaxGaussianSampler[BatchT: JaxControlInputBatch](
     JaxSampler[JaxControlInputSequence, BatchT]
 ):
     """Perturbs a nominal control sequence with zero-mean Gaussian noise."""
 
-    standard_deviation: Final[Float[JaxArray, " D_u"]]
-    to_batch: Final[JaxControlInputBatchCreator[BatchT]]
+    standard_deviation: Float[JaxArray, " D_u"]
+    to_batch: JaxControlInputBatchCreator[BatchT]
+    key: Variable[PRNGKeyArray]
 
-    _rollout_count: Final[int]
-
-    key: PRNGKeyArray
+    _rollout_count: int
 
     @staticmethod
     def create[B: JaxControlInputBatch](
@@ -45,16 +44,17 @@ class JaxGaussianSampler[BatchT: JaxControlInputBatch](
             standard_deviation=standardize.std(standard_deviation),
             to_batch=to_batch,
             _rollout_count=rollout_count,
-            key=key if key is not None else jrandom.key(seed or 0),
+            key=Variable.create(key if key is not None else jrandom.key(seed or 0)),
         )
 
     def sample(self, *, around: JaxControlInputSequence) -> BatchT:
-        self.key, samples = sample(
-            self.key,
+        key, samples = sample(
+            self.key.get(),
             around=around.array,
             standard_deviation=self.standard_deviation,
             rollout_count=self.rollout_count,
         )
+        self.key.set(key)
 
         return self.to_batch(array=samples)
 

@@ -15,3 +15,4 @@ from .accelerated import (
 )
 from .savgol import NumPySavGolFilter as NumPySavGolFilter
 from .savgol import JaxSavGolFilter as JaxSavGolFilter
+from .compilation import register as register

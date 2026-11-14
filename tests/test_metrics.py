@@ -27,7 +27,7 @@ from pytest_subtests import SubTests
 
 class test_that_collision_is_detected_when_distance_is_below_threshold:
     @staticmethod
-    def cases(data, types) -> Sequence[tuple]:
+    def cases(data, types, collectors) -> Sequence[tuple]:
         return [
             (
                 registry := metrics.registry(
@@ -121,8 +121,8 @@ class test_that_collision_is_detected_when_distance_is_below_threshold:
             "expected_collision_detected",
         ],
         [
-            *cases(data=data.numpy, types=types.numpy),
-            *cases(data=data.jax, types=types.jax),
+            *cases(data=data.numpy, types=types.numpy, collectors=collectors.numpy),
+            *cases(data=data.jax, types=types.jax, collectors=collectors.jax),
         ],
     )
     def test[StateT, InputSequenceT, ObstacleStatesForTimeStepT](
@@ -172,7 +172,7 @@ class test_that_collision_is_detected_when_distance_is_below_threshold:
 
 class test_that_metrics_are_recomputed_when_new_data_is_collected:
     @staticmethod
-    def cases(data, types) -> Sequence[tuple]:
+    def cases(data, types, collectors) -> Sequence[tuple]:
         return [
             (
                 registry := metrics.registry(
@@ -272,8 +272,8 @@ class test_that_metrics_are_recomputed_when_new_data_is_collected:
             "expected_final_collisions",
         ],
         [
-            *cases(data=data.numpy, types=types.numpy),
-            *cases(data=data.jax, types=types.jax),
+            *cases(data=data.numpy, types=types.numpy, collectors=collectors.numpy),
+            *cases(data=data.jax, types=types.jax, collectors=collectors.jax),
         ],
     )
     def test[StateT, InputSequenceT, ObstacleStatesForTimeStepT](
@@ -320,7 +320,7 @@ class TaskCompletionExpectation(NamedTuple):
 
 class test_that_task_completion_is_detected:
     @staticmethod
-    def cases(data, types, trajectory) -> Sequence[tuple]:
+    def cases(data, types, trajectory, collectors) -> Sequence[tuple]:
         return [
             (
                 registry := metrics.registry(
@@ -403,8 +403,18 @@ class test_that_task_completion_is_detected:
             "expected",
         ],
         [
-            *cases(data=data.numpy, types=types.numpy, trajectory=trajectory.numpy),
-            *cases(data=data.jax, types=types.jax, trajectory=trajectory.jax),
+            *cases(
+                data=data.numpy,
+                types=types.numpy,
+                trajectory=trajectory.numpy,
+                collectors=collectors.numpy,
+            ),
+            *cases(
+                data=data.jax,
+                types=types.jax,
+                trajectory=trajectory.jax,
+                collectors=collectors.jax,
+            ),
         ],
     )
     def test[StateT, InputSequenceT](
@@ -435,7 +445,7 @@ class test_that_task_completion_is_detected:
 
 class test_that_task_stretch_is_computed:
     @staticmethod
-    def cases(data, types, trajectory) -> Sequence[tuple]:
+    def cases(data, types, trajectory, collectors) -> Sequence[tuple]:
         return [
             (
                 registry := metrics.registry(
@@ -504,8 +514,18 @@ class test_that_task_stretch_is_computed:
             "expected_stretches",
         ],
         [
-            *cases(data=data.numpy, types=types.numpy, trajectory=trajectory.numpy),
-            *cases(data=data.jax, types=types.jax, trajectory=trajectory.jax),
+            *cases(
+                data=data.numpy,
+                types=types.numpy,
+                trajectory=trajectory.numpy,
+                collectors=collectors.numpy,
+            ),
+            *cases(
+                data=data.jax,
+                types=types.jax,
+                trajectory=trajectory.jax,
+                collectors=collectors.jax,
+            ),
         ],
     )
     def test[StateT, InputSequenceT](
@@ -546,7 +566,7 @@ class test_that_completed_part_is_computed:
     """
 
     @staticmethod
-    def cases(data, types, trajectory) -> Sequence[tuple]:
+    def cases(data, types, trajectory, collectors) -> Sequence[tuple]:
         return [
             (  # Simple linear progress along horizontal line.
                 registry := metrics.registry(
@@ -812,8 +832,18 @@ class test_that_completed_part_is_computed:
             "expected_completed_parts",
         ],
         [
-            *cases(data=data.numpy, types=types.numpy, trajectory=trajectory.numpy),
-            *cases(data=data.jax, types=types.jax, trajectory=trajectory.jax),
+            *cases(
+                data=data.numpy,
+                types=types.numpy,
+                trajectory=trajectory.numpy,
+                collectors=collectors.numpy,
+            ),
+            *cases(
+                data=data.jax,
+                types=types.jax,
+                trajectory=trajectory.jax,
+                collectors=collectors.jax,
+            ),
         ],
     )
     def test[StateT, InputSequenceT](
@@ -848,7 +878,9 @@ class ConstraintViolationExpectation(NamedTuple):
 
 class test_that_constraint_violation_metrics_are_computed:
     @staticmethod
-    def cases(data, types, create_trajectory, create_boundary) -> Sequence[tuple]:
+    def cases(
+        data, types, create_trajectory, create_boundary, collectors
+    ) -> Sequence[tuple]:
         reference = create_trajectory.line(
             start=(0.0, 0.0), end=(10.0, 0.0), path_length=10.0
         )
@@ -963,12 +995,14 @@ class test_that_constraint_violation_metrics_are_computed:
                 types=types.numpy,
                 create_trajectory=trajectory.numpy,
                 create_boundary=boundary.numpy,
+                collectors=collectors.numpy,
             ),
             *cases(
                 data=data.jax,
                 types=types.jax,
                 create_trajectory=trajectory.jax,
                 create_boundary=boundary.jax,
+                collectors=collectors.jax,
             ),
         ],
     )
@@ -1009,7 +1043,7 @@ class ComfortExpectation(NamedTuple):
 
 class test_that_comfort_metrics_are_computed:
     @staticmethod
-    def cases(data, types, create_trajectory) -> Sequence[tuple]:
+    def cases(data, types, create_trajectory, collectors) -> Sequence[tuple]:
         reference = create_trajectory.line(
             start=(0.0, 0.0), end=(100.0, 0.0), path_length=100.0
         )
@@ -1148,9 +1182,17 @@ class test_that_comfort_metrics_are_computed:
         ],
         [
             *cases(
-                data=data.numpy, types=types.numpy, create_trajectory=trajectory.numpy
+                data=data.numpy,
+                types=types.numpy,
+                create_trajectory=trajectory.numpy,
+                collectors=collectors.numpy,
             ),
-            *cases(data=data.jax, types=types.jax, create_trajectory=trajectory.jax),
+            *cases(
+                data=data.jax,
+                types=types.jax,
+                create_trajectory=trajectory.jax,
+                collectors=collectors.jax,
+            ),
         ],
     )
     def test[StateT, InputSequenceT](
@@ -1184,7 +1226,7 @@ class test_that_comfort_metrics_are_computed:
 
 class test_that_comfort_metric_measures_acceleration_when_it_is_constant:
     @staticmethod
-    def cases(data, types, create_trajectory) -> Sequence[tuple]:
+    def cases(data, types, create_trajectory, collectors) -> Sequence[tuple]:
         reference = create_trajectory.line(
             start=(0.0, 0.0), end=(100.0, 0.0), path_length=100.0
         )
@@ -1246,9 +1288,17 @@ class test_that_comfort_metric_measures_acceleration_when_it_is_constant:
         ],
         [
             *cases(
-                data=data.numpy, types=types.numpy, create_trajectory=trajectory.numpy
+                data=data.numpy,
+                types=types.numpy,
+                create_trajectory=trajectory.numpy,
+                collectors=collectors.numpy,
             ),
-            *cases(data=data.jax, types=types.jax, create_trajectory=trajectory.jax),
+            *cases(
+                data=data.jax,
+                types=types.jax,
+                create_trajectory=trajectory.jax,
+                collectors=collectors.jax,
+            ),
         ],
     )
     def test[StateT, InputSequenceT](
@@ -1277,7 +1327,7 @@ class test_that_comfort_metric_measures_acceleration_when_it_is_constant:
 
 class test_that_comfort_metric_measures_jerk_when_it_is_constant:
     @staticmethod
-    def cases(data, types, create_trajectory) -> Sequence[tuple]:
+    def cases(data, types, create_trajectory, collectors) -> Sequence[tuple]:
         reference = create_trajectory.line(
             start=(0.0, 0.0), end=(100.0, 0.0), path_length=100.0
         )
@@ -1340,9 +1390,17 @@ class test_that_comfort_metric_measures_jerk_when_it_is_constant:
         ],
         [
             *cases(
-                data=data.numpy, types=types.numpy, create_trajectory=trajectory.numpy
+                data=data.numpy,
+                types=types.numpy,
+                create_trajectory=trajectory.numpy,
+                collectors=collectors.numpy,
             ),
-            *cases(data=data.jax, types=types.jax, create_trajectory=trajectory.jax),
+            *cases(
+                data=data.jax,
+                types=types.jax,
+                create_trajectory=trajectory.jax,
+                collectors=collectors.jax,
+            ),
         ],
     )
     def test[StateT, InputSequenceT](

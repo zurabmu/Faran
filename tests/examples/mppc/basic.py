@@ -16,10 +16,10 @@ from faran import (
     MetricRegistry,
     MpccErrorMetric,
     CollisionMetric,
-    collectors,
     metrics,
 )
 from faran.numpy import (
+    collectors,
     mppi,
     filters,
     model,

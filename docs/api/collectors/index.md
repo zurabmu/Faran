@@ -18,12 +18,15 @@ Decorator-based data recorders for simulation loops. Collectors wrap planners an
 | `collectors.obstacle_observations.decorating(observer, ...)` | `ObstacleStateObserver` | Post-processed observations |
 | `collectors.obstacle_forecasts.decorating(provider, ...)` | `ObstacleStateProvider` | Predicted obstacle forecasts |
 
+Import `collectors` from the backend you are using (e.g. `faran.numpy` or `faran.jax`).
+
 All collectors accept an optional `transformer` that converts collected items before storage. Use the appropriate state-sequence builder for your model (e.g., `types.augmented.state_sequence.of_states` for MPCC).
 
 ## Usage
 
 ```python
-from faran import collectors, metrics
+from faran import metrics
+from faran.numpy import collectors
 
 planner = collectors.states.decorating(
     planner,

@@ -5,7 +5,6 @@ from faran.types import jaxtyped
 
 from jaxtyping import Array as JaxArray, Float
 
-import jax
 import jax.numpy as jnp
 
 
@@ -24,12 +23,6 @@ class EstimationFilter(Protocol):
         ...
 
 
-def verify_check_recent(check_recent: int) -> None:
-    assert check_recent > 0, (
-        "At least one time step must be checked for invalid estimates"
-    )
-
-
 @jaxtyped
 def invalid_obstacle_filter_from(
     *history: Float[JaxArray, "T K"] | Float[JaxArray, "T D_o K"], check_recent: int
@@ -40,7 +33,9 @@ def invalid_obstacle_filter_from(
         history: The history to check for invalid estimates.
         check_recent: The number of most recent time steps to check for invalid estimates.
     """
-    jax.debug.callback(verify_check_recent, check_recent)
+    assert check_recent > 0, (
+        "At least one time step must be checked for invalid estimates"
+    )
 
     def invalid_mask(array: JaxArray) -> Float[JaxArray, " K"]:
         recent = array[-check_recent:]

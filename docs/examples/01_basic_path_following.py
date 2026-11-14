@@ -52,8 +52,8 @@ def heading(states: types.bicycle.StateBatch) -> types.Headings:
 
 # --8<-- [start:setup]
 
-from faran import collectors, metrics
-from faran.numpy import extract, filters, model, mppi, sampler, types
+from faran import metrics
+from faran.numpy import collectors, extract, filters, model, mppi, sampler, types
 from tqdm.auto import tqdm
 
 

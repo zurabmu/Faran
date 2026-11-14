@@ -1,7 +1,10 @@
 from typing import Final
 
 
-from faran.obstacles.common import PredictingObstacleStateProvider
+from faran.obstacles.provider import (
+    PredictingObstacleStateProvider,
+    JaxPredictingObstacleStateProvider,
+)
 from faran.obstacles.static import (
     NumPyStaticObstacleSimulator,
     JaxStaticObstacleSimulator,
@@ -45,7 +48,7 @@ class obstacles:
         dynamic: Final = JaxDynamicObstacleSimulator.create
 
         class provider:
-            predicting: Final = PredictingObstacleStateProvider.create
+            predicting: Final = JaxPredictingObstacleStateProvider.create
 
         class sampler:
             gaussian: Final = JaxGaussianObstacle2dPoseSampler.create

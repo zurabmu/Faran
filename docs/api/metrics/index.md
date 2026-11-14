@@ -19,7 +19,8 @@ Post-simulation evaluation metrics operating on data recorded by [collectors](..
 ## Setup
 
 ```python
-from faran import collectors, metrics
+from faran import metrics
+from faran.numpy import collectors
 
 state_collector = collectors.states.decorating(planner, transformer=...)
 obstacle_collector = collectors.obstacle_states.decorating(observer)

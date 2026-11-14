@@ -9,8 +9,9 @@ from dataclasses import dataclass
 from numtypes import array
 from tqdm.auto import tqdm
 
-from faran import MpccErrorMetricResult, access, collectors, metrics
+from faran import MpccErrorMetricResult, access, metrics
 from faran.numpy import (
+    collectors,
     boundary,
     costs,
     extract,

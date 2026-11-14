@@ -21,6 +21,7 @@ from faran.types import (
     Control,
 )
 from faran.mppi.common import UseOptimalControlUpdate, NoFilter
+from faran.mppi.compilation import compiled
 
 from jaxtyping import Array as JaxArray, Float, Scalar
 
@@ -123,35 +124,54 @@ class JaxMppi[
         """Samples rollouts, evaluates costs, and returns the cost-weighted optimal control."""
         assert temperature > 0.0, "Temperature must be positive."
 
-        samples = self.sampler.sample(around=nominal_input)
-
-        rollouts = self.model.simulate(inputs=samples, initial_state=initial_state)
-        costs = self.cost_function(inputs=samples, states=rollouts)
-
-        optimal_control, weights = compute_weighted_control(
-            samples.array, costs.array, temperature
-        )
-        optimal_input = self.filter_function(
-            optimal_input=nominal_input.similar(array=optimal_control)
+        return step(
+            self,
+            temperature=jnp.asarray(temperature),
+            nominal_input=nominal_input,
+            initial_state=initial_state,
         )
 
-        nominal_input = self.update_function(
-            nominal_input=nominal_input, optimal_input=optimal_input
-        )
 
-        shifted_control = shift_control_left(
-            nominal_input.array,
-            padding_array=self.padding_function(
-                nominal_input=nominal_input, padding_size=self.planning_interval
-            ).array,
-            planning_interval=self.planning_interval,
-        )
+@compiled
+def step[
+    StateT: JaxState,
+    ControlInputSequenceT: JaxControlInputSequence,
+](
+    planner: JaxMppi[StateT, Any, ControlInputSequenceT, Any, Any],
+    *,
+    temperature: Scalar,
+    nominal_input: ControlInputSequenceT,
+    initial_state: StateT,
+) -> Control[ControlInputSequenceT, JaxWeights]:
+    samples = planner.sampler.sample(around=nominal_input)
 
-        return Control(
-            optimal=optimal_input,
-            nominal=nominal_input.similar(array=shifted_control),
-            debug=DebugData(trajectory_weights=JaxWeights(weights)),
-        )
+    rollouts = planner.model.simulate(inputs=samples, initial_state=initial_state)
+    costs = planner.cost_function(inputs=samples, states=rollouts)
+
+    optimal_control, weights = compute_weighted_control(
+        samples.array, costs.array, temperature
+    )
+    optimal_input = planner.filter_function(
+        optimal_input=nominal_input.similar(array=optimal_control)
+    )
+
+    nominal_input = planner.update_function(
+        nominal_input=nominal_input, optimal_input=optimal_input
+    )
+
+    shifted_control = shift_control_left(
+        nominal_input.array,
+        padding_array=planner.padding_function(
+            nominal_input=nominal_input, padding_size=planner.planning_interval
+        ).array,
+        planning_interval=planner.planning_interval,
+    )
+
+    return Control(
+        optimal=optimal_input,
+        nominal=nominal_input.similar(array=shifted_control),
+        debug=DebugData(trajectory_weights=JaxWeights(weights)),
+    )
 
 
 @jax.jit

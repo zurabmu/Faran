@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from faran.types import (
     jaxtyped,
+    record,
     Array,
     D_R,
     Trajectory,
@@ -17,11 +18,13 @@ from faran.types import (
 from faran.trajectories.waypoints.basic import NumPyWaypointsTrajectory
 
 from scipy.interpolate import CubicSpline
-from jaxtyping import Array as JaxArray, Float, Scalar, Int as JaxInt
+from jaxtyping import Array as JaxArray, Bool, Float, Scalar, Int as JaxInt
 
 import jax
 import jax.numpy as jnp
 import numpy as np
+
+type BoolScalar = Bool[JaxArray, ""]
 
 type PointArray = Float[Array, "N 2"]
 type JaxPointArray = Float[JaxArray, "N 2"]
@@ -105,7 +108,15 @@ class JaxWaypointsTrajectory(
     ) -> JaxReferencePoints:
         parameters_array = jnp.asarray(parameters.array)
 
-        report_invalid_path_parameters(parameters_array, path_length=self._path_length)
+        record(
+            InvalidPathParameterWarning(),
+            (
+                path_parameters_are_valid(
+                    parameters_array, path_length=self._path_length
+                ),
+                parameters_array,
+            ),
+        )
 
         return JaxReferencePoints(
             query(
@@ -174,7 +185,12 @@ class JaxWaypointsTrajectory(
         return self._inner.natural_length
 
 
-def report_invalid_parameters(valid: bool, parameters: Float[JaxArray, "S 4"]) -> None:
+class InvalidPathParameterWarning:
+    def receive(self, validity: tuple[BoolScalar, Float[JaxArray, "T M"]], /) -> None:
+        jax.debug.callback(report_invalid_parameters, *validity)
+
+
+def report_invalid_parameters(valid: bool, parameters: Float[JaxArray, "T M"]) -> None:
     if not valid:
         print(f"Path parameters out of bounds. Got: {parameters}")
 
@@ -208,11 +224,10 @@ def compute_guess_samples(
 
 @jax.jit
 @jaxtyped
-def report_invalid_path_parameters(
+def path_parameters_are_valid(
     path_parameters: Float[JaxArray, "T M"], *, path_length: Scalar
-) -> None:
-    valid = jnp.all((0.0 <= path_parameters) & (path_parameters <= path_length))
-    jax.debug.callback(report_invalid_parameters, valid, path_parameters)
+) -> BoolScalar:
+    return jnp.all((0.0 <= path_parameters) & (path_parameters <= path_length))
 
 
 @jax.jit

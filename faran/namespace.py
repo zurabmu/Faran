@@ -104,6 +104,7 @@ from faran.types import (
     JaxBoundaryDistance,
     JaxBoundaryDistanceExtractor,
 )
+from faran.mppi import NumPyWeights, JaxWeights
 from faran.models import (
     NumPyBicycleState,
     NumPyBicycleStateSequence,
@@ -325,6 +326,7 @@ class types:
         type Risk = NumPyRisk
         type Preference = NumPyPreference
 
+        type Weights = NumPyWeights
         type CostFunction = NumPyCostFunction
         type PathParameterExtractor[StateBatchT] = NumPyPathParameterExtractor[
             StateBatchT
@@ -506,6 +508,7 @@ class types:
         type Risk = JaxRisk
         type Preference = JaxPreference
 
+        type Weights = JaxWeights
         type CostFunction = JaxCostFunction
         type PathParameterExtractor[StateBatchT] = JaxPathParameterExtractor[
             StateBatchT

@@ -3,6 +3,7 @@ from . import (
     mppi as mppi,
     costs as costs,
     stubs as stubs,
+    planners as planners,
 )
 from .numeric import (
     ArrayConvertible as ArrayConvertible,

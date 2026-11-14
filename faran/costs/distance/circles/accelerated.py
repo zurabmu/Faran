@@ -131,16 +131,14 @@ def compute_circle_distances(
         obstacle_radii=obstacle_radii,
     )
 
-    pairwise = pairwise_distances(
+    return min_distances_to_obstacle_circles(
         ego_x=ego_global_x,
         ego_y=ego_global_y,
         ego_radii=ego_radii,
         obstacle_x=obstacle_x,
         obstacle_y=obstacle_y,
         obstacle_radii=obstacle_radii,
-    )
-
-    return jnp.min(pairwise, axis=1).transpose(1, 0, 2, 3)
+    ).transpose(1, 0, 2, 3)
 
 
 @jaxtyped
@@ -154,11 +152,6 @@ def flatten_obstacle_circles(
     Float[JaxArray, "CK T N"],
     Float[JaxArray, " CK"],
 ]:
-    # NOTE: Workaround for XLA's inefficient compilation of reductions over non-leading axes.
-    #
-    # Merges the obstacle circle (C) and obstacle sample (K) dimensions into a single
-    # leading axis. This ensures the subsequent reduction is over a single contiguous
-    # axis, which XLA manages to compile efficiently.
     T, N = obstacle_x.shape[1], obstacle_x.shape[3]
     K = obstacle_x.shape[2]
     flat_x = obstacle_x.transpose(0, 2, 1, 3).reshape(-1, T, N)
@@ -168,7 +161,7 @@ def flatten_obstacle_circles(
 
 
 @jaxtyped
-def pairwise_distances(
+def min_distances_to_obstacle_circles(
     *,
     ego_x: Float[JaxArray, "V T M"],
     ego_y: Float[JaxArray, "V T M"],
@@ -176,16 +169,31 @@ def pairwise_distances(
     obstacle_x: Float[JaxArray, "CK T N"],
     obstacle_y: Float[JaxArray, "CK T N"],
     obstacle_radii: Float[JaxArray, " CK"],
-) -> Float[JaxArray, "V CK T M N"]:
-    dx = ego_x[:, None, :, :, None] - obstacle_x[None, :, :, None, :]
-    dy = ego_y[:, None, :, :, None] - obstacle_y[None, :, :, None, :]
+) -> Float[JaxArray, "V T M N"]:
+    # NOTE: XLA compiles a min reduction over the obstacle circle axis inefficiently, and
+    # much more so when it fuses the reduction with the cost that uses the distances.
+    # Scanning over the obstacle circles and keeping the running minimum avoids the
+    # reduction altogether.
+    def keep_closer(
+        closest: Float[JaxArray, "V T M N"],
+        circle: tuple[
+            Float[JaxArray, "T N"], Float[JaxArray, "T N"], Float[JaxArray, ""]
+        ],
+    ) -> tuple[Float[JaxArray, "V T M N"], None]:
+        x, y, radius = circle
+        dx = ego_x[:, :, :, None] - x[None, :, None, :]
+        dy = ego_y[:, :, :, None] - y[None, :, None, :]
+        distance = jnp.sqrt(dx**2 + dy**2) - (ego_radii[:, None, None, None] + radius)
+        return jnp.minimum(closest, distance), None
 
-    center_dist = jnp.sqrt(dx**2 + dy**2)
-    radii_sum = (
-        ego_radii[:, None, None, None, None] + obstacle_radii[None, :, None, None, None]
+    V, T, M = ego_x.shape
+    N = obstacle_x.shape[2]
+    closest, _ = jax.lax.scan(
+        keep_closer,
+        jnp.full((V, T, M, N), jnp.inf),
+        (obstacle_x, obstacle_y, obstacle_radii),
     )
-
-    return center_dist - radii_sum
+    return closest
 
 
 @jax.jit
