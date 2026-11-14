@@ -4,6 +4,7 @@ from .array import (
     Device as Device,
     HasShape as HasShape,
     jaxtyped as jaxtyped,
+    pytree as pytree,
     place as place,
 )
 from .mppi import (

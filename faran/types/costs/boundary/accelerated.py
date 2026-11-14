@@ -2,7 +2,7 @@ from typing import Protocol
 from dataclasses import dataclass
 from functools import cached_property
 
-from faran.types.array import Array, DataType, jaxtyped
+from faran.types.array import Array, DataType, jaxtyped, pytree
 from faran.types.costs.boundary.common import BoundaryDistanceExtractor
 
 from jaxtyping import Array as JaxArray, Float
@@ -17,6 +17,7 @@ class JaxBoundaryDistanceExtractor[StateBatchT, DistanceT](
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxBoundaryDistance:
     _array: Float[JaxArray, "T M"]

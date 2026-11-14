@@ -2,7 +2,7 @@ from typing import Protocol, overload
 from dataclasses import dataclass
 from functools import cached_property
 
-from faran.types.array import Array, jaxtyped
+from faran.types.array import Array, jaxtyped, pytree
 from faran.types.trajectories.common import (
     D_R,
     PathParameters,
@@ -19,6 +19,7 @@ import jax.numpy as jnp
 import numpy as np
 
 
+@pytree
 @dataclass(frozen=True)
 class JaxPathParameters(PathParameters):
     array: Float[JaxArray, "T M"]
@@ -71,6 +72,7 @@ class JaxPositions(Positions, Protocol):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSimplePositions(JaxPositions):
     _x_array: Float[JaxArray, "T M"]
@@ -124,6 +126,7 @@ class JaxSimplePositions(JaxPositions):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxHeadings:
     _heading: Float[JaxArray, "T M"]
@@ -158,6 +161,7 @@ class JaxHeadings:
         return np.asarray(self._heading)
 
 
+@pytree
 @dataclass(frozen=True)
 class JaxReferencePoints(ReferencePoints):
     array: Float[JaxArray, f"T {D_R} M"]
@@ -231,6 +235,7 @@ class JaxReferencePoints(ReferencePoints):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxLateralPositions(LateralPositions):
     _array: Float[JaxArray, "T M"]
@@ -263,6 +268,7 @@ class JaxLateralPositions(LateralPositions):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxLongitudinalPositions(LongitudinalPositions):
     _array: Float[JaxArray, "T M"]
@@ -295,6 +301,7 @@ class JaxLongitudinalPositions(LongitudinalPositions):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxNormals(Normals):
     _array: Float[JaxArray, "T 2 M"]

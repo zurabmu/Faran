@@ -4,6 +4,7 @@ from functools import cached_property
 
 from faran.types import (
     jaxtyped,
+    pytree,
     Array,
     DataType,
     Distance,
@@ -29,6 +30,7 @@ import jax.numpy as jnp
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxDistance(Distance):
     """Pairwise distances between V vehicle parts and N obstacle samples over T time steps and M rollouts."""

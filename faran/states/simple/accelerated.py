@@ -6,6 +6,7 @@ from faran.types import (
     DataType,
     Array,
     jaxtyped,
+    pytree,
     ControlInputSequence,
     JaxState,
     JaxStateSequence,
@@ -35,6 +36,7 @@ class JaxControlInputSequenceLike(ControlInputSequence, Protocol):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSimpleState(JaxState):
     """JAX simple flat state vector."""
@@ -70,6 +72,7 @@ class JaxSimpleState(JaxState):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSimpleStateSequence(JaxStateSequence):
     """JAX state sequence as a 2D array (time × dimension)."""
@@ -109,6 +112,7 @@ class JaxSimpleStateSequence(JaxStateSequence):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSimpleStateBatch(JaxStateBatch):
     """JAX state batch as a 3D array (time × dimension × rollouts)."""
@@ -162,6 +166,7 @@ class JaxSimpleStateBatch(JaxStateBatch):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSimpleControlInputSequence(JaxControlInputSequence):
     """JAX control input sequence as a 2D array (time × dimension)."""
@@ -215,6 +220,7 @@ class JaxSimpleControlInputSequence(JaxControlInputSequence):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSimpleControlInputBatch(JaxControlInputBatch):
     """JAX control input batch as a 3D array (time × dimension × rollouts)."""
@@ -267,6 +273,7 @@ class JaxSimpleControlInputBatch(JaxControlInputBatch):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSimpleCosts(JaxCosts):
     """JAX cost values as a 2D array (time × rollouts)."""
@@ -300,6 +307,7 @@ class JaxSimpleCosts(JaxCosts):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSimpleSampledObstacleStates(JaxSampledObstacleStates):
     """JAX sampled obstacle states as a 4D array (time × dimension × obstacles × samples)."""
@@ -335,6 +343,7 @@ class JaxSimpleSampledObstacleStates(JaxSampledObstacleStates):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSimpleObstacleStatesForTimeStep(
     JaxObstacleStatesForTimeStep[
@@ -382,6 +391,7 @@ class JaxSimpleObstacleStatesForTimeStep(
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSimpleObstacleStates(JaxObstacleStates[JaxSimpleSampledObstacleStates]):
     """JAX obstacle states as a 3D array (time × dimension × obstacles)."""

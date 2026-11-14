@@ -5,10 +5,12 @@ try:
 except ImportError:
     typechecker = None
 
-from typing import Literal, Protocol, runtime_checkable
+from dataclasses import field
+from typing import Literal, Protocol, Any, runtime_checkable
 
 from numpy.typing import NDArray
 from jaxtyping import jaxtyped as jaxtyping_jaxtyped, Array as JaxArray
+from jax.tree_util import register_dataclass
 
 import jax
 import numpy as np
@@ -36,6 +38,18 @@ class HasShape(Protocol):
 
 jaxtyped = jaxtyping_jaxtyped(typechecker=typechecker)
 """Wrapper around `jaxtyping.jaxtyped` that conditionally applies type checking."""
+
+
+class pytree:
+    @staticmethod
+    def __new__[T](cls, target: type[T]) -> type[T]:
+        """Registers a dataclass as a JAX pytree."""
+        return register_dataclass(target)
+
+    @staticmethod
+    def static_field() -> Any:
+        """Declares a dataclass field that JAX does not trace. Its value must be hashable."""
+        return field(metadata={"static": True})
 
 
 def place(array: Array | JaxArray, *, device: Device) -> JaxArray:

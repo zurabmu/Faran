@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from faran.types import (
     jaxtyped,
+    pytree,
     Array,
     DataType,
     JaxState,
@@ -29,6 +30,7 @@ import numpy as np
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxWeights:
     """Softmax-normalized cost weights used to compute the weighted average over rollouts."""

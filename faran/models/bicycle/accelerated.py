@@ -4,6 +4,7 @@ from functools import cached_property
 
 from faran.types import (
     jaxtyped,
+    pytree,
     Array,
     DataType,
     JaxState,
@@ -89,6 +90,7 @@ type KalmanFilter = JaxExtendedKalmanFilter | JaxUnscentedKalmanFilter
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxBicycleState(BicycleState, JaxState):
     """Kinematic bicycle state: [x, y, heading, speed]."""
@@ -149,10 +151,11 @@ class JaxBicycleState(BicycleState, JaxState):
         return self.array[3]
 
 
+@pytree
 @dataclass(kw_only=True, frozen=True)
 class JaxBicycleStateSequence(BicycleStateSequence, JaxStateSequence):
     batch: "JaxBicycleStateBatch"
-    rollout: int
+    rollout: int = pytree.static_field()
 
     @staticmethod
     def of_states(states: Sequence[JaxBicycleState]) -> "JaxBicycleStateSequence":
@@ -199,6 +202,7 @@ class JaxBicycleStateSequence(BicycleStateSequence, JaxStateSequence):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxBicycleStateBatch(BicycleStateBatch, JaxStateBatch):
     _array: StateBatchArray
@@ -259,6 +263,7 @@ class JaxBicycleStateBatch(BicycleStateBatch, JaxStateBatch):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxBicyclePositions(BicyclePositions):
     batch: JaxBicycleStateBatch
@@ -294,6 +299,7 @@ class JaxBicyclePositions(BicyclePositions):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxBicycleControlInputSequence(
     BicycleControlInputSequence, JaxControlInputSequence
@@ -334,6 +340,7 @@ class JaxBicycleControlInputSequence(
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxBicycleControlInputBatch(BicycleControlInputBatch, JaxControlInputBatch):
     _array: ControlInputBatchArray
@@ -383,6 +390,7 @@ class JaxBicycleControlInputBatch(BicycleControlInputBatch, JaxControlInputBatch
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxBicycleObstacleStates:
     _array: Float[JaxArray, f"{BICYCLE_D_O} K"]
@@ -436,6 +444,7 @@ class JaxBicycleObstacleStates:
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxBicycleObstacleStateSequences:
     _array: Float[JaxArray, f"T {BICYCLE_ESTIMATION_D_X} K"]
@@ -535,6 +544,7 @@ class JaxBicycleObstacleStateSequences:
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxBicycleObstacleInputs:
     _accelerations: Float[JaxArray, " K"]

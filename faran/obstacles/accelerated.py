@@ -4,6 +4,7 @@ from functools import cached_property
 
 from faran.types import (
     jaxtyped,
+    pytree,
     Array,
     DataType,
     POSE_D_O as D_O,
@@ -31,6 +32,7 @@ ObstacleCovarianceArray = Float[JaxArray, f"T {D_O} {D_O} K"]
 
 
 @jaxtyped
+@pytree
 @dataclass(kw_only=True, frozen=True)
 class JaxSampledObstacle2dPoses(JaxSampledObstacleStates):
     """Sampled 2D poses (x, y, heading) with shape (T, POSE_D_O, K, N)."""
@@ -117,6 +119,7 @@ class JaxSampledObstacle2dPoses(JaxSampledObstacleStates):
 
 
 @jaxtyped
+@pytree
 @dataclass(kw_only=True, frozen=True)
 class JaxObstacle2dPositions(JaxObstaclePositions):
     """2D positions (x, y) with shape (T, 2, K)."""
@@ -159,6 +162,7 @@ class JaxObstacle2dPositions(JaxObstaclePositions):
 
 
 @jaxtyped
+@pytree
 @dataclass(kw_only=True, frozen=True)
 class JaxObstacle2dPositionsForTimeStep(JaxObstaclePositionsForTimeStep):
     """2D positions (x, y) for a single time step with shape (2, K)."""
@@ -197,6 +201,7 @@ class JaxObstacle2dPositionsForTimeStep(JaxObstaclePositionsForTimeStep):
 
 
 @jaxtyped
+@pytree
 @dataclass(kw_only=True, frozen=True)
 class JaxObstacleHeadings(JaxObstacleOrientations):
     """Obstacle headings with shape (T, 1, K)."""
@@ -236,6 +241,7 @@ class JaxObstacleHeadings(JaxObstacleOrientations):
 
 
 @jaxtyped
+@pytree
 @dataclass(kw_only=True, frozen=True)
 class JaxObstacleHeadingsForTimeStep(JaxObstacleOrientationsForTimeStep):
     """Obstacle headings for a single time step with shape (1, K)."""
@@ -271,6 +277,7 @@ class JaxObstacleHeadingsForTimeStep(JaxObstacleOrientationsForTimeStep):
 
 
 @jaxtyped
+@pytree
 @dataclass(kw_only=True, frozen=True)
 class JaxObstacle2dPoses(
     JaxObstacleStates[
@@ -441,6 +448,7 @@ class JaxObstacle2dPoses(
 
 
 @jaxtyped
+@pytree
 @dataclass(kw_only=True, frozen=True)
 class JaxObstacle2dPosesForTimeStep(JaxObstacleStatesForTimeStep[JaxObstacle2dPoses]):
     """2D poses (x, y, heading) for a single time step."""

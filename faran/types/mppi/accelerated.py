@@ -14,8 +14,11 @@ from faran.types.mppi.common import (
     PaddingFunction,
     FilterFunction,
 )
+from faran.types.mppi.register import register_shared_types_as_pytrees
 
 from jaxtyping import Array as JaxArray, Float
+
+register_shared_types_as_pytrees()
 
 
 class JaxState(State, Protocol):

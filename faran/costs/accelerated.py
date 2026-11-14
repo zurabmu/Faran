@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from faran.types import (
     jaxtyped,
+    pytree,
     Array,
     DataType,
     StateBatch,
@@ -33,6 +34,7 @@ import jax.numpy as jnp
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxError(Error):
     """Contouring or lag error between the state batch and reference trajectory."""
@@ -44,6 +46,7 @@ class JaxError(Error):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxPreference(Preference):
     """Preference score for each trajectory in the batch."""

@@ -5,6 +5,7 @@ from functools import cached_property
 
 from faran.types import (
     jaxtyped,
+    pytree,
     Array,
     DynamicalModel,
     ObstacleModel,
@@ -48,6 +49,7 @@ type JaxIntegratorObstacleCovariances = Float[JaxArray, "D_x D_x K"]
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxIntegratorObstacleStates:
     """Obstacle states represented in integrator model coordinates."""
@@ -81,6 +83,7 @@ class JaxIntegratorObstacleStates:
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxIntegratorObstacleStateSequences:
     """Time-indexed obstacle state sequences for integrator model obstacles."""
@@ -123,6 +126,7 @@ class JaxIntegratorObstacleStateSequences:
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxIntegratorObstacleInputs:
     _array: Float[JaxArray, "D_o K"]

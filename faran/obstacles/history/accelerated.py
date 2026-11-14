@@ -6,6 +6,7 @@ from faran.types import (
     DataType,
     Array,
     jaxtyped,
+    pytree,
     NumPyObstacleStatesForTimeStep,
     JaxObstacleStates,
     JaxObstacleStatesForTimeStep,
@@ -47,6 +48,7 @@ class JaxObstacleStateCreatorAdapter[StatesT]:
 
 
 @jaxtyped
+@pytree
 @dataclass(kw_only=True, frozen=True)
 class JaxObstacleIds:
     """JAX container for integer obstacle identifiers."""

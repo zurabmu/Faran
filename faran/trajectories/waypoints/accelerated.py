@@ -1,4 +1,4 @@
-from typing import Literal, NamedTuple, Sequence
+from typing import NamedTuple, Sequence
 from dataclasses import dataclass
 
 from faran.types import (
@@ -105,9 +105,7 @@ class JaxWaypointsTrajectory(
     ) -> JaxReferencePoints:
         parameters_array = jnp.asarray(parameters.array)
 
-        assert path_parameters_are_valid(
-            parameters_array, path_length=self._path_length
-        )
+        report_invalid_path_parameters(parameters_array, path_length=self._path_length)
 
         return JaxReferencePoints(
             query(
@@ -210,12 +208,11 @@ def compute_guess_samples(
 
 @jax.jit
 @jaxtyped
-def path_parameters_are_valid(
+def report_invalid_path_parameters(
     path_parameters: Float[JaxArray, "T M"], *, path_length: Scalar
-) -> Literal[True]:
+) -> None:
     valid = jnp.all((0.0 <= path_parameters) & (path_parameters <= path_length))
     jax.debug.callback(report_invalid_parameters, valid, path_parameters)
-    return True
 
 
 @jax.jit

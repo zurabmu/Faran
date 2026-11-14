@@ -2,7 +2,7 @@ from typing import Protocol, Any
 from dataclasses import dataclass
 from functools import cached_property
 
-from faran.types.array import Array, jaxtyped, DataType
+from faran.types.array import Array, jaxtyped, DataType, pytree
 from faran.types.costs.collision.common import (
     ObstacleStateProvider,
     ObstacleStateSampler,
@@ -63,6 +63,7 @@ class JaxObstacleStates[SingleSampleT, ObstacleStatesForTimeStepT = Any](
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSampledObstaclePositions(SampledObstaclePositions):
     _x: Float[JaxArray, "T K N"]
@@ -117,6 +118,7 @@ class JaxSampledObstaclePositions(SampledObstaclePositions):
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxSampledObstacleHeadings(SampledObstacleHeadings):
     _heading: Float[JaxArray, "T K N"]
@@ -180,6 +182,7 @@ class JaxDistanceExtractor[StateBatchT, SampledObstacleStatesT, DistanceT](
 
 
 @jaxtyped
+@pytree
 @dataclass(frozen=True)
 class JaxRisk(Risk):
     _array: Float[JaxArray, "T M"]

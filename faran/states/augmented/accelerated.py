@@ -2,6 +2,7 @@ from typing import Self, Sequence, overload, cast
 from dataclasses import dataclass
 
 from faran.types import (
+    pytree,
     DataType,
     Array,
     JaxState,
@@ -18,6 +19,7 @@ from faran.types import (
     HasVirtual,
     StateSequenceCreator,
 )
+from faran.states.augmented.register import register_shared_types_as_pytrees
 from faran.states.augmented.base import (
     BaseAugmentedState,
     BaseAugmentedStateSequence,
@@ -30,7 +32,10 @@ from jaxtyping import Array as JaxArray, Float
 
 import jax.numpy as jnp
 
+register_shared_types_as_pytrees()
 
+
+@pytree
 @dataclass(frozen=True)
 class JaxAugmentedState[P: JaxState, V: JaxState](
     AugmentedState[P, V], HasPhysical[P], HasVirtual[V], JaxState
@@ -69,6 +74,7 @@ class JaxAugmentedState[P: JaxState, V: JaxState](
         )
 
 
+@pytree
 @dataclass(frozen=True)
 class JaxAugmentedStateSequence[P: JaxStateSequence, V: JaxStateSequence](
     AugmentedStateSequence[P, V], HasPhysical[P], HasVirtual[V], JaxStateSequence
@@ -139,6 +145,7 @@ class JaxAugmentedStateSequence[P: JaxStateSequence, V: JaxStateSequence](
         )
 
 
+@pytree
 @dataclass(frozen=True)
 class JaxAugmentedStateBatch[P: JaxStateBatch, V: JaxStateBatch](
     AugmentedStateBatch[P, V], HasPhysical[P], HasVirtual[V], JaxStateBatch
@@ -185,6 +192,7 @@ class JaxAugmentedStateBatch[P: JaxStateBatch, V: JaxStateBatch](
         )
 
 
+@pytree
 @dataclass(frozen=True)
 class JaxAugmentedControlInputSequence[
     P: JaxControlInputSequence,
@@ -266,6 +274,7 @@ class JaxAugmentedControlInputSequence[
         )
 
 
+@pytree
 @dataclass(frozen=True)
 class JaxAugmentedControlInputBatch[
     P: JaxControlInputBatch,
