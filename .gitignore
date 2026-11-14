@@ -17,6 +17,7 @@ wheels/
 .pytest_cache
 .ruff_cache
 .codspeed
+.zed
 benchmark*.json
 benchmark*.html
 

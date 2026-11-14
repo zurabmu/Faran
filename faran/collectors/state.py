@@ -103,6 +103,7 @@ class ControlCollector[
                 initial_state=initial_state,
             )
         )
+        self.notify()
         return control
 
     @property

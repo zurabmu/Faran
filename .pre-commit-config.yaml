@@ -10,3 +10,5 @@ repos:
     hooks:
       - id: doctoc
         args: ["--github", "--notitle", "--update-only"]
+        language_version: 24.7.0
+        exclude: ^\.gitlab/

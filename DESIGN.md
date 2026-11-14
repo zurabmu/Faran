@@ -334,7 +334,7 @@ def test_that_roots_of_quadratic_polynomials_are_correct(a: float, b: float, c: 
 
 However, if you then go ahead and implement this function using the same analytical solution, you're really just verifying that ```1 == 1```.
 
-> **NOTE:** It would make sense to write the above test if you use then proceed to implement the root finding function using Newton's method or in some other way that is more complex than what's written in the test.
+> **NOTE:** It would make sense to write the above test if you then proceed to implement the root finding function using Newton's method or in some other way that is more complex than what's written in the test.
 
 A better test would look as follows:
 

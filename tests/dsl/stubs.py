@@ -27,6 +27,7 @@ from faran import (
     DistanceExtractor as DistanceExtractorLike,
     BoundaryDistanceExtractor as BoundaryDistanceExtractorLike,
     Mppi as MppiLike,
+    RiskMetric as RiskMetricLike,
     ObstacleStateObserver as ObstacleStateObserverLike,
 )
 
@@ -402,6 +403,29 @@ class BoundaryDistanceExtractor[StateT: StateBatch, DistanceT: BoundaryDistance]
             f"Expected: {self.expected_states}, Got: {states}"
         )
         return self.result
+
+
+@dataclass(frozen=True)
+class RiskMetric[RiskT](RiskMetricLike[Any, Any, Any, Any, RiskT]):
+    result: RiskT
+
+    @staticmethod
+    def returns[R](result: R) -> "RiskMetric[R]":
+        return RiskMetric(result=result)
+
+    def compute(
+        self,
+        cost_function: Any,
+        *,
+        states: Any,
+        obstacle_states: Any,
+        sampler: Any,
+    ) -> RiskT:
+        return self.result
+
+    @property
+    def name(self) -> str:
+        return "Stub"
 
 
 @dataclass(frozen=True)

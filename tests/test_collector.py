@@ -1,4 +1,4 @@
-from typing import Sequence, Callable
+from typing import Any, Sequence, Callable
 
 from faran import (
     CollectorRegistry,
@@ -9,6 +9,7 @@ from faran import (
     collectors,
     access,
     types,
+    model,
 )
 
 from numtypes import array
@@ -276,3 +277,165 @@ class test_that_obstacle_state_collector_works_when_number_of_obstacles_varies:
             expected_obstacle_states,
             equal_nan=True,
         )
+
+
+class test_that_collectors_collect_data:
+    @staticmethod
+    def cases(data, model) -> Sequence[tuple]:
+        def controls() -> tuple:
+            mppi = collectors.controls.decorating(stubs.Mppi.create())
+            state = data.state(array([0.0], shape=(D_x := 1,)))
+            inputs = [
+                data.control_input_sequence(np.random.rand(T := 3, D_u := 2))
+                for _ in range(2)
+            ]
+
+            return (
+                collectors.registry(mppi),
+                lambda step: mppi.step(
+                    temperature=1.0, nominal_input=inputs[step], initial_state=state
+                ),
+                lambda registry: [
+                    it.optimal for it in registry.data(access.controls.require())
+                ],
+                inputs,
+            )
+
+        def trajectories() -> tuple:
+            mppi = collectors.trajectories.decorating(
+                stubs.Mppi.create(),
+                model=model.integrator.dynamical(time_step_size=0.1),
+            )
+            no_input = data.control_input_sequence(np.zeros((T := 3, D_u := 1)))
+            initial_states = [1.0, 2.0]
+
+            return (
+                collectors.registry(mppi),
+                lambda step: mppi.step(
+                    temperature=1.0,
+                    nominal_input=no_input,
+                    initial_state=data.state(
+                        array([initial_states[step]], shape=(D_x := 1,))
+                    ),
+                ),
+                lambda registry: [
+                    (it.optimal, it.nominal)
+                    for it in registry.data(access.trajectories.require())
+                ],
+                [
+                    (np.full((T, 1), state), np.full((T, 1), state))
+                    for state in initial_states
+                ],
+            )
+
+        def risks() -> tuple:
+            metric = collectors.risk.decorating(
+                stubs.RiskMetric.returns(risk := np.random.rand(T := 3, M := 4))
+            )
+            states = data.state_batch(np.random.rand(T, D_x := 3, M))
+            obstacle_states = data.obstacle_2d_poses(
+                x=np.random.rand(T, K := 2), y=np.random.rand(T, K)
+            )
+            sampler = stubs.ObstacleStateSampler.returns(
+                data.obstacle_2d_pose_samples(
+                    x=np.random.rand(T, K, N := 1), y=np.random.rand(T, K, N)
+                ),
+                when_obstacle_states_are=obstacle_states,
+                and_sample_count_is=N,
+            )
+
+            def cost_function(*, states, samples):
+                return np.zeros((T, M, N))
+
+            return (
+                collectors.registry(metric),
+                lambda step: metric.compute(
+                    cost_function,
+                    states=states,
+                    obstacle_states=obstacle_states,
+                    sampler=sampler,
+                ),
+                lambda registry: registry.data(access.risks.require()),
+                [risk, risk],
+            )
+
+        def obstacle_observations() -> tuple:
+            observer = collectors.obstacle_observations.decorating(
+                stubs.ObstacleStateObserver.create()
+            )
+            observations = [
+                data.obstacle_2d_poses_for_time_step(
+                    x=np.random.rand(K := 3), y=np.random.rand(K)
+                )
+                for _ in range(2)
+            ]
+
+            return (
+                collectors.registry(observer),
+                lambda step: observer.observe(observations[step]),
+                lambda registry: registry.data(access.obstacle_observations.require()),
+                observations,
+            )
+
+        def obstacle_forecasts() -> tuple:
+            provider = collectors.obstacle_forecasts.decorating(
+                stubs.ObstacleStateProvider.returns(
+                    forecast := data.obstacle_2d_poses(
+                        x=np.random.rand(T := 3, K := 2), y=np.random.rand(T, K)
+                    )
+                )
+            )
+
+            return (
+                collectors.registry(provider),
+                lambda step: provider(),
+                lambda registry: registry.data(access.obstacle_forecasts.require()),
+                [forecast, forecast],
+            )
+
+        return [
+            controls(),
+            trajectories(),
+            risks(),
+            obstacle_observations(),
+            obstacle_forecasts(),
+        ]
+
+    @mark.parametrize(
+        ["registry", "collect", "read", "expected"],
+        [
+            *cases(data=data.numpy, model=model.numpy),
+            *cases(data=data.jax, model=model.jax),
+        ],
+    )
+    def test_that_data_from_every_step_is_collected(
+        self,
+        registry: CollectorRegistry,
+        collect: Callable[[int], Any],
+        read: Callable[[CollectorRegistry], Sequence[Any]],
+        expected: Sequence[Any],
+    ) -> None:
+        for step in range(len(expected)):
+            collect(step)
+
+        assert np.allclose(read(registry), expected)
+
+    @mark.parametrize(
+        ["registry", "collect", "read", "expected"],
+        [
+            *cases(data=data.numpy, model=model.numpy),
+            *cases(data=data.jax, model=model.jax),
+        ],
+    )
+    def test_that_new_data_is_collected_in_registry_when_registry_data_was_previously_read(
+        self,
+        registry: CollectorRegistry,
+        collect: Callable[[int], Any],
+        read: Callable[[CollectorRegistry], Sequence[Any]],
+        expected: Sequence[Any],
+    ) -> None:
+        for step in range(len(expected)):
+            collect(step)
+            read(registry)
+
+        assert np.allclose(read(registry), expected)

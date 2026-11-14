@@ -168,6 +168,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MPCC error and collision evaluation metrics
 - Standalone HTML visualizer (`faran-visualizer`) with interactive Plotly plots
 
+[0.3.1]: https://gitlab.com/risk-metrics/faran/-/compare/v0.3.0...v0.3.1
 [0.3.0]: https://gitlab.com/risk-metrics/faran/-/compare/v0.2.10...v0.3.0
 [0.2.10]: https://gitlab.com/risk-metrics/faran/-/compare/v0.2.9...v0.2.10
 [0.2.9]: https://gitlab.com/risk-metrics/faran/-/compare/v0.2.8...v0.2.9
