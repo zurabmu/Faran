@@ -9,6 +9,8 @@ is primarily meant to work with the accompanying Python API.
 
 ## Setup
 
+Run the following commands from the directory of this README:
+
 ```bash
 pnpm install && pnpm build
 ```

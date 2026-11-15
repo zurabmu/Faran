@@ -9,6 +9,7 @@ Hi! Thanks for considering contributing to Faran. All contributions are welcome,
 - Python ≥ 3.13
 - [uv](https://github.com/astral-sh/uv) (recommended) or pip
 - [just](https://github.com/casey/just) (optional, for convenience)
+- [Node.js](https://nodejs.org/) ≥ 18 and [pnpm](https://pnpm.io/) (only for visualizing simulation results)
 
 ### Getting Started
 
@@ -83,15 +84,35 @@ uv run pytest --cov=faran --cov-report=term-missing
 # Run specific test
 uv run pytest tests/test_mppi.py -k "test_that_mppi_favors"
 
-# Run integration tests
-uv run pytest -m integration  # Append --visualize to help with debugging
-
 # Run documentation examples
-uv run pytest -m docs  # --visualize works here too
+uv run pytest -m docs  # --visualize will generate visualizations
 
 # Run benchmarks
 uv run pytest -m benchmark --benchmark-json=benchmark.json
 ```
+
+### Integration Tests
+
+```bash
+just integration-tests <test>                   # Run integration tests
+just integration-tests list <test>              # List integration tests
+just integration-tests visualize <test>         # Run integration tests and generate visualizations of each
+```
+
+You can filter tests by specifying the optional `<test>` argument, which can be any [expression you would pass to the pytest `-k` option](https://docs.pytest.org/en/stable/example/markers.html#keyword-expressions). For example, `"test_that_planner_avoids_pedestrians[configuration1-jax-unicycle-pedestrian]"`, `pedestrian`, or `three_laps or pedestrian`. Quote the expression when it contains brackets or spaces.
+
+The generated visualizations are saved under `tests/visualizations/` as HTML files (containing the interactive replay visualization) and JSON files (containing the simulation data).
+
+If you don't have `just`, you can first [build the visualizer CLI](#visualizer) and then run the following commands:
+
+```bash
+uv run pytest -m integration -k <test>               # Run integration tests
+uv run pytest -m integration -k <test> --visualize   # Run integration tests and generate visualizations
+```
+
+### Visualizer
+
+You can build the visualizer by running `just build-visualizer`. If you don't have `just`, you can follow the build instructions [here](visualizer/core/README.md).
 
 ### Documentation
 
