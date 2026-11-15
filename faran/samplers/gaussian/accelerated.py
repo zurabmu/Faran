@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from faran.types import (
-    Variable,
+    pytree,
     jaxtyped,
     JaxControlInputBatchCreator,
     JaxControlInputSequence,
@@ -24,7 +24,7 @@ class JaxGaussianSampler[BatchT: JaxControlInputBatch](
 
     standard_deviation: Float[JaxArray, " D_u"]
     to_batch: JaxControlInputBatchCreator[BatchT]
-    key: Variable[PRNGKeyArray]
+    key: pytree.Variable[PRNGKeyArray]
 
     _rollout_count: int
 
@@ -44,7 +44,7 @@ class JaxGaussianSampler[BatchT: JaxControlInputBatch](
             standard_deviation=standardize.std(standard_deviation),
             to_batch=to_batch,
             _rollout_count=rollout_count,
-            key=Variable.create(key if key is not None else jrandom.key(seed or 0)),
+            key=pytree.variable(key if key is not None else jrandom.key(seed or 0)),
         )
 
     def sample(self, *, around: JaxControlInputSequence) -> BatchT:

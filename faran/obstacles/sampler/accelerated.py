@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from faran.types import JaxObstacleStateSampler, Variable
+from faran.types import JaxObstacleStateSampler, pytree
 from faran.obstacles.accelerated import JaxSampledObstacle2dPoses, JaxObstacle2dPoses
 
 from jaxtyping import PRNGKeyArray
@@ -16,12 +16,12 @@ class JaxGaussianObstacle2dPoseSampler(
 ):
     """Samples obstacle poses from a Gaussian distribution parameterized by predicted covariances."""
 
-    key: Variable[PRNGKeyArray]
+    key: pytree.Variable[PRNGKeyArray]
 
     @staticmethod
     def create(*, seed: int = 42) -> "JaxGaussianObstacle2dPoseSampler":
         return JaxGaussianObstacle2dPoseSampler(
-            key=Variable.create(jax.random.key(seed))
+            key=pytree.variable(jax.random.key(seed))
         )
 
     def __call__(

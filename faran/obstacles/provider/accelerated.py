@@ -6,7 +6,6 @@ from faran.types import (
     ObstacleMotionPredictor,
     ObstacleStatesRunningHistory,
     ObstacleIdAssignment,
-    Variable,
     pytree,
 )
 from faran.obstacles.provider.common import DefaultIdAssignment
@@ -36,7 +35,7 @@ class JaxPredictingObstacleStateProvider[
     history: CurrentHistory[ObstacleStatesForTimeStepT, IdT, HistoryT] = (
         pytree.static_field()
     )
-    states: Variable[HistoryT]
+    states: pytree.Variable[HistoryT]
 
     @staticmethod
     def create[O: ObstacleStatesForTimeStep, I, H, P](
@@ -51,7 +50,7 @@ class JaxPredictingObstacleStateProvider[
             if id_assignment is not None
             else DefaultIdAssignment(),
             history=CurrentHistory(history),
-            states=Variable.create(history.get()),
+            states=pytree.variable(history.get()),
         )
 
     def __call__(self) -> PredictionT:

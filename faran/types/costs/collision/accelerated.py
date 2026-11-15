@@ -2,7 +2,8 @@ from typing import Protocol, Any
 from dataclasses import dataclass
 from functools import cached_property
 
-from faran.types.array import Array, jaxtyped, DataType, pytree
+from faran.types.array import Array, jaxtyped, DataType
+from faran.types.pytree import pytree
 from faran.types.costs.collision.common import (
     ObstacleStateProvider,
     ObstacleStateSampler,

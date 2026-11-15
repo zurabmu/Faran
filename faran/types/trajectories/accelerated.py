@@ -2,7 +2,8 @@ from typing import Protocol, overload
 from dataclasses import dataclass
 from functools import cached_property
 
-from faran.types.array import Array, jaxtyped, pytree
+from faran.types.array import Array, jaxtyped
+from faran.types.pytree import pytree
 from faran.types.trajectories.common import (
     D_R,
     PathParameters,

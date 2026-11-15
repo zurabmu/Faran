@@ -1,4 +1,4 @@
-from faran.types.array import pytree
+from faran.types.pytree import pytree
 from faran.types.mppi.common import Control, DebugData
 
 

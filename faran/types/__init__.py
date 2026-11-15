@@ -4,10 +4,11 @@ from .array import (
     Device as Device,
     HasShape as HasShape,
     jaxtyped as jaxtyped,
-    pytree as pytree,
-    Variable as Variable,
-    UntracedStateError as UntracedStateError,
     place as place,
+)
+from .pytree import (
+    pytree as pytree,
+    UntracedStateError as UntracedStateError,
 )
 from .records import (
     Receiver as Receiver,

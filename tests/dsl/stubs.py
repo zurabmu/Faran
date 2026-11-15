@@ -350,18 +350,18 @@ class ObstacleIdAssignment[
     ObservationT: ObstacleStatesForTimeStep,
     HistoryT: ObstacleStatesHistory,
 ]:
-    class Entry[IdT, ObservationT, HistoryT](NamedTuple):
-        ids: IdT
-        when_observing: ObservationT
-        and_history: HistoryT | None = None
-        and_ids: IdT | None = None
+    class Entry[I, O, H](NamedTuple):
+        ids: I
+        when_observing: O
+        and_history: H | None = None
+        and_ids: I | None = None
 
-    class Provider[IdT, ObservationT, HistoryT](Protocol):
+    class Provider[I, O, H](Protocol):
         def __call__(
             self,
-            ids: type["ObstacleIdAssignment.Entry[IdT, ObservationT, HistoryT]"],
+            ids: type["ObstacleIdAssignment.Entry[I, O, H]"],
             /,
-        ) -> Sequence["ObstacleIdAssignment.Entry[IdT, ObservationT, HistoryT]"]:
+        ) -> Sequence["ObstacleIdAssignment.Entry[I, O, H]"]:
             """Describes how obstacle IDs are assigned based on observations."""
             ...
 

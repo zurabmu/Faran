@@ -54,6 +54,7 @@ plugins:
   - search
   - bibtex:
       bib_file: "docs/references.bib"
+      enable_inline_citations: false
   - mkdocstrings:
       handlers:
         python:

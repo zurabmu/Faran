@@ -38,6 +38,7 @@ from .types import (
     Receiver as Receiver,
     record as record,
     UntracedStateError as UntracedStateError,
+    pytree as pytree,
     State as State,
     StateSequence as StateSequence,
     StateBatch as StateBatch,

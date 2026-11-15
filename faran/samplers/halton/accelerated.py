@@ -2,7 +2,7 @@ from typing import Final
 from dataclasses import dataclass
 
 from faran.types import (
-    Variable,
+    pytree,
     jaxtyped,
     JaxControlInputBatchCreator,
     JaxControlInputSequence,
@@ -60,7 +60,7 @@ class JaxHaltonSplineSampler[
     standard_deviation: Float[JaxArray, " D_u"]
     to_batch: JaxControlInputBatchCreator[BatchT]
     knot_count: int
-    halton_start_index: Variable[IntScalar]
+    halton_start_index: pytree.Variable[IntScalar]
 
     _rollout_count: int
 
@@ -77,7 +77,7 @@ class JaxHaltonSplineSampler[
             standard_deviation=standardize.std(standard_deviation),
             to_batch=to_batch,
             knot_count=knot_count,
-            halton_start_index=Variable.create(jnp.array(seed)),
+            halton_start_index=pytree.variable(jnp.array(seed)),
             _rollout_count=rollout_count,
         )
 
