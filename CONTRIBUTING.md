@@ -117,7 +117,7 @@ You can build the visualizer by running `just build-visualizer`. If you don't ha
 ### Documentation
 
 ```bash
-uv run mkdocs serve
+just docs-serve
 ```
 
 Visit `http://127.0.0.1:8000/faran/` to preview.
