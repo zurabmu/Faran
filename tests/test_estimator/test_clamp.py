@@ -1,12 +1,16 @@
 from typing import Sequence
 
-from faran import Noise, NoiseModel, NumPyGaussianBelief, JaxGaussianBelief, noise
+from faran import Noise, NoiseModel, NumPyGaussianBelief, noise
 
 import numpy as np
-import jax.numpy as jnp
 
 from tests.dsl import stubs, check, compute
-from pytest import mark
+from needy import needs
+from tests.dsl import backends, probe
+
+with needs.modules(probe.jax):
+    from faran import JaxGaussianBelief
+    import jax.numpy as jnp
 
 
 class test_that_clamped_noise_does_not_go_below_floor:
@@ -49,12 +53,12 @@ class test_that_clamped_noise_does_not_go_below_floor:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "belief", "observation", "original", "floor"],
-        [
-            *cases(noise=noise.numpy, belief=NumPyGaussianBelief, to_array=np.asarray),
-            *cases(noise=noise.jax, belief=JaxGaussianBelief, to_array=jnp.asarray),
-        ],
+        numpy=cases(noise=noise.numpy, belief=NumPyGaussianBelief, to_array=np.asarray),
+        jax=lambda cases=cases: cases(
+            noise=noise.jax, belief=JaxGaussianBelief, to_array=jnp.asarray
+        ),
     )
     def test[NoiseT: Noise, BeliefT, ObservationT](
         self,
@@ -118,12 +122,12 @@ class test_that_clamped_noise_does_not_go_above_ceiling:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "belief", "observation", "original", "ceiling"],
-        [
-            *cases(noise=noise.numpy, belief=NumPyGaussianBelief, to_array=np.asarray),
-            *cases(noise=noise.jax, belief=JaxGaussianBelief, to_array=jnp.asarray),
-        ],
+        numpy=cases(noise=noise.numpy, belief=NumPyGaussianBelief, to_array=np.asarray),
+        jax=lambda cases=cases: cases(
+            noise=noise.jax, belief=JaxGaussianBelief, to_array=jnp.asarray
+        ),
     )
     def test[NoiseT: Noise, BeliefT, ObservationT](
         self,
@@ -189,12 +193,12 @@ class test_that_clamped_noise_is_not_changed_when_noise_is_above_floor_and_below
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "belief", "observation", "original"],
-        [
-            *cases(noise=noise.numpy, belief=NumPyGaussianBelief, to_array=np.asarray),
-            *cases(noise=noise.jax, belief=JaxGaussianBelief, to_array=jnp.asarray),
-        ],
+        numpy=cases(noise=noise.numpy, belief=NumPyGaussianBelief, to_array=np.asarray),
+        jax=lambda cases=cases: cases(
+            noise=noise.jax, belief=JaxGaussianBelief, to_array=jnp.asarray
+        ),
     )
     def test[NoiseT: Noise, BeliefT, ObservationT](
         self,
@@ -260,12 +264,12 @@ class test_that_noise_is_clamped_to_floor_and_ceiling_when_both_are_provided:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "belief", "observation", "original", "floor", "ceiling"],
-        [
-            *cases(noise=noise.numpy, belief=NumPyGaussianBelief, to_array=np.asarray),
-            *cases(noise=noise.jax, belief=JaxGaussianBelief, to_array=jnp.asarray),
-        ],
+        numpy=cases(noise=noise.numpy, belief=NumPyGaussianBelief, to_array=np.asarray),
+        jax=lambda cases=cases: cases(
+            noise=noise.jax, belief=JaxGaussianBelief, to_array=jnp.asarray
+        ),
     )
     def test[NoiseT: Noise, BeliefT, ObservationT](
         self,
@@ -351,12 +355,12 @@ class test_that_clamped_covariance_remains_symmetric_positive_definite:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "belief", "observation", "original"],
-        [
-            *cases(noise=noise.numpy, belief=NumPyGaussianBelief, to_array=np.asarray),
-            *cases(noise=noise.jax, belief=JaxGaussianBelief, to_array=jnp.asarray),
-        ],
+        numpy=cases(noise=noise.numpy, belief=NumPyGaussianBelief, to_array=np.asarray),
+        jax=lambda cases=cases: cases(
+            noise=noise.jax, belief=JaxGaussianBelief, to_array=jnp.asarray
+        ),
     )
     def test[NoiseT: Noise, BeliefT, ObservationT](
         self,

@@ -2,8 +2,12 @@ from faran import types
 
 from numtypes import shape_of
 
-import jax.numpy as jnp
 import numpy as np
+from needy import needs
+from tests.dsl.optional import probe
+
+with needs.modules(probe.jax):
+    import jax.numpy as jnp
 
 
 type NumPyControlInputBatch = types.numpy.ControlInputBatch

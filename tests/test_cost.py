@@ -18,7 +18,8 @@ from numtypes import array
 import numpy as np
 
 from tests.dsl import mppi as data, stubs
-from pytest import mark, approx
+from pytest import approx
+from tests.dsl import backends
 
 
 class test_that_tracking_cost_does_not_depend_on_coordinate_system:
@@ -183,7 +184,7 @@ class test_that_tracking_cost_does_not_depend_on_coordinate_system:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "cost",
             "transformed_cost",
@@ -191,20 +192,18 @@ class test_that_tracking_cost_does_not_depend_on_coordinate_system:
             "states",
             "transformed_states",
         ],
-        [
-            *cases(
-                trajectory=trajectory.numpy,
-                types=types.numpy,
-                data=data.numpy,
-                costs=costs.numpy,
-            ),
-            *cases(
-                trajectory=trajectory.jax,
-                types=types.jax,
-                data=data.jax,
-                costs=costs.jax,
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy,
+            types=types.numpy,
+            data=data.numpy,
+            costs=costs.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax,
+            types=types.jax,
+            data=data.jax,
+            costs=costs.jax,
+        ),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -268,7 +267,7 @@ class test_that_contouring_cost_increases_with_lateral_deviation:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "cost",
             "inputs",
@@ -277,20 +276,18 @@ class test_that_contouring_cost_increases_with_lateral_deviation:
             "equal_deviation_indices",
             "increasing_deviation_indices",
         ],
-        [
-            *cases(
-                trajectory=trajectory.numpy,
-                types=types.numpy,
-                data=data.numpy,
-                costs=costs.numpy,
-            ),
-            *cases(
-                trajectory=trajectory.jax,
-                types=types.jax,
-                data=data.jax,
-                costs=costs.jax,
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy,
+            types=types.numpy,
+            data=data.numpy,
+            costs=costs.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax,
+            types=types.jax,
+            data=data.jax,
+            costs=costs.jax,
+        ),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -372,7 +369,7 @@ class test_that_lag_cost_increases_with_longitudinal_deviation:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "cost",
             "inputs",
@@ -381,20 +378,18 @@ class test_that_lag_cost_increases_with_longitudinal_deviation:
             "equal_deviation_indices",
             "increasing_deviation_indices",
         ],
-        [
-            *cases(
-                trajectory=trajectory.numpy,
-                types=types.numpy,
-                data=data.numpy,
-                costs=costs.numpy,
-            ),
-            *cases(
-                trajectory=trajectory.jax,
-                types=types.jax,
-                data=data.jax,
-                costs=costs.jax,
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy,
+            types=types.numpy,
+            data=data.numpy,
+            costs=costs.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax,
+            types=types.jax,
+            data=data.jax,
+            costs=costs.jax,
+        ),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -566,22 +561,20 @@ class test_that_cost_increases_with_weight:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["inputs", "states", "create_cost"],
-        [
-            *cases(
-                trajectory=trajectory.numpy,
-                types=types.numpy,
-                data=data.numpy,
-                costs=costs.numpy,
-            ),
-            *cases(
-                trajectory=trajectory.jax,
-                types=types.jax,
-                data=data.jax,
-                costs=costs.jax,
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy,
+            types=types.numpy,
+            data=data.numpy,
+            costs=costs.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax,
+            types=types.jax,
+            data=data.jax,
+            costs=costs.jax,
+        ),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -621,12 +614,10 @@ class test_that_progress_cost_rewards_velocity:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["cost", "inputs_slow", "inputs_fast", "states"],
-        [
-            *cases(data=data.numpy, costs=costs.numpy),
-            *cases(data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -678,7 +669,7 @@ class test_that_control_smoothing_cost_increases_with_higher_jerk:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "cost",
             "inputs",
@@ -687,10 +678,8 @@ class test_that_control_smoothing_cost_increases_with_higher_jerk:
             "equal_jerk_indices",
             "increasing_jerk_indices",
         ],
-        [
-            *cases(data=data.numpy, costs=costs.numpy),
-            *cases(data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -759,7 +748,7 @@ class test_that_control_smoothing_cost_respects_dimension_weights:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "cost",
             "inputs",
@@ -767,10 +756,8 @@ class test_that_control_smoothing_cost_respects_dimension_weights:
             "low_cost_indices",
             "high_cost_indices",
         ],
-        [
-            *cases(data=data.numpy, costs=costs.numpy),
-            *cases(data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -834,7 +821,7 @@ class test_that_control_effort_cost_increases_with_control_magnitude:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "cost",
             "inputs",
@@ -843,10 +830,8 @@ class test_that_control_effort_cost_increases_with_control_magnitude:
             "increasing_deviation_indices",
             "equal_deviation_indices",
         ],
-        [
-            *cases(data=data.numpy, costs=costs.numpy),
-            *cases(data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -955,7 +940,7 @@ class test_that_collision_cost_decreases_with_distance:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "cost",
             "inputs",
@@ -964,10 +949,8 @@ class test_that_collision_cost_decreases_with_distance:
             "non_zero_cost_indices",
             "zero_cost_indices",
         ],
-        [
-            *cases(data=data.numpy, costs=costs.numpy),
-            *cases(data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -1054,12 +1037,10 @@ class test_that_collision_cost_uses_different_thresholds_for_different_parts:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["cost", "inputs", "states", "cost_order"],
-        [
-            *cases(data=data.numpy, costs=costs.numpy),
-            *cases(data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -1159,12 +1140,10 @@ class test_that_collision_cost_is_zero_when_no_obstacles_are_present:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["cost", "inputs", "states"],
-        [
-            *cases(data=data.numpy, costs=costs.numpy, risk=risk.numpy),
-            *cases(data=data.jax, costs=costs.jax, risk=risk.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy, risk=risk.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax, risk=risk.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -1257,26 +1236,24 @@ class test_that_collision_cost_with_uncertainty_is_consistent_with_deterministic
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["inputs", "states", "create_cost", "no_metric", "target_metric"],
-        [
-            *cases(
-                data=data.numpy,
-                costs=costs.numpy,
-                distance_measure=distance_measure.numpy,
-                obstacles=obstacles.numpy,
-                risk=risk.numpy,
-                types=types.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                costs=costs.jax,
-                distance_measure=distance_measure.jax,
-                obstacles=obstacles.jax,
-                risk=risk.jax,
-                types=types.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            costs=costs.numpy,
+            distance_measure=distance_measure.numpy,
+            obstacles=obstacles.numpy,
+            risk=risk.numpy,
+            types=types.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            costs=costs.jax,
+            distance_measure=distance_measure.jax,
+            obstacles=obstacles.jax,
+            risk=risk.jax,
+            types=types.jax,
+        ),
     )
     def test_that_costs_are_equal_when_variance_is_close_to_zero[
         ControlInputBatchT,
@@ -1308,26 +1285,24 @@ class test_that_collision_cost_with_uncertainty_is_consistent_with_deterministic
             f"with uncertainty. Got deterministic costs: {J_deterministic} vs uncertain costs: {J_uncertain}"
         )
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["inputs", "states", "create_cost", "no_metric", "target_metric"],
-        [
-            *cases(
-                data=data.numpy,
-                costs=costs.numpy,
-                distance_measure=distance_measure.numpy,
-                obstacles=obstacles.numpy,
-                risk=risk.numpy,
-                types=types.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                costs=costs.jax,
-                distance_measure=distance_measure.jax,
-                obstacles=obstacles.jax,
-                risk=risk.jax,
-                types=types.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            costs=costs.numpy,
+            distance_measure=distance_measure.numpy,
+            obstacles=obstacles.numpy,
+            risk=risk.numpy,
+            types=types.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            costs=costs.jax,
+            distance_measure=distance_measure.jax,
+            obstacles=obstacles.jax,
+            risk=risk.jax,
+            types=types.jax,
+        ),
     )
     def test_that_jensen_inequality_is_satisfied_when_variance_is_not_zero[
         ControlInputBatchT,
@@ -1439,26 +1414,24 @@ class test_that_collision_cost_increases_with_higher_variance_in_obstacle_state_
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["inputs", "states", "create_cost"],
-        [
-            *cases(
-                data=data.numpy,
-                costs=costs.numpy,
-                distance_measure=distance_measure.numpy,
-                obstacles=obstacles.numpy,
-                risk=risk.numpy,
-                types=types.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                costs=costs.jax,
-                distance_measure=distance_measure.jax,
-                obstacles=obstacles.jax,
-                risk=risk.jax,
-                types=types.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            costs=costs.numpy,
+            distance_measure=distance_measure.numpy,
+            obstacles=obstacles.numpy,
+            risk=risk.numpy,
+            types=types.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            costs=costs.jax,
+            distance_measure=distance_measure.jax,
+            obstacles=obstacles.jax,
+            risk=risk.jax,
+            types=types.jax,
+        ),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -1556,26 +1529,24 @@ class test_that_collision_cost_increases_linearly_with_weight:
             ]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["inputs", "states", "create_cost"],
-        [
-            *cases(
-                data=data.numpy,
-                costs=costs.numpy,
-                distance_measure=distance_measure.numpy,
-                obstacles=obstacles.numpy,
-                risk=risk.numpy,
-                types=types.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                costs=costs.jax,
-                distance_measure=distance_measure.jax,
-                obstacles=obstacles.jax,
-                risk=risk.jax,
-                types=types.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            costs=costs.numpy,
+            distance_measure=distance_measure.numpy,
+            obstacles=obstacles.numpy,
+            risk=risk.numpy,
+            types=types.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            costs=costs.jax,
+            distance_measure=distance_measure.jax,
+            obstacles=obstacles.jax,
+            risk=risk.jax,
+            types=types.jax,
+        ),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -1635,12 +1606,10 @@ class test_that_boundary_cost_is_zero_when_boundary_is_far:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["cost", "inputs", "states"],
-        [
-            *cases(data=data.numpy, costs=costs.numpy),
-            *cases(data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -1700,12 +1669,10 @@ class test_that_boundary_cost_increases_with_decreasing_distance:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["cost", "inputs", "states", "cost_order"],
-        [
-            *cases(data=data.numpy, costs=costs.numpy),
-            *cases(data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -1745,12 +1712,10 @@ class test_that_preference_cost_is_lower_for_rollouts_with_higher_preference:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["cost", "inputs", "states", "rollout_order"],
-        [
-            *cases(data=data.numpy, costs=costs.numpy, types=types.numpy),
-            *cases(data=data.jax, costs=costs.jax, types=types.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax, types=types.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,
@@ -1786,12 +1751,10 @@ class test_that_preference_cost_is_uniform_across_timesteps:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["cost", "inputs", "states"],
-        [
-            *cases(data=data.numpy, costs=costs.numpy, types=types.numpy),
-            *cases(data=data.jax, costs=costs.jax, types=types.jax),
-        ],
+        numpy=cases(data=data.numpy, costs=costs.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, costs=costs.jax, types=types.jax),
     )
     def test[ControlInputBatchT, StateBatchT, CostsT: Costs](
         self,

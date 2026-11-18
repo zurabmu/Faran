@@ -31,8 +31,9 @@ The Python ecosystem has plenty of individual MPPI implementations [1](https://g
 Python 3.13+ is required.
 
 ```bash
-pip install faran          # NumPy + JAX (CPU only)
-pip install faran[cuda]    # JAX with GPU support
+pip install faran          # NumPy only
+pip install faran[jax]     # NumPy + JAX (CPU only)
+pip install faran[cuda]    # NumPy + JAX with GPU support
 ```
 
 The visualizer CLI can be installed separately:

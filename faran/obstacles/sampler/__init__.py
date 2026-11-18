@@ -1,6 +1,3 @@
-from .basic import (
-    NumPyGaussianObstacle2dPoseSampler as NumPyGaussianObstacle2dPoseSampler,
-)
-from .accelerated import (
-    JaxGaussianObstacle2dPoseSampler as JaxGaussianObstacle2dPoseSampler,
-)
+import lazy_loader as lazy
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

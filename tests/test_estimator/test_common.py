@@ -13,7 +13,8 @@ from tests.dsl import (
     mppi as data,
     model as model_data,
 )
-from pytest import mark, Subtests
+from pytest import Subtests
+from tests.dsl import backends
 
 
 class test_that_estimated_states_satisfy_basic_properties:
@@ -111,12 +112,10 @@ class test_that_estimated_states_satisfy_basic_properties:
 
         return cases
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "expected_count"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT: HasObstacleCount, InputsT: HasObstacleCount](
         self,
@@ -260,7 +259,7 @@ class test_that_estimated_poses_are_close_to_final_historical_poses:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "estimator",
             "history",
@@ -272,10 +271,8 @@ class test_that_estimated_poses_are_close_to_final_historical_poses:
             "expected_heading",
             "tolerance",
         ],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -417,12 +414,10 @@ class test_that_velocity_is_near_zero_for_stationary_obstacles:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "velocity_of", "tolerance"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -614,12 +609,10 @@ class test_that_velocity_direction_matches_motion_direction:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "velocity_of", "expected_direction"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -758,12 +751,10 @@ class test_that_estimates_for_constant_velocity_motion_are_close_to_true_velocit
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "velocity_of", "expected_velocity", "tolerance"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -858,7 +849,7 @@ class test_that_estimates_are_independent_across_obstacles:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "estimator",
             "base_history",
@@ -866,10 +857,8 @@ class test_that_estimates_are_independent_across_obstacles:
             "unperturbed_obstacle_index",
             "tolerance",
         ],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT: ArrayConvertible, InputsT: ArrayConvertible](
         self,
@@ -990,7 +979,7 @@ class test_that_bicycle_input_estimates_are_close_to_true_values_when_inputs_are
 
         return cases
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "estimator",
             "history",
@@ -1000,10 +989,10 @@ class test_that_bicycle_input_estimates_are_close_to_true_values_when_inputs_are
             "expected_steering",
             "tolerance",
         ],
-        [
-            *cases(model=model.numpy, data=data.numpy, model_data=model_data.numpy),
-            *cases(model=model.jax, data=data.jax, model_data=model_data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy, model_data=model_data.numpy),
+        jax=lambda cases=cases: cases(
+            model=model.jax, data=data.jax, model_data=model_data.jax
+        ),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -1105,7 +1094,7 @@ class test_that_unicycle_input_estimates_are_close_to_true_values_when_inputs_ar
 
         return cases
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "estimator",
             "history",
@@ -1115,10 +1104,10 @@ class test_that_unicycle_input_estimates_are_close_to_true_values_when_inputs_ar
             "expected_angular",
             "tolerance",
         ],
-        [
-            *cases(model=model.numpy, data=data.numpy, model_data=model_data.numpy),
-            *cases(model=model.jax, data=data.jax, model_data=model_data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy, model_data=model_data.numpy),
+        jax=lambda cases=cases: cases(
+            model=model.jax, data=data.jax, model_data=model_data.jax
+        ),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -1247,12 +1236,10 @@ class test_that_estimates_are_missing_when_obstacle_is_missing:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "missing_obstacle_index"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -1355,12 +1342,10 @@ class test_that_estimator_does_not_mutate_history:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "data_of"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT: ArrayConvertible, StatesT, InputsT](
         self,

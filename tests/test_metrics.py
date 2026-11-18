@@ -21,8 +21,8 @@ from jaxtyping import Bool
 import numpy as np
 
 from tests.dsl import stubs, mppi as data
-from pytest import mark
 from pytest_subtests import SubTests
+from tests.dsl import backends
 
 
 class test_that_collision_is_detected_when_distance_is_below_threshold:
@@ -105,7 +105,7 @@ class test_that_collision_is_detected_when_distance_is_below_threshold:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "metric",
@@ -120,10 +120,10 @@ class test_that_collision_is_detected_when_distance_is_below_threshold:
             "expected_collisions",
             "expected_collision_detected",
         ],
-        [
-            *cases(data=data.numpy, types=types.numpy, collectors=collectors.numpy),
-            *cases(data=data.jax, types=types.jax, collectors=collectors.jax),
-        ],
+        numpy=cases(data=data.numpy, types=types.numpy, collectors=collectors.numpy),
+        jax=lambda cases=cases: cases(
+            data=data.jax, types=types.jax, collectors=collectors.jax
+        ),
     )
     def test[StateT, InputSequenceT, ObstacleStatesForTimeStepT](
         self,
@@ -258,7 +258,7 @@ class test_that_metrics_are_recomputed_when_new_data_is_collected:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "metric",
@@ -271,10 +271,10 @@ class test_that_metrics_are_recomputed_when_new_data_is_collected:
             "expected_initial_collisions",
             "expected_final_collisions",
         ],
-        [
-            *cases(data=data.numpy, types=types.numpy, collectors=collectors.numpy),
-            *cases(data=data.jax, types=types.jax, collectors=collectors.jax),
-        ],
+        numpy=cases(data=data.numpy, types=types.numpy, collectors=collectors.numpy),
+        jax=lambda cases=cases: cases(
+            data=data.jax, types=types.jax, collectors=collectors.jax
+        ),
     )
     def test[StateT, InputSequenceT, ObstacleStatesForTimeStepT](
         self,
@@ -392,7 +392,7 @@ class test_that_task_completion_is_detected:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "metric",
@@ -402,20 +402,18 @@ class test_that_task_completion_is_detected:
             "states_at",
             "expected",
         ],
-        [
-            *cases(
-                data=data.numpy,
-                types=types.numpy,
-                trajectory=trajectory.numpy,
-                collectors=collectors.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                types=types.jax,
-                trajectory=trajectory.jax,
-                collectors=collectors.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            types=types.numpy,
+            trajectory=trajectory.numpy,
+            collectors=collectors.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            types=types.jax,
+            trajectory=trajectory.jax,
+            collectors=collectors.jax,
+        ),
     )
     def test[StateT, InputSequenceT](
         self,
@@ -503,7 +501,7 @@ class test_that_task_stretch_is_computed:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "metric",
@@ -513,20 +511,18 @@ class test_that_task_stretch_is_computed:
             "states_at",
             "expected_stretches",
         ],
-        [
-            *cases(
-                data=data.numpy,
-                types=types.numpy,
-                trajectory=trajectory.numpy,
-                collectors=collectors.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                types=types.jax,
-                trajectory=trajectory.jax,
-                collectors=collectors.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            types=types.numpy,
+            trajectory=trajectory.numpy,
+            collectors=collectors.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            types=types.jax,
+            trajectory=trajectory.jax,
+            collectors=collectors.jax,
+        ),
     )
     def test[StateT, InputSequenceT](
         self,
@@ -821,7 +817,7 @@ class test_that_completed_part_is_computed:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "metric",
@@ -831,20 +827,18 @@ class test_that_completed_part_is_computed:
             "states_at",
             "expected_completed_parts",
         ],
-        [
-            *cases(
-                data=data.numpy,
-                types=types.numpy,
-                trajectory=trajectory.numpy,
-                collectors=collectors.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                types=types.jax,
-                trajectory=trajectory.jax,
-                collectors=collectors.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            types=types.numpy,
+            trajectory=trajectory.numpy,
+            collectors=collectors.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            types=types.jax,
+            trajectory=trajectory.jax,
+            collectors=collectors.jax,
+        ),
     )
     def test[StateT, InputSequenceT](
         self,
@@ -979,7 +973,7 @@ class test_that_constraint_violation_metrics_are_computed:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "metric",
@@ -989,22 +983,20 @@ class test_that_constraint_violation_metrics_are_computed:
             "states_at",
             "expected",
         ],
-        [
-            *cases(
-                data=data.numpy,
-                types=types.numpy,
-                create_trajectory=trajectory.numpy,
-                create_boundary=boundary.numpy,
-                collectors=collectors.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                types=types.jax,
-                create_trajectory=trajectory.jax,
-                create_boundary=boundary.jax,
-                collectors=collectors.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            types=types.numpy,
+            create_trajectory=trajectory.numpy,
+            create_boundary=boundary.numpy,
+            collectors=collectors.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            types=types.jax,
+            create_trajectory=trajectory.jax,
+            create_boundary=boundary.jax,
+            collectors=collectors.jax,
+        ),
     )
     def test[StateT, InputSequenceT](
         self,
@@ -1170,7 +1162,7 @@ class test_that_comfort_metrics_are_computed:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "metric",
@@ -1180,20 +1172,18 @@ class test_that_comfort_metrics_are_computed:
             "states_at",
             "expected",
         ],
-        [
-            *cases(
-                data=data.numpy,
-                types=types.numpy,
-                create_trajectory=trajectory.numpy,
-                collectors=collectors.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                types=types.jax,
-                create_trajectory=trajectory.jax,
-                collectors=collectors.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            types=types.numpy,
+            create_trajectory=trajectory.numpy,
+            collectors=collectors.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            types=types.jax,
+            create_trajectory=trajectory.jax,
+            collectors=collectors.jax,
+        ),
     )
     def test[StateT, InputSequenceT](
         self,
@@ -1276,7 +1266,7 @@ class test_that_comfort_metric_measures_acceleration_when_it_is_constant:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "metric",
@@ -1286,20 +1276,18 @@ class test_that_comfort_metric_measures_acceleration_when_it_is_constant:
             "states_at",
             "expected_acceleration",
         ],
-        [
-            *cases(
-                data=data.numpy,
-                types=types.numpy,
-                create_trajectory=trajectory.numpy,
-                collectors=collectors.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                types=types.jax,
-                create_trajectory=trajectory.jax,
-                collectors=collectors.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            types=types.numpy,
+            create_trajectory=trajectory.numpy,
+            collectors=collectors.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            types=types.jax,
+            create_trajectory=trajectory.jax,
+            collectors=collectors.jax,
+        ),
     )
     def test[StateT, InputSequenceT](
         self,
@@ -1378,7 +1366,7 @@ class test_that_comfort_metric_measures_jerk_when_it_is_constant:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "metric",
@@ -1388,20 +1376,18 @@ class test_that_comfort_metric_measures_jerk_when_it_is_constant:
             "states_at",
             "expected_jerk",
         ],
-        [
-            *cases(
-                data=data.numpy,
-                types=types.numpy,
-                create_trajectory=trajectory.numpy,
-                collectors=collectors.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                types=types.jax,
-                create_trajectory=trajectory.jax,
-                collectors=collectors.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            types=types.numpy,
+            create_trajectory=trajectory.numpy,
+            collectors=collectors.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            types=types.jax,
+            create_trajectory=trajectory.jax,
+            collectors=collectors.jax,
+        ),
     )
     def test[StateT, InputSequenceT](
         self,

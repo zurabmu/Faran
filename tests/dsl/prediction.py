@@ -42,8 +42,8 @@ class NumPyUnicyclePredictionCreator:
 
 class JaxIntegratorPredictionCreator:
     def __call__(
-        self, *, states: types.jax.integrator.ObstacleStateSequences
-    ) -> types.jax.Obstacle2dPoses:
+        self, *, states: "types.jax.integrator.ObstacleStateSequences"
+    ) -> "types.jax.Obstacle2dPoses":
         return data.jax.obstacle_2d_poses(
             x=states.array[:, 0, :],
             y=states.array[:, 1, :],
@@ -51,27 +51,27 @@ class JaxIntegratorPredictionCreator:
             covariance=states.covariance_array[:, :3, :3],
         )
 
-    def empty(self, *, horizon: int) -> types.jax.Obstacle2dPoses:
+    def empty(self, *, horizon: int) -> "types.jax.Obstacle2dPoses":
         return types.jax.obstacle_2d_poses.empty(horizon=horizon)
 
 
 class JaxBicyclePredictionCreator:
     def __call__(
-        self, *, states: types.jax.bicycle.ObstacleStateSequences
-    ) -> types.jax.Obstacle2dPoses:
+        self, *, states: "types.jax.bicycle.ObstacleStateSequences"
+    ) -> "types.jax.Obstacle2dPoses":
         return states.pose()
 
-    def empty(self, *, horizon: int) -> types.jax.Obstacle2dPoses:
+    def empty(self, *, horizon: int) -> "types.jax.Obstacle2dPoses":
         return types.jax.obstacle_2d_poses.empty(horizon=horizon)
 
 
 class JaxUnicyclePredictionCreator:
     def __call__(
-        self, *, states: types.jax.unicycle.ObstacleStateSequences
-    ) -> types.jax.Obstacle2dPoses:
+        self, *, states: "types.jax.unicycle.ObstacleStateSequences"
+    ) -> "types.jax.Obstacle2dPoses":
         return states.pose()
 
-    def empty(self, *, horizon: int) -> types.jax.Obstacle2dPoses:
+    def empty(self, *, horizon: int) -> "types.jax.Obstacle2dPoses":
         return types.jax.obstacle_2d_poses.empty(horizon=horizon)
 
 

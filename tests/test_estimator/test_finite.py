@@ -7,7 +7,7 @@ from numtypes import Array, array
 import numpy as np
 
 from tests.dsl import ComponentExtractor, ArrayConvertible, mppi as data
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_velocity_estimates_are_zero_for_single_state_history:
@@ -61,12 +61,10 @@ class test_that_velocity_estimates_are_zero_for_single_state_history:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "velocity_of", "tolerance"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -112,12 +110,10 @@ class test_that_acceleration_is_zero_for_fewer_than_three_states:
             for history in histories
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "acceleration_of", "tolerance"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -164,12 +160,10 @@ class test_that_finite_difference_estimators_return_none_covariance:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -247,12 +241,10 @@ class test_that_missing_state_earlier_in_history_does_not_affect_estimates:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "reference_history"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT: ArrayConvertible, InputsT: ArrayConvertible](
         self,
@@ -489,12 +481,10 @@ class test_that_estimable_states_are_computed_when_there_are_not_enough_valid_en
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "check"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,

@@ -1,10 +1,10 @@
-from faran.types import HasShape, JaxNoiseCovarianceDescription
+from faran.types import HasShape
 
 
 def observation_dimension_from(
     *,
-    process_noise_covariance: JaxNoiseCovarianceDescription,
-    observation_noise_covariance: JaxNoiseCovarianceDescription,
+    process_noise_covariance: HasShape | float,
+    observation_noise_covariance: HasShape | float,
     initial_state_covariance: HasShape | None,
     observation_dimension: int | None,
 ) -> int:

@@ -1,9 +1,3 @@
-from .gaussian import (
-    NumPyGaussianSampler as NumPyGaussianSampler,
-    JaxGaussianSampler as JaxGaussianSampler,
-)
-from .halton import (
-    NumPyHaltonSplineSampler as NumPyHaltonSplineSampler,
-    JaxHaltonSplineSampler as JaxHaltonSplineSampler,
-)
-from .factory import sampler as sampler
+import lazy_loader as lazy
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

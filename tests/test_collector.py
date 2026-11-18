@@ -20,6 +20,7 @@ import numpy as np
 from tests.dsl import stubs, costs, planners, mppi as data
 from pytest import mark, warns
 from pytest_subtests import SubTests
+from tests.dsl import backends
 
 
 class test_that_collector_registry_discards_incomplete_data_for_time_step:
@@ -63,7 +64,7 @@ class test_that_collector_registry_discards_incomplete_data_for_time_step:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "mppi",
@@ -75,10 +76,10 @@ class test_that_collector_registry_discards_incomplete_data_for_time_step:
             "expected_states",
             "expected_obstacle_states",
         ],
-        [
-            *cases(data=data.numpy, types=types.numpy, collectors=collectors.numpy),
-            *cases(data=data.jax, types=types.jax, collectors=collectors.jax),
-        ],
+        numpy=cases(data=data.numpy, types=types.numpy, collectors=collectors.numpy),
+        jax=lambda cases=cases: cases(
+            data=data.jax, types=types.jax, collectors=collectors.jax
+        ),
     )
     @mark.filterwarnings("error")
     def test[StateT, InputSequenceT, ObstacleStatesForTimeStepT](
@@ -169,12 +170,10 @@ class test_that_collector_registry_emits_warnings_when_collectors_do_not_collect
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["registry", "mppi", "horizon", "nominal_input", "state_at"],
-        [
-            *cases(data=data.numpy, collectors=collectors.numpy),
-            *cases(data=data.jax, collectors=collectors.jax),
-        ],
+        numpy=cases(data=data.numpy, collectors=collectors.numpy),
+        jax=lambda cases=cases: cases(data=data.jax, collectors=collectors.jax),
     )
     def test[StateT, InputSequenceT, ObstacleStatesForTimeStepT](
         self,
@@ -252,7 +251,7 @@ class test_that_obstacle_state_collector_works_when_number_of_obstacles_varies:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "registry",
             "observer",
@@ -260,10 +259,10 @@ class test_that_obstacle_state_collector_works_when_number_of_obstacles_varies:
             "obstacle_states_at",
             "expected_obstacle_states",
         ],
-        [
-            *cases(data=data.numpy, types=types.numpy, collectors=collectors.numpy),
-            *cases(data=data.jax, types=types.jax, collectors=collectors.jax),
-        ],
+        numpy=cases(data=data.numpy, types=types.numpy, collectors=collectors.numpy),
+        jax=lambda cases=cases: cases(
+            data=data.jax, types=types.jax, collectors=collectors.jax
+        ),
     )
     def test[ObstacleStatesForTimeStepT](
         self,
@@ -467,28 +466,26 @@ class test_that_collectors_collect_data:
             obstacle_forecasts_in_planner(),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["registry", "collect", "read", "expected"],
-        [
-            *cases(
-                data=data.numpy,
-                model=model.numpy,
-                types=types.numpy,
-                obstacles=obstacles.numpy,
-                planners=planners.numpy,
-                costs=costs.numpy,
-                collectors=collectors.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                model=model.jax,
-                types=types.jax,
-                obstacles=obstacles.jax,
-                planners=planners.jax,
-                costs=costs.jax,
-                collectors=collectors.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            model=model.numpy,
+            types=types.numpy,
+            obstacles=obstacles.numpy,
+            planners=planners.numpy,
+            costs=costs.numpy,
+            collectors=collectors.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            model=model.jax,
+            types=types.jax,
+            obstacles=obstacles.jax,
+            planners=planners.jax,
+            costs=costs.jax,
+            collectors=collectors.jax,
+        ),
     )
     def test_that_data_from_every_step_is_collected(
         self,
@@ -502,28 +499,26 @@ class test_that_collectors_collect_data:
 
         assert np.allclose(read(registry), expected)
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["registry", "collect", "read", "expected"],
-        [
-            *cases(
-                data=data.numpy,
-                model=model.numpy,
-                types=types.numpy,
-                obstacles=obstacles.numpy,
-                planners=planners.numpy,
-                costs=costs.numpy,
-                collectors=collectors.numpy,
-            ),
-            *cases(
-                data=data.jax,
-                model=model.jax,
-                types=types.jax,
-                obstacles=obstacles.jax,
-                planners=planners.jax,
-                costs=costs.jax,
-                collectors=collectors.jax,
-            ),
-        ],
+        numpy=cases(
+            data=data.numpy,
+            model=model.numpy,
+            types=types.numpy,
+            obstacles=obstacles.numpy,
+            planners=planners.numpy,
+            costs=costs.numpy,
+            collectors=collectors.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            data=data.jax,
+            model=model.jax,
+            types=types.jax,
+            obstacles=obstacles.jax,
+            planners=planners.jax,
+            costs=costs.jax,
+            collectors=collectors.jax,
+        ),
     )
     def test_that_new_data_is_collected_in_registry_when_registry_data_was_previously_read(
         self,

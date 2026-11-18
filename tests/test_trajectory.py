@@ -16,7 +16,7 @@ from numtypes import array
 
 import numpy as np
 
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_trajectory_returns_final_position_as_end:
@@ -47,12 +47,10 @@ class test_that_trajectory_returns_final_position_as_end:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "expected"],
-        [
-            *cases(trajectory=trajectory.numpy),
-            *cases(trajectory=trajectory.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax),
     )
     def test(self, trajectory: Trajectory, expected: tuple[float, float]) -> None:
         assert np.allclose(trajectory.end, expected)
@@ -82,12 +80,10 @@ class test_that_trajectory_returns_natural_length_of_trajectory:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "expected"],
-        [
-            *cases(trajectory=trajectory.numpy),
-            *cases(trajectory=trajectory.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax),
     )
     def test(self, trajectory: Trajectory, expected: float) -> None:
         # The exact length may vary depending on how the trajectory is implemented.
@@ -116,12 +112,10 @@ class test_that_trajectory_returns_natural_length_as_path_length_when_path_lengt
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "expected"],
-        [
-            *cases(trajectory=trajectory.numpy),
-            *cases(trajectory=trajectory.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax),
     )
     def test(self, trajectory: Trajectory, expected: float) -> None:
         assert np.allclose(trajectory.natural_length, expected)
@@ -173,16 +167,14 @@ class test_that_batch_query_returns_correct_positions_and_headings:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "path_parameters", "expected"],
-        [
-            *cases(
-                trajectory=trajectory.numpy, types=types.numpy, types_common=types.numpy
-            ),
-            *cases(
-                trajectory=trajectory.jax, types=types.jax, types_common=types.numpy
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy, types=types.numpy, types_common=types.numpy
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax, types=types.jax, types_common=types.numpy
+        ),
     )
     def test[PathParametersT: PathParameters, ReferencePointsT: ReferencePoints](
         self,
@@ -247,16 +239,14 @@ class test_that_waypoints_interpolate_linearly_when_waypoints_follow_a_straight_
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "path_parameters", "expected"],
-        [
-            *cases(
-                trajectory=trajectory.numpy, types=types.numpy, types_common=types.numpy
-            ),
-            *cases(
-                trajectory=trajectory.jax, types=types.jax, types_common=types.numpy
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy, types=types.numpy, types_common=types.numpy
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax, types=types.jax, types_common=types.numpy
+        ),
     )
     def test[PathParametersT: PathParameters, ReferencePointsT: ReferencePoints](
         self,
@@ -284,12 +274,10 @@ class test_that_query_returns_first_waypoint_when_path_parameter_is_zero:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "path_parameters"],
-        [
-            *cases(trajectory=trajectory.numpy, types=types.numpy),
-            *cases(trajectory=trajectory.jax, types=types.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax, types=types.jax),
     )
     def test[PathParametersT: PathParameters](
         self,
@@ -317,12 +305,10 @@ class test_that_query_returns_last_waypoint_when_path_parameter_is_total_length:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "path_parameters"],
-        [
-            *cases(trajectory=trajectory.numpy, types=types.numpy),
-            *cases(trajectory=trajectory.jax, types=types.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax, types=types.jax),
     )
     def test[PathParametersT: PathParameters](
         self,
@@ -381,12 +367,10 @@ class test_that_heading_matches_tangent_direction_of_waypoint_trajectory:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "path_parameters", "expected_heading"],
-        [
-            *cases(trajectory=trajectory.numpy, types=types.numpy),
-            *cases(trajectory=trajectory.jax, types=types.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax, types=types.jax),
     )
     def test[PathParametersT: PathParameters](
         self,
@@ -429,7 +413,7 @@ class test_that_heading_changes_smoothly_through_waypoints:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "trajectory",
             "path_parameters",
@@ -437,10 +421,8 @@ class test_that_heading_changes_smoothly_through_waypoints:
             "expected_end_heading",
             "should_increase",
         ],
-        [
-            *cases(trajectory=trajectory.numpy, types=types.numpy),
-            *cases(trajectory=trajectory.jax, types=types.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax, types=types.jax),
     )
     def test[PathParametersT: PathParameters](
         self,
@@ -634,12 +616,10 @@ class test_that_lateral_position_is_signed_perpendicular_distance_from_trajector
 
         return cases
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "positions", "expected"],
-        [
-            *cases(trajectory=trajectory.numpy, types=types.numpy),
-            *cases(trajectory=trajectory.jax, types=types.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax, types=types.jax),
     )
     def test[PositionsT: Positions, LateralT: LateralPositions](
         self,
@@ -813,12 +793,10 @@ class test_that_longitudinal_position_is_distance_along_trajectory:
 
         return cases
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "positions", "expected"],
-        [
-            *cases(trajectory=trajectory.numpy, types=types.numpy),
-            *cases(trajectory=trajectory.jax, types=types.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax, types=types.jax),
     )
     def test[PositionsT: Positions, LongitudinalT: LongitudinalPositions](
         self,
@@ -904,12 +882,10 @@ class test_that_normal_is_perpendicular_to_trajectory_direction:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "path_parameters", "expected"],
-        [
-            *cases(trajectory=trajectory.numpy, types=types.numpy),
-            *cases(trajectory=trajectory.jax, types=types.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax, types=types.jax),
     )
     def test[PathParametersT: PathParameters, NormalT: Normals](
         self,
@@ -945,12 +921,10 @@ class test_that_normal_has_unit_length:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["trajectory", "path_parameters"],
-        [
-            *cases(trajectory=trajectory.numpy, types=types.numpy),
-            *cases(trajectory=trajectory.jax, types=types.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax, types=types.jax),
     )
     def test[PathParametersT: PathParameters](
         self,
@@ -981,7 +955,7 @@ class test_that_normal_changes_direction_when_trajectory_is_curved:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "trajectory",
             "start_params",
@@ -989,10 +963,8 @@ class test_that_normal_changes_direction_when_trajectory_is_curved:
             "expected_start_normal",
             "expected_end_normal",
         ],
-        [
-            *cases(trajectory=trajectory.numpy, types=types.numpy),
-            *cases(trajectory=trajectory.jax, types=types.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax, types=types.jax),
     )
     def test[PathParametersT: PathParameters](
         self,
@@ -1032,12 +1004,10 @@ class test_that_waypoint_trajectory_is_created_correctly_when_alternative_api_is
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["reference", "alternative", "path_parameters"],
-        [
-            *cases(trajectory=trajectory.numpy, types=types.numpy),
-            *cases(trajectory=trajectory.jax, types=types.jax),
-        ],
+        numpy=cases(trajectory=trajectory.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(trajectory=trajectory.jax, types=types.jax),
     )
     def test[PathParametersT: PathParameters](
         self,

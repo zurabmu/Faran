@@ -46,10 +46,8 @@ class numpy:
 class jax:
     @staticmethod
     def stepping_with(
-        cost_function: types.jax.CostFunction,
-    ) -> Callable[
-        [], Control[types.jax.simple.ControlInputSequence, types.jax.Weights]
-    ]:
+        cost_function: "types.jax.CostFunction",
+    ) -> "Callable[[], Control[types.jax.simple.ControlInputSequence, types.jax.Weights]]":
         """Returns a function that runs one step of a planner with the given cost function."""
         mppi = create_mppi.jax.base(
             model=stubs.DynamicalModel.returns(

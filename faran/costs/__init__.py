@@ -1,43 +1,9 @@
-from .basic import (
-    NumPyPreference as NumPyPreference,
-    NumPyContouringCost as NumPyContouringCost,
-    NumPyLagCost as NumPyLagCost,
-    NumPyProgressCost as NumPyProgressCost,
-    NumPyControlSmoothingCost as NumPyControlSmoothingCost,
-    NumPyControlEffortCost as NumPyControlEffortCost,
-    NumPyPreferenceCost as NumPyPreferenceCost,
-)
-from .accelerated import (
-    JaxPreference as JaxPreference,
-    JaxContouringCost as JaxContouringCost,
-    JaxLagCost as JaxLagCost,
-    JaxProgressCost as JaxProgressCost,
-    JaxControlSmoothingCost as JaxControlSmoothingCost,
-    JaxControlEffortCost as JaxControlEffortCost,
-    JaxPreferenceCost as JaxPreferenceCost,
-)
-from .combined import (
-    CombinedCost as CombinedCost,
-    NumPyCostSumFunction as NumPyCostSumFunction,
-    JaxCostSumFunction as JaxCostSumFunction,
-)
-from .collision import (
-    NumPyDistance as NumPyDistance,
-    NumPyCollisionCost as NumPyCollisionCost,
-    JaxDistance as JaxDistance,
-    JaxCollisionCost as JaxCollisionCost,
-)
-from .distance import (
-    Circles as Circles,
-    ConvexPolygon as ConvexPolygon,
-    NumPyCircleDistanceExtractor as NumPyCircleDistanceExtractor,
-    JaxCircleDistanceExtractor as JaxCircleDistanceExtractor,
-    NumPySatDistanceExtractor as NumPySatDistanceExtractor,
-    JaxSatDistanceExtractor as JaxSatDistanceExtractor,
-)
-from .boundary import (
-    NumPyFixedWidthBoundary as NumPyFixedWidthBoundary,
-    JaxFixedWidthBoundary as JaxFixedWidthBoundary,
-)
+import lazy_loader as lazy
+
+# NOTE: These names are also subpackages. Importing a subpackage for the first time replaces the
+# package attribute of the same name, so the subpackages are imported before the names are bound.
+from . import distance as _distance, boundary as _boundary, risk as _risk  # noqa: F401
+from .factory import distance as distance, boundary as boundary
 from .risk import risk as risk
-from .factory import costs as costs, distance as distance, boundary as boundary
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

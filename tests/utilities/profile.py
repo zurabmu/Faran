@@ -3,9 +3,13 @@ import time
 import logging
 from dataclasses import dataclass, field
 
-import jax
-
 import pytest
+
+from needy import needs
+from tests.dsl import probe
+
+with needs.modules(probe.jax):
+    import jax
 
 
 @dataclass

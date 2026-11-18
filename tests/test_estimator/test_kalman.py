@@ -8,7 +8,8 @@ from jaxtyping import Float
 import numpy as np
 
 from tests.dsl import ArrayConvertible, mppi as data, check
-from pytest import mark, Subtests
+from pytest import Subtests
+from tests.dsl import backends
 
 
 class EstimatorCreator[HistoryT, StatesT, InputsT](Protocol):
@@ -90,12 +91,10 @@ class test_that_covariance_satisfies_basic_properties:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "expected_shape"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -208,12 +207,10 @@ class test_that_covariance_decreases_with_more_observations:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "short_history", "long_history"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -291,12 +288,10 @@ class test_that_covariance_is_larger_for_unobserved_states:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "observed_indices", "unobserved_indices"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -382,12 +377,10 @@ class test_that_higher_noise_yields_higher_covariance:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -510,17 +503,15 @@ class test_that_covariance_is_independent_across_obstacles:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "estimator",
             "base_history",
             "perturbed_history",
             "unperturbed_index",
         ],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,
@@ -619,12 +610,10 @@ class test_that_estimator_estimates_obstacle_state_when_obstacle_appears_mid_his
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history", "reference_history"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT: ArrayConvertible, InputsT: ArrayConvertible](
         self,
@@ -726,12 +715,10 @@ class test_that_estimator_uses_observations_when_there_are_gaps_in_history:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "gappy_history", "reference_history"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test[HistoryT, StatesT: ArrayConvertible, InputsT: ArrayConvertible](
         self,
@@ -868,12 +855,10 @@ class test_that_estimated_covariance_is_symmetric:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["estimator", "history"],
-        [
-            *cases(model=model.numpy, data=data.numpy),
-            *cases(model=model.jax, data=data.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax),
     )
     def test_numpy_update_preserves_symmetry[HistoryT, StatesT, InputsT](
         self,
@@ -961,12 +946,10 @@ class test_that_estimator_uses_specified_noise_model:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["base_estimator", "adapted_estimator", "history"],
-        [
-            *cases(model=model.numpy, data=data.numpy, noise=noise.numpy),
-            *cases(model=model.jax, data=data.jax, noise=noise.jax),
-        ],
+        numpy=cases(model=model.numpy, data=data.numpy, noise=noise.numpy),
+        jax=lambda cases=cases: cases(model=model.jax, data=data.jax, noise=noise.jax),
     )
     def test[HistoryT, StatesT, InputsT](
         self,

@@ -8,7 +8,7 @@ stages:
 
 include:
   - project: "zurabm/ci-templates"
-    ref: v1.4.6
+    ref: v1.8.0
     file:
       - "/python/verify.yml"
       - "/python/publish.yml"
@@ -19,6 +19,17 @@ variables:
   COLLECT_COVERAGE: "true"
   PYPI_PROJECT_NAME: "faran"
   COVERAGE_SOURCE: "faran"
+  PYRIGHT_PYTHON_NODE_VERSION: "24.22.3"
+
+nox:test_without_jax:
+  extends: .nox
+  script:
+    - uv run nox -s test_without_jax
+
+nox:test_full:
+  extends: .nox
+  script:
+    - uv run nox -s test_full
 
 benchmark:
   extends: .benchmark-base

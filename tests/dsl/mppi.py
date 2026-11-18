@@ -2,11 +2,16 @@ from typing import Final, Sequence
 
 from faran import types
 
-from jaxtyping import Array as JaxArray, Float, Num
+from jaxtyping import Float, Num
 from numtypes import Array
 
 import numpy as np
-import jax.numpy as jnp
+from needy import needs
+from tests.dsl.optional import probe
+
+with needs.modules(probe.jax):
+    from jaxtyping import Array as JaxArray
+    import jax.numpy as jnp
 
 D_O: Final = types.obstacle.POSE_D_O
 
@@ -160,17 +165,15 @@ class jax:
 
     @staticmethod
     def control_input_batch(
-        array: Float[Array, "T D_u M"] | Float[JaxArray, "T D_u M"],
+        array: 'Float[Array, "T D_u M"] | Float[JaxArray, "T D_u M"]',
     ) -> JaxControlInputBatch:
         return types.jax.simple.control_input_batch.create(array=array)
 
     @staticmethod
     def simple_obstacle_states(
         *,
-        states: Float[Array, "T D_o K"] | Float[JaxArray, "T D_o K"],
-        covariance: Float[Array, "T D_o D_o K"]
-        | Float[JaxArray, "T D_o D_o K"]
-        | None = None,
+        states: 'Float[Array, "T D_o K"] | Float[JaxArray, "T D_o K"]',
+        covariance: 'Float[Array, "T D_o D_o K"] | Float[JaxArray, "T D_o D_o K"] | None' = None,
     ) -> JaxSimpleObstacleStates:
         return types.jax.simple.obstacle_states.create(
             states=states, covariance=covariance
@@ -178,19 +181,17 @@ class jax:
 
     @staticmethod
     def simple_obstacle_states_for_time_step(
-        *, array: Float[Array, " D_o K"] | Float[JaxArray, " D_o K"]
+        *, array: 'Float[Array, " D_o K"] | Float[JaxArray, " D_o K"]'
     ) -> JaxSimpleObstacleStates:
         return types.jax.simple.obstacle_states_for_time_step.create(array=array)
 
     @staticmethod
     def obstacle_2d_poses(
         *,
-        x: Float[Array, "T K"] | Float[JaxArray, "T K"],
-        y: Float[Array, "T K"] | Float[JaxArray, "T K"],
-        heading: Float[Array, "T K"] | Float[JaxArray, "T K"] | None = None,
-        covariance: Float[Array, "T D_o D_o K"]
-        | Float[JaxArray, f"T {D_O} {D_O} K"]
-        | None = None,
+        x: 'Float[Array, "T K"] | Float[JaxArray, "T K"]',
+        y: 'Float[Array, "T K"] | Float[JaxArray, "T K"]',
+        heading: 'Float[Array, "T K"] | Float[JaxArray, "T K"] | None' = None,
+        covariance: 'Float[Array, "T D_o D_o K"] | Float[JaxArray, f"T {D_O} {D_O} K"] | None' = None,
     ) -> JaxObstacle2dPoses:
         return types.jax.obstacle_2d_poses.create(
             x=x,
@@ -202,9 +203,9 @@ class jax:
     @staticmethod
     def obstacle_2d_poses_for_time_step(
         *,
-        x: Float[Array, " K"] | Float[JaxArray, " K"],
-        y: Float[Array, " K"] | Float[JaxArray, " K"],
-        heading: Float[Array, " K"] | Float[JaxArray, " K"] | None = None,
+        x: 'Float[Array, " K"] | Float[JaxArray, " K"]',
+        y: 'Float[Array, " K"] | Float[JaxArray, " K"]',
+        heading: 'Float[Array, " K"] | Float[JaxArray, " K"] | None' = None,
     ) -> JaxObstacle2dPosesForTimeStep:
         return types.jax.obstacle_2d_poses_for_time_step.create(
             x=x,
@@ -215,9 +216,9 @@ class jax:
     @staticmethod
     def obstacle_2d_pose_samples(
         *,
-        x: Float[Array, "T K N"] | Float[JaxArray, "T K N"],
-        y: Float[Array, "T K N"] | Float[JaxArray, "T K N"],
-        heading: Float[Array, "T K N"] | Float[JaxArray, "T K N"] | None = None,
+        x: 'Float[Array, "T K N"] | Float[JaxArray, "T K N"]',
+        y: 'Float[Array, "T K N"] | Float[JaxArray, "T K N"]',
+        heading: 'Float[Array, "T K N"] | Float[JaxArray, "T K N"] | None' = None,
     ) -> JaxSampledObstacle2dPoses:
         return types.jax.obstacle_2d_poses.sampled(
             x=x,
@@ -227,12 +228,12 @@ class jax:
 
     @staticmethod
     def distance(
-        array: Float[Array, "T V M N"] | Float[JaxArray, "T V M N"],
+        array: 'Float[Array, "T V M N"] | Float[JaxArray, "T V M N"]',
     ) -> JaxDistance:
         return types.jax.distance.create(array=array)
 
     @staticmethod
     def boundary_distance(
-        array: Float[Array, "T M"] | Float[JaxArray, "T M"],
+        array: 'Float[Array, "T M"] | Float[JaxArray, "T M"]',
     ) -> JaxBoundaryDistance:
         return types.jax.boundary_distance.create(array=array)

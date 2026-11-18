@@ -9,8 +9,9 @@ One of the goals of Faran is to get you to work on the problem you care about as
 ## Installation
 
 ```bash
-pip install faran          # NumPy + JAX (CPU)
-pip install faran[cuda]    # JAX with GPU support (Linux)
+pip install faran          # NumPy only
+pip install faran[jax]     # NumPy + JAX (CPU)
+pip install faran[cuda]    # NumPy + JAX with GPU support (Linux)
 ```
 
 Requires Python 3.13+. 

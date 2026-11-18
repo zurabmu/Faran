@@ -7,7 +7,7 @@ from numtypes import array, Array
 import numpy as np
 
 from tests.dsl import mppi as data
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_polynomials_are_preserved_by_savgol_filter_when_order_is_less_than_or_equal_to_filter_order:
@@ -41,12 +41,10 @@ class test_that_polynomials_are_preserved_by_savgol_filter_when_order_is_less_th
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["savgol", "inputs", "margin", "expected"],
-        [
-            *cases(filters=filters.numpy, data=data.numpy),
-            *cases(filters=filters.jax, data=data.jax),
-        ],
+        numpy=cases(filters=filters.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(filters=filters.jax, data=data.jax),
     )
     def test[InputSequenceT: ControlInputSequence](
         self,
@@ -90,12 +88,10 @@ class test_that_savgol_filter_reduces_noise_while_preserving_trend:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["savgol", "clean", "noisy"],
-        [
-            *cases(filters=filters.numpy, data=data.numpy),
-            *cases(filters=filters.jax, data=data.jax),
-        ],
+        numpy=cases(filters=filters.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(filters=filters.jax, data=data.jax),
     )
     def test[InputSequenceT: ControlInputSequence](
         self,
@@ -122,12 +118,10 @@ class test_that_savgol_filter_preserves_input_shape:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["savgol", "inputs"],
-        [
-            *cases(filters=filters.numpy, data=data.numpy),
-            *cases(filters=filters.jax, data=data.jax),
-        ],
+        numpy=cases(filters=filters.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(filters=filters.jax, data=data.jax),
     )
     def test[InputSequenceT: ControlInputSequence](
         self, savgol: FilterFunction[InputSequenceT], inputs: InputSequenceT

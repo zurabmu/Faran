@@ -4,7 +4,7 @@ from faran import MpccMppiSetup, mppi, model, sampler, trajectory, types, extrac
 
 from numtypes import array
 
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_mpcc_factory_creates_mpcc_planner:
@@ -16,49 +16,53 @@ class test_that_mpcc_factory_creates_mpcc_planner:
         )
 
         return [
-            lambda: mppi.mpcc(
-                model=model.bicycle.dynamical(
-                    time_step_size=0.1,
-                    wheelbase=2.5,
-                    speed_limits=(0.0, 15.0),
-                    steering_limits=(-0.5, 0.5),
-                    acceleration_limits=(-3.0, 3.0),
+            (
+                lambda: mppi.mpcc(
+                    model=model.bicycle.dynamical(
+                        time_step_size=0.1,
+                        wheelbase=2.5,
+                        speed_limits=(0.0, 15.0),
+                        steering_limits=(-0.5, 0.5),
+                        acceleration_limits=(-3.0, 3.0),
+                    ),
+                    sampler=sampler.gaussian(
+                        standard_deviation=array([0.5, 0.2], shape=(2,)),
+                        rollout_count=256,
+                        to_batch=types.bicycle.control_input_batch.create,
+                        seed=42,
+                    ),
+                    reference=reference,
+                    position_extractor=extract.from_physical(
+                        lambda states: states.positions
+                    ),
+                    config={
+                        "weights": {
+                            "contouring": 50.0,
+                            "lag": 100.0,
+                            "progress": 1000.0,
+                        },
+                        "virtual": {"velocity_limits": (0.0, 15.0)},
+                    },
                 ),
-                sampler=sampler.gaussian(
-                    standard_deviation=array([0.5, 0.2], shape=(2,)),
-                    rollout_count=256,
-                    to_batch=types.bicycle.control_input_batch.create,
-                    seed=42,
-                ),
-                reference=reference,
-                position_extractor=extract.from_physical(
-                    lambda states: states.positions
-                ),
-                config={
-                    "weights": {"contouring": 50.0, "lag": 100.0, "progress": 1000.0},
-                    "virtual": {"velocity_limits": (0.0, 15.0)},
-                },
             )
         ]
 
-    @mark.parametrize(
-        "factory",
-        [
-            *cases(
-                mppi=mppi.numpy,
-                model=model.numpy,
-                sampler=sampler.numpy,
-                trajectory=trajectory.numpy,
-                types=types.numpy,
-            ),
-            *cases(
-                mppi=mppi.jax,
-                model=model.jax,
-                sampler=sampler.jax,
-                trajectory=trajectory.jax,
-                types=types.jax,
-            ),
-        ],
+    @backends.parametrize(
+        ["factory"],
+        numpy=cases(
+            mppi=mppi.numpy,
+            model=model.numpy,
+            sampler=sampler.numpy,
+            trajectory=trajectory.numpy,
+            types=types.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            mppi=mppi.jax,
+            model=model.jax,
+            sampler=sampler.jax,
+            trajectory=trajectory.jax,
+            types=types.jax,
+        ),
     )
     def test(self, factory: Callable[[], MpccMppiSetup]) -> None:
         setup = factory()

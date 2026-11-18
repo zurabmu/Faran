@@ -13,7 +13,7 @@ from numtypes import array
 import numpy as np
 
 from tests.dsl import mppi as data
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_integration_is_exact_for_constant_inputs:
@@ -60,12 +60,10 @@ class test_that_integration_is_exact_for_constant_inputs:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_states"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy),
-            *cases(create_model=create_model.jax, data=data.jax),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(create_model=create_model.jax, data=data.jax),
     )
     def test[
         StateT,
@@ -110,12 +108,10 @@ class test_that_zero_velocity_results_in_standstill:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_states"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy),
-            *cases(create_model=create_model.jax, data=data.jax),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(create_model=create_model.jax, data=data.jax),
     )
     def test[
         StateT,
@@ -187,7 +183,7 @@ class test_that_state_limits_are_respected_during_integration:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "model",
             "inputs",
@@ -196,10 +192,8 @@ class test_that_state_limits_are_respected_during_integration:
             "state_max",
             "expected_final_state",
         ],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy),
-            *cases(create_model=create_model.jax, data=data.jax),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(create_model=create_model.jax, data=data.jax),
     )
     def test[
         StateT,
@@ -288,12 +282,10 @@ class test_that_velocity_limits_are_respected_during_integration:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_states"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy),
-            *cases(create_model=create_model.jax, data=data.jax),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(create_model=create_model.jax, data=data.jax),
     )
     def test[
         StateT,
@@ -559,12 +551,10 @@ class test_that_state_wraps_around_when_periodic_boundaries_are_enabled:
             ]
         )
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_states"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy),
-            *cases(create_model=create_model.jax, data=data.jax),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(create_model=create_model.jax, data=data.jax),
     )
     def test[
         StateT,
@@ -638,12 +628,10 @@ class test_that_velocity_limits_are_applied_before_periodic_wrapping:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_states"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy),
-            *cases(create_model=create_model.jax, data=data.jax),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(create_model=create_model.jax, data=data.jax),
     )
     def test[
         StateT,
@@ -710,12 +698,10 @@ class test_that_simulating_individual_steps_matches_horizon_simulation:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "input_batch", "initial_state", "horizon", "input_of"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy),
-            *cases(create_model=create_model.jax, data=data.jax),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(create_model=create_model.jax, data=data.jax),
     )
     def test[
         StateT: State,
@@ -792,12 +778,10 @@ class test_that_simulating_individual_input_sequence_matches_horizon_simulation:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "input_batch", "initial_state", "input_of"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy),
-            *cases(create_model=create_model.jax, data=data.jax),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(create_model=create_model.jax, data=data.jax),
     )
     def test[
         StateT,

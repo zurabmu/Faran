@@ -110,3 +110,22 @@ Core protocols and type definitions used throughout Faran. For dimension and sha
     options:
       show_root_heading: true
       heading_level: 3
+
+## Compilation
+
+<!-- TODO: One sentence on what these are for, linking to [Compiling Your Own Functions](../../guide/backends.md#compiling-your-own-functions). -->
+
+::: faran.mppi.register
+    options:
+      show_root_heading: true
+      heading_level: 3
+
+::: faran.types.pytree
+    options:
+      show_root_heading: true
+      heading_level: 3
+
+::: faran.types.UntracedStateError
+    options:
+      show_root_heading: true
+      heading_level: 3

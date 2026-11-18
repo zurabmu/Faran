@@ -15,7 +15,7 @@ from numtypes import array
 import numpy as np
 
 from tests.dsl import mppi as data
-from pytest import mark
+from tests.dsl import backends
 
 
 class ObstacleStateSamplerProvider[StateT, SampleT](Protocol):
@@ -59,12 +59,10 @@ class test_that_obstacle_state_samplers_produce_same_results_when_seeded_identic
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["provider", "states"],
-        [
-            *cases(sampler=obstacles.numpy.sampler, data=data.numpy),
-            *cases(sampler=obstacles.jax.sampler, data=data.jax),
-        ],
+        numpy=cases(sampler=obstacles.numpy.sampler, data=data.numpy),
+        jax=lambda cases=cases: cases(sampler=obstacles.jax.sampler, data=data.jax),
     )
     def test[StateT](
         self,
@@ -126,12 +124,10 @@ class test_that_obstacle_state_sampler_returns_empty_samples_when_no_obstacles_a
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["sampler", "states", "sample_count", "expected"],
-        [
-            *cases(obstacles.numpy.sampler, data.numpy),
-            *cases(obstacles.jax.sampler, data.jax),
-        ],
+        numpy=cases(obstacles.numpy.sampler, data.numpy),
+        jax=lambda cases=cases: cases(obstacles.jax.sampler, data.jax),
     )
     def test[StateT, SampleT: SampledObstacleStates](
         self,
@@ -179,12 +175,12 @@ class test_that_control_input_samplers_produce_same_results_when_seeded_identica
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["provider", "input_sequence"],
-        [
-            *cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
-            *cases(sampler=sampler.jax, data=data.jax, types=types.jax),
-        ],
+        numpy=cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(
+            sampler=sampler.jax, data=data.jax, types=types.jax
+        ),
     )
     def test[InputSequenceT](
         self,
@@ -252,12 +248,12 @@ class test_that_sampled_control_inputs_have_correct_shape:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["sampler", "input_sequence", "expected_shape"],
-        [
-            *cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
-            *cases(sampler=sampler.jax, data=data.jax, types=types.jax),
-        ],
+        numpy=cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(
+            sampler=sampler.jax, data=data.jax, types=types.jax
+        ),
     )
     def test[InputSequenceT](
         self,
@@ -304,12 +300,12 @@ class test_that_sampled_control_inputs_have_correct_marginal_statistics:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["sampler", "input_sequence", "expected_std"],
-        [
-            *cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
-            *cases(sampler=sampler.jax, data=data.jax, types=types.jax),
-        ],
+        numpy=cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(
+            sampler=sampler.jax, data=data.jax, types=types.jax
+        ),
     )
     def test[InputSequenceT](
         self,
@@ -371,12 +367,12 @@ class test_that_sampler_is_created_correctly_when_alternative_api_is_used:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["reference", "alternative", "input_sequence"],
-        [
-            *cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
-            *cases(sampler=sampler.jax, data=data.jax, types=types.jax),
-        ],
+        numpy=cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(
+            sampler=sampler.jax, data=data.jax, types=types.jax
+        ),
     )
     def test[InputSequenceT](
         self,
@@ -414,12 +410,12 @@ class test_that_halton_spline_samples_are_temporally_smooth:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["halton_sampler", "gaussian_sampler", "input_sequence"],
-        [
-            *cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
-            *cases(sampler=sampler.jax, data=data.jax, types=types.jax),
-        ],
+        numpy=cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(
+            sampler=sampler.jax, data=data.jax, types=types.jax
+        ),
     )
     def test[InputSequenceT](
         self,
@@ -464,12 +460,12 @@ class test_that_halton_spline_smoothness_increases_with_fewer_knots:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["few_knots_sampler", "many_knots_sampler", "input_sequence"],
-        [
-            *cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
-            *cases(sampler=sampler.jax, data=data.jax, types=types.jax),
-        ],
+        numpy=cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(
+            sampler=sampler.jax, data=data.jax, types=types.jax
+        ),
     )
     def test[InputSequenceT](
         self,
@@ -514,12 +510,12 @@ class test_that_halton_spline_with_max_knots_has_similar_smoothness_to_gaussian:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["halton_sampler", "gaussian_sampler", "input_sequence"],
-        [
-            *cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
-            *cases(sampler=sampler.jax, data=data.jax, types=types.jax),
-        ],
+        numpy=cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(
+            sampler=sampler.jax, data=data.jax, types=types.jax
+        ),
     )
     def test[InputSequenceT](
         self,
@@ -574,12 +570,12 @@ class test_that_halton_spline_works_with_minimum_knot_count:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["sampler", "input_sequence", "expected_shape"],
-        [
-            *cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
-            *cases(sampler=sampler.jax, data=data.jax, types=types.jax),
-        ],
+        numpy=cases(sampler=sampler.numpy, data=data.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(
+            sampler=sampler.jax, data=data.jax, types=types.jax
+        ),
     )
     def test[InputSequenceT](
         self,

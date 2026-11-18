@@ -1,31 +1,3 @@
-from .common import (
-    D_r as D_r,
-    D_R as D_R,
-    Trajectory as Trajectory,
-    PathParameters as PathParameters,
-    ReferencePoints as ReferencePoints,
-    Positions as Positions,
-    LateralPositions as LateralPositions,
-    LongitudinalPositions as LongitudinalPositions,
-    Normals as Normals,
-)
-from .basic import (
-    NumPyPositions as NumPyPositions,
-    NumPySimplePositions as NumPySimplePositions,
-    NumPyHeadings as NumPyHeadings,
-    NumPyPathParameters as NumPyPathParameters,
-    NumPyReferencePoints as NumPyReferencePoints,
-    NumPyLateralPositions as NumPyLateralPositions,
-    NumPyLongitudinalPositions as NumPyLongitudinalPositions,
-    NumPyNormals as NumPyNormals,
-)
-from .accelerated import (
-    JaxPositions as JaxPositions,
-    JaxSimplePositions as JaxSimplePositions,
-    JaxHeadings as JaxHeadings,
-    JaxPathParameters as JaxPathParameters,
-    JaxReferencePoints as JaxReferencePoints,
-    JaxLateralPositions as JaxLateralPositions,
-    JaxLongitudinalPositions as JaxLongitudinalPositions,
-    JaxNormals as JaxNormals,
-)
+import lazy_loader as lazy
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

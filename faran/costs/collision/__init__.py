@@ -1,10 +1,3 @@
-from .basic import (
-    NumPyDistance as NumPyDistance,
-    NumPyNoMetric as NumPyNoMetric,
-    NumPyCollisionCost as NumPyCollisionCost,
-)
-from .accelerated import (
-    JaxDistance as JaxDistance,
-    JaxNoMetric as JaxNoMetric,
-    JaxCollisionCost as JaxCollisionCost,
-)
+import lazy_loader as lazy
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

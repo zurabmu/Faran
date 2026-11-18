@@ -1,13 +1,3 @@
-from .common import (
-    AugmentedState as AugmentedState,
-    AugmentedStateSequence as AugmentedStateSequence,
-    AugmentedStateBatch as AugmentedStateBatch,
-    AugmentedControlInputSequence as AugmentedControlInputSequence,
-    AugmentedControlInputBatch as AugmentedControlInputBatch,
-    AugmentedStateCreator as AugmentedStateCreator,
-    AugmentedStateSequenceCreator as AugmentedStateSequenceCreator,
-    AugmentedStateBatchCreator as AugmentedStateBatchCreator,
-    AugmentedControlInputBatchCreator as AugmentedControlInputBatchCreator,
-    HasPhysical as HasPhysical,
-    HasVirtual as HasVirtual,
-)
+import lazy_loader as lazy
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

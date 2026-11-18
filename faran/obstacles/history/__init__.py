@@ -1,8 +1,3 @@
-from .basic import (
-    NumPyObstacleIds as NumPyObstacleIds,
-    NumPyObstacleStatesRunningHistory as NumPyObstacleStatesRunningHistory,
-)
-from .accelerated import (
-    JaxObstacleIds as JaxObstacleIds,
-    JaxObstacleStatesRunningHistory as JaxObstacleStatesRunningHistory,
-)
+import lazy_loader as lazy
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

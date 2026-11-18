@@ -12,10 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A preference cost component that can be used to incorporate arbitrary heuristics for trajectory selection.
 - Design guidelines for developers to provide more details on the testing philosophy.
 - `faran.jax.register` and `faran.pytree` for compiling your own functions that use JAX components using Flax.
+- Support for using the NumPy backend without JAX installed, which also makes Faran usable in Pyodide.
 
 ### Changed
 
 - The step function of the MPPI planner for the JAX backend can be compiled as a single graph. This makes one step of the JAX implementation about 50% faster.
+- **Breaking:** JAX, Equinox and Flax are no longer installed by default. Install `faran[jax]` (or `faran[cuda]`) to use the JAX backend.
 - **Breaking:** Collectors are now backend-specific. Import them from `faran.numpy` or `faran.jax` (e.g. `from faran.jax import collectors`) instead of from `faran` directly.
 
 ### Fixed

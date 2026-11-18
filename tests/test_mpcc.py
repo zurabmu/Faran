@@ -29,6 +29,7 @@ from faran_visualizer import (
 from tests.utilities import VisualizationData, project_root
 from tests.examples import mpcc, reference, obstacles, sampling, weights
 from pytest import mark, fixture
+from tests.dsl import backends
 
 
 @fixture(scope="session", autouse=True)
@@ -198,9 +199,9 @@ class MpccUnicyclePlannerConfiguration[
         ...
 
 
-@mark.parametrize(
+@backends.parametrize(
     ["configuration", "configuration_name"],
-    [
+    numpy=[
         (mpcc.numpy.planner_from_base(), "numpy-from-base"),
         (mpcc.numpy.planner_from_augmented(), "numpy-from-augmented"),
         (mpcc.numpy.planner_from_mpcc(), "numpy-from-mpcc"),
@@ -210,6 +211,8 @@ class MpccUnicyclePlannerConfiguration[
             ),
             "numpy-from-mpcc-with-boundary",
         ),
+    ],
+    jax=lambda: [
         (mpcc.jax.planner_from_base(), "jax-from-base"),
         (mpcc.jax.planner_from_augmented(), "jax-from-augmented"),
         (mpcc.jax.planner_from_mpcc(), "jax-from-mpcc"),
@@ -305,9 +308,9 @@ def test_that_mpcc_planner_follows_trajectory_without_excessive_deviation[
     )
 
 
-@mark.parametrize(
+@backends.parametrize(
     ["configuration", "configuration_name"],
-    [
+    numpy=[
         (
             mpcc.numpy.planner_from_augmented(
                 reference=reference.numpy.loop, obstacles=obstacles.numpy.static.loop
@@ -353,15 +356,19 @@ def test_that_mpcc_planner_follows_trajectory_without_excessive_deviation[
             ),
             "numpy-from-mpcc-kalman-noisy-observations",
         ),
+    ],
+    jax=lambda: [
         (
             mpcc.jax.planner_from_augmented(
-                reference=reference.jax.loop, obstacles=obstacles.jax.static.loop
+                reference=reference.jax.loop,
+                obstacles=obstacles.jax.static.loop,
             ),
             "jax-from-augmented-static",
         ),
         (
             mpcc.jax.planner_from_mpcc(
-                reference=reference.jax.loop, obstacles=obstacles.jax.static.loop
+                reference=reference.jax.loop,
+                obstacles=obstacles.jax.static.loop,
             ),
             "jax-from-mpcc-static",
         ),
@@ -375,7 +382,8 @@ def test_that_mpcc_planner_follows_trajectory_without_excessive_deviation[
         ),
         (
             mpcc.jax.planner_from_mpcc(
-                reference=reference.jax.slalom, obstacles=obstacles.jax.dynamic.slalom
+                reference=reference.jax.slalom,
+                obstacles=obstacles.jax.dynamic.slalom,
             ),
             "jax-from-mpcc-dynamic",
         ),
@@ -518,9 +526,9 @@ def test_that_mpcc_planner_follows_trajectory_without_collision_when_obstacles_a
     )
 
 
-@mark.parametrize(
+@backends.parametrize(
     ["configuration", "configuration_name"],
-    [
+    numpy=[
         (
             mpcc.numpy.planner_from_mpcc(
                 reference=reference.numpy.cyclic,
@@ -529,6 +537,8 @@ def test_that_mpcc_planner_follows_trajectory_without_collision_when_obstacles_a
             ),
             "numpy-from-mpcc",
         ),
+    ],
+    jax=lambda: [
         (
             mpcc.jax.planner_from_mpcc(
                 reference=reference.jax.cyclic,
@@ -536,7 +546,7 @@ def test_that_mpcc_planner_follows_trajectory_without_collision_when_obstacles_a
                 cyclic_reference=True,
             ),
             "jax-from-mpcc",
-        ),
+        )
     ],
 )
 @mark.visualize.with_args(visualizer.mpcc, lambda seed: f"{seed}-three-laps")
@@ -649,9 +659,9 @@ def test_that_mpcc_planner_completes_three_laps_without_collision[
     )
 
 
-@mark.parametrize(
+@backends.parametrize(
     ["configuration", "configuration_name"],
-    [
+    numpy=[
         (
             mpcc.numpy.planner_from_mpcc_unicycle(
                 reference=reference.numpy.short,
@@ -659,13 +669,15 @@ def test_that_mpcc_planner_completes_three_laps_without_collision[
             ),
             "numpy-unicycle-pedestrian",
         ),
+    ],
+    jax=lambda: [
         (
             mpcc.jax.planner_from_mpcc_unicycle(
                 reference=reference.jax.short,
                 obstacles=obstacles.jax.pedestrian.crossing,
             ),
             "jax-unicycle-pedestrian",
-        ),
+        )
     ],
 )
 @mark.visualize.with_args(visualizer.mpcc, lambda seed: f"{seed}-pedestrian")

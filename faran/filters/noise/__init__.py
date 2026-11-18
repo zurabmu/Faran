@@ -1,18 +1,3 @@
-from .common import (
-    IdentityNoiseModelProvider as IdentityNoiseModelProvider,
-)
-from .basic import (
-    NumPyAdaptiveNoise as NumPyAdaptiveNoise,
-    NumPyAdaptiveNoiseProvider as NumPyAdaptiveNoiseProvider,
-    NumPyClampedNoise as NumPyClampedNoise,
-    NumPyClampedNoiseProvider as NumPyClampedNoiseProvider,
-    NumPyNoiseCovarianceBounds as NumPyNoiseCovarianceBounds,
-)
-from .accelerated import (
-    JaxAdaptiveNoise as JaxAdaptiveNoise,
-    JaxAdaptiveNoiseProvider as JaxAdaptiveNoiseProvider,
-    JaxAdaptiveNoiseState as JaxAdaptiveNoiseState,
-    JaxClampedNoise as JaxClampedNoise,
-    JaxClampedNoiseProvider as JaxClampedNoiseProvider,
-    JaxNoiseCovarianceBounds as JaxNoiseCovarianceBounds,
-)
+import lazy_loader as lazy
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

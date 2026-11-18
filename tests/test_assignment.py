@@ -7,7 +7,7 @@ from numtypes import array
 import numpy as np
 
 from tests.dsl import mppi as data
-from pytest import mark
+from tests.dsl import backends
 
 
 type NumPyObstacleStatesForTimeStep = types.numpy.Obstacle2dPosesForTimeStep
@@ -431,22 +431,20 @@ class test_that_ids_are_assigned_to_obstacles:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["assignment", "states", "history", "ids", "expected"],
-        [
-            *cases(
-                id_assignment=obstacles.numpy.id_assignment,
-                position_extractor=NumPyObstaclePositionExtractor,
-                heading_extractor=NumPyObstacleHeadingExtractor,
-                data=data.numpy,
-            ),
-            *cases(
-                id_assignment=obstacles.jax.id_assignment,
-                position_extractor=JaxObstaclePositionExtractor,
-                heading_extractor=JaxObstacleHeadingExtractor,
-                data=data.jax,
-            ),
-        ],
+        numpy=cases(
+            id_assignment=obstacles.numpy.id_assignment,
+            position_extractor=NumPyObstaclePositionExtractor,
+            heading_extractor=NumPyObstacleHeadingExtractor,
+            data=data.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            id_assignment=obstacles.jax.id_assignment,
+            position_extractor=JaxObstaclePositionExtractor,
+            heading_extractor=JaxObstacleHeadingExtractor,
+            data=data.jax,
+        ),
     )
     def test[ObstacleStatesForTimeStepT, IdT: ObstacleIds, HistoryT](
         self,

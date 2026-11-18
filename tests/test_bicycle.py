@@ -7,7 +7,7 @@ from numtypes import array, Array
 import numpy as np
 
 from tests.dsl import model as data, estimate, compute
-from pytest import mark
+from tests.dsl import backends
 
 
 type State = types.bicycle.State
@@ -47,12 +47,12 @@ class test_that_vehicle_position_does_not_change_when_velocity_and_input_are_zer
             for rear_axle_distance in [0.0, 0.5, 0.9]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "M", "T", "x_0", "y_0", "theta_0", "v_0"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -141,7 +141,7 @@ class test_that_vehicle_follows_straight_line_when_velocity_is_constant:
             for rear_axle_distance in [0.0, 0.5, 0.9]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "model",
             "inputs",
@@ -151,10 +151,10 @@ class test_that_vehicle_follows_straight_line_when_velocity_is_constant:
             "expected_theta",
             "expected_v",
         ],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -237,7 +237,7 @@ class test_that_vehicle_follows_straight_line_when_acceleration_is_constant:
             for rear_axle_distance in [0.0, 0.5, 0.9]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "model",
             "inputs",
@@ -248,10 +248,10 @@ class test_that_vehicle_follows_straight_line_when_acceleration_is_constant:
             "expected_v_middle",
             "expected_v_final",
         ],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -307,12 +307,12 @@ class test_that_vehicle_orientation_returns_to_start_when_steering_is_reversed:
             for rear_axle_distance in [0.0, 0.5, 0.9]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_final_theta"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -361,12 +361,12 @@ class test_that_vehicle_velocity_returns_to_start_when_acceleration_is_reversed:
             for rear_axle_distance in [0.0, 0.5, 0.9]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_final_v"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -420,7 +420,7 @@ class test_that_vehicle_returns_to_starting_position_when_initially_not_moving_a
             for rear_axle_distance in [0.0, 0.5, 0.9]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "model",
             "inputs",
@@ -429,10 +429,10 @@ class test_that_vehicle_returns_to_starting_position_when_initially_not_moving_a
             "expected_final_y",
             "expected_final_theta",
         ],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -481,12 +481,12 @@ class test_that_displacement_is_consistent_with_velocity_state:
             for rear_axle_distance in [0.0, 0.5, 0.9]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "time_step_size"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -595,7 +595,7 @@ class test_that_vehicle_returns_to_start_when_completing_a_circle_with_constant_
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "model",
             "inputs",
@@ -604,10 +604,10 @@ class test_that_vehicle_returns_to_start_when_completing_a_circle_with_constant_
             "expected_final_y",
             "expected_final_theta",
         ],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -687,7 +687,7 @@ class test_that_angular_velocity_depends_on_wheelbase:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "model",
             "inputs",
@@ -695,10 +695,10 @@ class test_that_angular_velocity_depends_on_wheelbase:
             "time_step_size",
             "expected_angular_velocity",
         ],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -755,12 +755,12 @@ class test_that_velocity_is_clamped_to_speed_limits:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "max_speed", "min_speed"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -844,12 +844,12 @@ class test_that_steering_input_is_clipped_to_max_steering:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_theta_change"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT: State,
@@ -910,12 +910,12 @@ class test_that_acceleration_input_is_clipped_to_max_acceleration:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_velocity"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.bicycle),
-            *cases(create_model=create_model.jax, data=data.jax.bicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.bicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.bicycle
+        ),
     )
     def test[
         StateT,
@@ -970,18 +970,18 @@ class test_that_simulating_individual_steps_matches_horizon_simulation:
             for rear_axle_distance in [0.0, 0.5, 0.9]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "input_batch", "initial_state", "horizon", "input_of"],
-        [
-            *cases(
-                create_model=create_model.numpy,
-                data=data.numpy.bicycle,
-                types=types.numpy,
-            ),
-            *cases(
-                create_model=create_model.jax, data=data.jax.bicycle, types=types.jax
-            ),
-        ],
+        numpy=cases(
+            create_model=create_model.numpy,
+            data=data.numpy.bicycle,
+            types=types.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax,
+            data=data.jax.bicycle,
+            types=types.jax,
+        ),
     )
     def test[
         StateT: State,
@@ -1040,18 +1040,18 @@ class test_that_simulating_individual_input_sequence_matches_horizon_simulation:
             for rear_axle_distance in [0.0, 0.5, 0.9]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "input_batch", "initial_state", "input_of"],
-        [
-            *cases(
-                create_model=create_model.numpy,
-                data=data.numpy.bicycle,
-                types=types.numpy,
-            ),
-            *cases(
-                create_model=create_model.jax, data=data.jax.bicycle, types=types.jax
-            ),
-        ],
+        numpy=cases(
+            create_model=create_model.numpy,
+            data=data.numpy.bicycle,
+            types=types.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax,
+            data=data.jax.bicycle,
+            types=types.jax,
+        ),
     )
     def test[
         StateT,

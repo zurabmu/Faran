@@ -3,8 +3,6 @@ from typing import Sequence, NamedTuple
 from faran import (
     NumPyGaussianBelief,
     NumPyNoiseCovariances,
-    JaxGaussianBelief,
-    JaxNoiseCovariances,
     NoiseModel,
     NoiseModelProvider,
     noise,
@@ -13,10 +11,14 @@ from faran import (
 from numtypes import array, Array
 
 import numpy as np
-import jax.numpy as jnp
 
 from tests.dsl import check, ArrayConvertible
-from pytest import mark
+from needy import needs
+from tests.dsl import backends, probe
+
+with needs.modules(probe.jax):
+    from faran import JaxGaussianBelief, JaxNoiseCovariances
+    import jax.numpy as jnp
 
 
 class NoiseModelInputs[BeliefT, ObservationT](NamedTuple):
@@ -95,22 +97,20 @@ class test_that_noise_is_not_adapted_when_there_are_not_enough_observations:
             for count in [1, window - 1]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["noise", "model", "inputs"],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT](
         self,
@@ -176,22 +176,20 @@ class test_that_noise_is_adapted_when_there_are_enough_observations:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["noise", "model", "inputs"],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT](
         self,
@@ -245,22 +243,20 @@ class test_that_zero_innovation_produces_near_zero_adapted_noise:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["noise", "model", "prediction", "observation"],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT](
         self,
@@ -330,7 +326,7 @@ class test_that_adapted_process_noise_scales_quadratically_with_innovation:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "noise",
             "observation_matrix",
@@ -340,20 +336,18 @@ class test_that_adapted_process_noise_scales_quadratically_with_innovation:
             "observation_1",
             "observation_2",
         ],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT, MatrixT](
         self,
@@ -430,22 +424,20 @@ class test_that_all_innovation_is_attributed_to_observation_noise_when_state_is_
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["noise", "model", "prediction", "observation", "expected_observation_noise"],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT](
         self,
@@ -504,7 +496,7 @@ class test_that_repeated_identical_innovations_match_single_innovation:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "noise",
             "observation_matrix",
@@ -513,20 +505,18 @@ class test_that_repeated_identical_innovations_match_single_innovation:
             "obstacle_count",
             "observation",
         ],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT, MatrixT](
         self,
@@ -611,22 +601,20 @@ class test_that_orthogonal_unit_innovations_produce_isotropic_adapted_process_no
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["noise", "model", "prediction", "observations", "observed_dimensions"],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT](
         self,
@@ -704,22 +692,20 @@ class test_that_two_models_from_same_provider_have_independent_state:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["noise", "observation_matrix", "provider", "obstacle_count", "inputs"],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT, MatrixT](
         self,
@@ -809,22 +795,20 @@ class test_that_adapted_noise_is_spd:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["noise", "model", "inputs"],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT](
         self,
@@ -878,22 +862,20 @@ class test_that_nan_prediction_returns_noise_unchanged:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["noise", "model", "nan_prediction", "observation"],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT](
         self,
@@ -965,22 +947,20 @@ class test_that_observations_older_than_window_size_do_not_affect_noise:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["noise", "model", "inputs_a", "inputs_b"],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT](
         self,
@@ -1141,7 +1121,7 @@ class test_that_noise_is_adapted_when_not_all_obstacles_have_enough_observations
             ]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "noise",
             "observation_matrix",
@@ -1149,20 +1129,18 @@ class test_that_noise_is_adapted_when_not_all_obstacles_have_enough_observations
             "inputs",
             "inputs_with_missing_data",
         ],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT, MatrixT](
         self,
@@ -1251,7 +1229,7 @@ class test_that_adapted_noise_is_robust_to_single_outlier_innovation:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "noise",
             "observation_matrix",
@@ -1261,20 +1239,18 @@ class test_that_adapted_noise_is_robust_to_single_outlier_innovation:
             "normal_observation",
             "outlier_observation",
         ],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT, MatrixT](
         self,
@@ -1375,7 +1351,7 @@ class test_that_adapted_noise_covariance_for_multiple_obstacles_is_average_of_in
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "noise",
             "observation_matrix",
@@ -1386,20 +1362,18 @@ class test_that_adapted_noise_covariance_for_multiple_obstacles_is_average_of_in
             "observation_single",
             "observation_combined",
         ],
-        [
-            *cases(
-                provider=noise.numpy.adaptive,
-                covariances=NumPyNoiseCovariances,
-                belief=NumPyGaussianBelief,
-                to_array=np.asarray,
-            ),
-            *cases(
-                provider=noise.jax.adaptive,
-                covariances=JaxNoiseCovariances,
-                belief=JaxGaussianBelief,
-                to_array=jnp.asarray,
-            ),
-        ],
+        numpy=cases(
+            provider=noise.numpy.adaptive,
+            covariances=NumPyNoiseCovariances,
+            belief=NumPyGaussianBelief,
+            to_array=np.asarray,
+        ),
+        jax=lambda cases=cases: cases(
+            provider=noise.jax.adaptive,
+            covariances=JaxNoiseCovariances,
+            belief=JaxGaussianBelief,
+            to_array=jnp.asarray,
+        ),
     )
     def test[NoiseT, BeliefT, ObservationT, MatrixT](
         self,
@@ -1532,16 +1506,16 @@ class test_that_noise_covariances_are_created_correctly:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["result", "expected_process", "expected_observation"],
-        [
-            *cases(covariances=noise.numpy.covariances, to_array=np.asarray),
-            *cases(covariances=noise.jax.covariances, to_array=jnp.asarray),
-        ],
+        numpy=cases(covariances=noise.numpy.covariances, to_array=np.asarray),
+        jax=lambda cases=cases: cases(
+            covariances=noise.jax.covariances, to_array=jnp.asarray
+        ),
     )
     def test(
         self,
-        result: NumPyNoiseCovariances | JaxNoiseCovariances,
+        result: "NumPyNoiseCovariances | JaxNoiseCovariances",
         expected_process: ArrayConvertible,
         expected_observation: ArrayConvertible,
     ) -> None:

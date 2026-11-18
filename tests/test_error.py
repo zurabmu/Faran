@@ -7,7 +7,7 @@ from numtypes import array, Array
 import numpy as np
 
 from tests.dsl import mppi as data
-from pytest import mark
+from tests.dsl import backends
 
 
 type NumPyPathParameterExtractor = types.numpy.PathParameterExtractor[
@@ -89,24 +89,22 @@ class test_that_contouring_cost_computes_correct_lateral_error:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["contouring_cost", "states", "expected_error"],
-        [
-            *cases(
-                costs=costs.numpy,
-                trajectory=trajectory.numpy,
-                path_parameter_extractor=numpy_path_parameter_extractor,
-                types=types.numpy,
-                data=data.numpy,
-            ),
-            *cases(
-                costs=costs.jax,
-                trajectory=trajectory.jax,
-                path_parameter_extractor=jax_path_parameter_extractor,
-                types=types.jax,
-                data=data.jax,
-            ),
-        ],
+        numpy=cases(
+            costs=costs.numpy,
+            trajectory=trajectory.numpy,
+            path_parameter_extractor=numpy_path_parameter_extractor,
+            types=types.numpy,
+            data=data.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            costs=costs.jax,
+            trajectory=trajectory.jax,
+            path_parameter_extractor=jax_path_parameter_extractor,
+            types=types.jax,
+            data=data.jax,
+        ),
     )
     def test[InputBatchT, StateBatchT](
         self,
@@ -155,24 +153,22 @@ class test_that_contouring_error_handles_multiple_timesteps_and_rollouts:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["contouring_cost", "states", "expected_errors"],
-        [
-            *cases(
-                costs=costs.numpy,
-                trajectory=trajectory.numpy,
-                path_parameter_extractor=numpy_path_parameter_extractor,
-                types=types.numpy,
-                data=data.numpy,
-            ),
-            *cases(
-                costs=costs.jax,
-                trajectory=trajectory.jax,
-                path_parameter_extractor=jax_path_parameter_extractor,
-                types=types.jax,
-                data=data.jax,
-            ),
-        ],
+        numpy=cases(
+            costs=costs.numpy,
+            trajectory=trajectory.numpy,
+            path_parameter_extractor=numpy_path_parameter_extractor,
+            types=types.numpy,
+            data=data.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            costs=costs.jax,
+            trajectory=trajectory.jax,
+            path_parameter_extractor=jax_path_parameter_extractor,
+            types=types.jax,
+            data=data.jax,
+        ),
     )
     def test[InputBatchT, StateBatchT](
         self,
@@ -249,24 +245,22 @@ class test_that_lag_cost_computes_correct_longitudinal_error:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["lag_cost", "states", "expected_error"],
-        [
-            *cases(
-                costs=costs.numpy,
-                trajectory=trajectory.numpy,
-                path_parameter_extractor=numpy_path_parameter_extractor,
-                types=types.numpy,
-                data=data.numpy,
-            ),
-            *cases(
-                costs=costs.jax,
-                trajectory=trajectory.jax,
-                path_parameter_extractor=jax_path_parameter_extractor,
-                types=types.jax,
-                data=data.jax,
-            ),
-        ],
+        numpy=cases(
+            costs=costs.numpy,
+            trajectory=trajectory.numpy,
+            path_parameter_extractor=numpy_path_parameter_extractor,
+            types=types.numpy,
+            data=data.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            costs=costs.jax,
+            trajectory=trajectory.jax,
+            path_parameter_extractor=jax_path_parameter_extractor,
+            types=types.jax,
+            data=data.jax,
+        ),
     )
     def test[InputBatchT, StateBatchT](
         self,
@@ -328,24 +322,22 @@ class test_that_lag_error_handles_multiple_timesteps_and_rollouts:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["lag_cost", "states", "expected_errors"],
-        [
-            *cases(
-                costs=costs.numpy,
-                trajectory=trajectory.numpy,
-                path_parameter_extractor=numpy_path_parameter_extractor,
-                types=types.numpy,
-                data=data.numpy,
-            ),
-            *cases(
-                costs=costs.jax,
-                trajectory=trajectory.jax,
-                path_parameter_extractor=jax_path_parameter_extractor,
-                types=types.jax,
-                data=data.jax,
-            ),
-        ],
+        numpy=cases(
+            costs=costs.numpy,
+            trajectory=trajectory.numpy,
+            path_parameter_extractor=numpy_path_parameter_extractor,
+            types=types.numpy,
+            data=data.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            costs=costs.jax,
+            trajectory=trajectory.jax,
+            path_parameter_extractor=jax_path_parameter_extractor,
+            types=types.jax,
+            data=data.jax,
+        ),
     )
     def test[InputBatchT, StateBatchT](
         self,

@@ -15,7 +15,7 @@ from numtypes import array
 import numpy as np
 
 from tests.dsl import stubs, mppi as data
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_obstacle_state_provider_provides_forecasts_from_obstacle_motion_predictor:
@@ -124,12 +124,12 @@ class test_that_obstacle_state_provider_provides_forecasts_from_obstacle_motion_
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["provider", "states_sequence", "expected"],
-        [
-            *cases(obstacles=obstacles.numpy, data=data.numpy, types=types.numpy),
-            *cases(obstacles=obstacles.jax, data=data.jax, types=types.jax),
-        ],
+        numpy=cases(obstacles=obstacles.numpy, data=data.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(
+            obstacles=obstacles.jax, data=data.jax, types=types.jax
+        ),
     )
     def test[ObstacleStatesForTimeStepT, PredictionT: ObstacleStates](
         self,
@@ -924,12 +924,12 @@ class test_that_obstacle_state_provider_uses_specified_id_assignment:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["provider", "states_sequence", "expected"],
-        [
-            *cases(obstacles=obstacles.numpy, data=data.numpy, types=types.numpy),
-            *cases(obstacles=obstacles.jax, data=data.jax, types=types.jax),
-        ],
+        numpy=cases(obstacles=obstacles.numpy, data=data.numpy, types=types.numpy),
+        jax=lambda cases=cases: cases(
+            obstacles=obstacles.jax, data=data.jax, types=types.jax
+        ),
     )
     def test[ObstacleStatesForTimeStepT, PredictionT: ObstacleStates](
         self,
@@ -1021,12 +1021,10 @@ class test_that_running_history_tracks_active_ids_when_obstacle_count_is_exceede
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["history", "expected_ids"],
-        [
-            *cases(types=types.numpy, data=data.numpy),
-            *cases(types=types.jax, data=data.jax),
-        ],
+        numpy=cases(types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(types=types.jax, data=data.jax),
     )
     def test(
         self,

@@ -5,8 +5,12 @@ from faran import types
 from numtypes import array, Array, shape_of
 from jaxtyping import Float
 
-import jax.numpy as jnp
 import numpy as np
+from needy import needs
+from tests.dsl.optional import probe
+
+with needs.modules(probe.jax):
+    import jax.numpy as jnp
 
 
 type NumPyBicycleState = types.numpy.bicycle.State

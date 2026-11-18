@@ -8,7 +8,8 @@ from numtypes import array, Array
 import numpy as np
 
 from tests.dsl import mppi as data, check
-from pytest import mark, Subtests
+from pytest import Subtests
+from tests.dsl import backends
 
 
 class StateWrapper(Protocol):
@@ -70,12 +71,12 @@ class test_that_noisy_observer_delegates_modified_states_to_inner_observer:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["states", "to_states", "sigma", "create_observer"],
-        [
-            *cases(data=data.numpy, types=types.numpy, obstacles=obstacles.numpy),
-            *cases(data=data.jax, types=types.jax, obstacles=obstacles.jax),
-        ],
+        numpy=cases(data=data.numpy, types=types.numpy, obstacles=obstacles.numpy),
+        jax=lambda cases=cases: cases(
+            data=data.jax, types=types.jax, obstacles=obstacles.jax
+        ),
     )
     def test(
         self,
@@ -143,12 +144,12 @@ class test_that_states_are_unchanged_when_sigma_is_zero:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["states", "to_states", "sigma", "create_observer"],
-        [
-            *cases(data=data.numpy, types=types.numpy, obstacles=obstacles.numpy),
-            *cases(data=data.jax, types=types.jax, obstacles=obstacles.jax),
-        ],
+        numpy=cases(data=data.numpy, types=types.numpy, obstacles=obstacles.numpy),
+        jax=lambda cases=cases: cases(
+            data=data.jax, types=types.jax, obstacles=obstacles.jax
+        ),
     )
     def test(
         self,
@@ -198,12 +199,12 @@ class test_that_same_seed_produces_identical_noise:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["states", "to_states", "sigma", "create_observer"],
-        [
-            *cases(data=data.numpy, types=types.numpy, obstacles=obstacles.numpy),
-            *cases(data=data.jax, types=types.jax, obstacles=obstacles.jax),
-        ],
+        numpy=cases(data=data.numpy, types=types.numpy, obstacles=obstacles.numpy),
+        jax=lambda cases=cases: cases(
+            data=data.jax, types=types.jax, obstacles=obstacles.jax
+        ),
     )
     def test(
         self,
@@ -263,12 +264,12 @@ class test_that_different_seeds_produce_different_noise:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["states", "to_states", "sigma", "create_observer"],
-        [
-            *cases(data=data.numpy, types=types.numpy, obstacles=obstacles.numpy),
-            *cases(data=data.jax, types=types.jax, obstacles=obstacles.jax),
-        ],
+        numpy=cases(data=data.numpy, types=types.numpy, obstacles=obstacles.numpy),
+        jax=lambda cases=cases: cases(
+            data=data.jax, types=types.jax, obstacles=obstacles.jax
+        ),
     )
     def test(
         self,
@@ -328,12 +329,12 @@ class test_that_original_states_are_not_mutated:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["states", "to_states", "sigma", "create_observer"],
-        [
-            *cases(data=data.numpy, types=types.numpy, obstacles=obstacles.numpy),
-            *cases(data=data.jax, types=types.jax, obstacles=obstacles.jax),
-        ],
+        numpy=cases(data=data.numpy, types=types.numpy, obstacles=obstacles.numpy),
+        jax=lambda cases=cases: cases(
+            data=data.jax, types=types.jax, obstacles=obstacles.jax
+        ),
     )
     def test(
         self,

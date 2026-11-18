@@ -19,7 +19,7 @@ import numpy as np
 from numtypes import array
 
 from tests.dsl import mppi as data, costs, stubs
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_mppi_favors_samples_with_lower_costs:
@@ -86,7 +86,7 @@ class test_that_mppi_favors_samples_with_lower_costs:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "mppi",
             "temperature",
@@ -95,10 +95,10 @@ class test_that_mppi_favors_samples_with_lower_costs:
             "expected_optimal_control",
             "tolerance",
         ],
-        [
-            *cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
-            *cases(create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(
+            create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax
+        ),
     )
     def test[StateT: State, ControlInputSequenceT: ControlInputSequence](
         self,
@@ -179,24 +179,22 @@ class test_that_mppi_shifts_control_sequence_left_when_replanning:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["mppi", "nominal_input", "initial_state", "expected_nominal_control"],
-        [
-            *cases(
-                create_mppi=create_mppi.numpy,
-                update=update.numpy,
-                padding=padding.numpy,
-                data=data.numpy,
-                costs=costs.numpy,
-            ),
-            *cases(
-                create_mppi=create_mppi.jax,
-                update=update.jax,
-                padding=padding.jax,
-                data=data.jax,
-                costs=costs.jax,
-            ),
-        ],
+        numpy=cases(
+            create_mppi=create_mppi.numpy,
+            update=update.numpy,
+            padding=padding.numpy,
+            data=data.numpy,
+            costs=costs.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_mppi=create_mppi.jax,
+            update=update.jax,
+            padding=padding.jax,
+            data=data.jax,
+            costs=costs.jax,
+        ),
     )
     def test[StateT: State, ControlInputSequenceT: ControlInputSequence](
         self,
@@ -269,12 +267,12 @@ class test_that_mppi_uses_samples_with_higher_costs_when_temperature_is_high:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["mppi", "nominal_input", "initial_state", "expected_optimal_control"],
-        [
-            *cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
-            *cases(create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(
+            create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax
+        ),
     )
     def test[StateT: State, ControlInputSequenceT: ControlInputSequence](
         self,
@@ -336,12 +334,12 @@ class test_that_mppi_optimal_control_is_convex_combination_of_samples:
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["mppi", "nominal_input", "initial_state", "sampled_inputs"],
-        [
-            *cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
-            *cases(create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(
+            create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax
+        ),
     )
     def test[StateT: State, ControlInputSequenceT: ControlInputSequence](
         self,
@@ -392,7 +390,7 @@ class test_that_mppi_converges_to_target_state:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "mppi",
             "model",
@@ -402,22 +400,20 @@ class test_that_mppi_converges_to_target_state:
             "max_iterations",
             "convergence_threshold",
         ],
-        [
-            *cases(
-                create_mppi=create_mppi.numpy,
-                create_model=create_model.numpy,
-                data=data.numpy,
-                costs=costs.numpy,
-                sampler=sampler.numpy,
-            ),
-            *cases(
-                create_mppi=create_mppi.jax,
-                create_model=create_model.jax,
-                data=data.jax,
-                costs=costs.jax,
-                sampler=sampler.jax,
-            ),
-        ],
+        numpy=cases(
+            create_mppi=create_mppi.numpy,
+            create_model=create_model.numpy,
+            data=data.numpy,
+            costs=costs.numpy,
+            sampler=sampler.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_mppi=create_mppi.jax,
+            create_model=create_model.jax,
+            data=data.jax,
+            costs=costs.jax,
+            sampler=sampler.jax,
+        ),
     )
     def test[StateT: State, ControlInputSequenceT: ControlInputSequence](
         self,
@@ -500,12 +496,12 @@ class test_that_mppi_does_not_overflow_when_sample_cost_differences_are_very_lar
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["mppi", "nominal_input", "initial_state"],
-        [
-            *cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
-            *cases(create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(
+            create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax
+        ),
     )
     def test[StateT: State, ControlInputSequenceT: ControlInputSequence](
         self,
@@ -569,12 +565,12 @@ class test_that_mppi_does_not_underflow_when_sample_cost_differences_are_very_sm
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["mppi", "nominal_input", "initial_state"],
-        [
-            *cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
-            *cases(create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(
+            create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax
+        ),
     )
     def test[StateT: State, ControlInputSequenceT: ControlInputSequence](
         self,
@@ -643,12 +639,12 @@ class test_that_mppi_uses_update_function_to_update_nominal_input:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["mppi", "nominal_input", "initial_state", "expected_updated_input"],
-        [
-            *cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
-            *cases(create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax),
-        ],
+        numpy=cases(create_mppi=create_mppi.numpy, data=data.numpy, costs=costs.numpy),
+        jax=lambda cases=cases: cases(
+            create_mppi=create_mppi.jax, data=data.jax, costs=costs.jax
+        ),
     )
     def test[StateT: State, ControlInputSequenceT: ControlInputSequence](
         self,
@@ -721,22 +717,20 @@ class test_that_mppi_uses_padding_function_to_pad_nominal_input:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["mppi", "nominal_input", "initial_state", "expected_nominal_control"],
-        [
-            *cases(
-                create_mppi=create_mppi.numpy,
-                update=update.numpy,
-                data=data.numpy,
-                costs=costs.numpy,
-            ),
-            *cases(
-                create_mppi=create_mppi.jax,
-                update=update.jax,
-                data=data.jax,
-                costs=costs.jax,
-            ),
-        ],
+        numpy=cases(
+            create_mppi=create_mppi.numpy,
+            update=update.numpy,
+            data=data.numpy,
+            costs=costs.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_mppi=create_mppi.jax,
+            update=update.jax,
+            data=data.jax,
+            costs=costs.jax,
+        ),
     )
     def test[StateT: State, ControlInputSequenceT: ControlInputSequence](
         self,
@@ -809,7 +803,7 @@ class test_that_mppi_uses_filter_function_to_filter_optimal_control:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "mppi",
             "nominal_input",
@@ -817,20 +811,18 @@ class test_that_mppi_uses_filter_function_to_filter_optimal_control:
             "expected_optimal_control",
             "expected_nominal_control",
         ],
-        [
-            *cases(
-                create_mppi=create_mppi.numpy,
-                update=update.numpy,
-                data=data.numpy,
-                costs=costs.numpy,
-            ),
-            *cases(
-                create_mppi=create_mppi.jax,
-                update=update.jax,
-                data=data.jax,
-                costs=costs.jax,
-            ),
-        ],
+        numpy=cases(
+            create_mppi=create_mppi.numpy,
+            update=update.numpy,
+            data=data.numpy,
+            costs=costs.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_mppi=create_mppi.jax,
+            update=update.jax,
+            data=data.jax,
+            costs=costs.jax,
+        ),
     )
     def test[StateT: State, ControlInputSequenceT: ControlInputSequence](
         self,

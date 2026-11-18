@@ -13,7 +13,7 @@ from numtypes import Array, array
 import numpy as np
 
 from tests.dsl import mppi as data
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_extractor_returns_zero_distance_when_ego_is_on_the_boundary:
@@ -130,22 +130,20 @@ class test_that_extractor_returns_zero_distance_when_ego_is_on_the_boundary:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["boundary", "states", "expected_distance"],
-        [
-            *cases(
-                trajectory=trajectory.numpy,
-                types=types.numpy,
-                data=data.numpy,
-                create_boundary=boundary.numpy,
-            ),
-            *cases(
-                trajectory=trajectory.jax,
-                types=types.jax,
-                data=data.jax,
-                create_boundary=boundary.jax,
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy,
+            types=types.numpy,
+            data=data.numpy,
+            create_boundary=boundary.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax,
+            types=types.jax,
+            data=data.jax,
+            create_boundary=boundary.jax,
+        ),
     )
     def test[StateBatchT](
         self,
@@ -227,22 +225,20 @@ class test_that_extractor_returns_positive_distance_inside_boundary:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["boundary", "states", "expected_distances"],
-        [
-            *cases(
-                trajectory=trajectory.numpy,
-                types=types.numpy,
-                data=data.numpy,
-                create_boundary=boundary.numpy,
-            ),
-            *cases(
-                trajectory=trajectory.jax,
-                types=types.jax,
-                data=data.jax,
-                create_boundary=boundary.jax,
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy,
+            types=types.numpy,
+            data=data.numpy,
+            create_boundary=boundary.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax,
+            types=types.jax,
+            data=data.jax,
+            create_boundary=boundary.jax,
+        ),
     )
     def test[StateBatchT](
         self,
@@ -341,22 +337,20 @@ class test_that_extractor_returns_negative_distance_outside_boundary:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["boundary", "states", "expected_distance"],
-        [
-            *cases(
-                trajectory=trajectory.numpy,
-                types=types.numpy,
-                data=data.numpy,
-                create_boundary=boundary.numpy,
-            ),
-            *cases(
-                trajectory=trajectory.jax,
-                types=types.jax,
-                data=data.jax,
-                create_boundary=boundary.jax,
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy,
+            types=types.numpy,
+            data=data.numpy,
+            create_boundary=boundary.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax,
+            types=types.jax,
+            data=data.jax,
+            create_boundary=boundary.jax,
+        ),
     )
     def test[StateBatchT](
         self,
@@ -407,18 +401,18 @@ class test_that_distance_between_edges_of_explicit_boundary_is_constant_when_wid
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["boundary", "left_width", "right_width"],
-        [
-            *cases(
-                trajectory=trajectory.numpy,
-                types=types.numpy,
-                create_boundary=boundary.numpy,
-            ),
-            *cases(
-                trajectory=trajectory.jax, types=types.jax, create_boundary=boundary.jax
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy,
+            types=types.numpy,
+            create_boundary=boundary.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax,
+            types=types.jax,
+            create_boundary=boundary.jax,
+        ),
     )
     def test(
         self, boundary: ExplicitBoundary, left_width: float, right_width: float
@@ -464,20 +458,18 @@ class test_that_distance_between_edges_of_explicit_boundary_matches_piecewise_wi
             )
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["boundary", "expected_widths"],
-        [
-            *cases(
-                trajectory=trajectory.numpy,
-                types=types.numpy,
-                create_boundary=boundary.numpy,
-            ),
-            *cases(
-                trajectory=trajectory.jax,
-                types=types.jax,
-                create_boundary=boundary.jax,
-            ),
-        ],
+        numpy=cases(
+            trajectory=trajectory.numpy,
+            types=types.numpy,
+            create_boundary=boundary.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            trajectory=trajectory.jax,
+            types=types.jax,
+            create_boundary=boundary.jax,
+        ),
     )
     def test(self, boundary: ExplicitBoundary, expected_widths: Array) -> None:
         left_boundary_points = boundary.left(sample_count=(N := 5))

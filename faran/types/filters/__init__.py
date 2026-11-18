@@ -1,21 +1,3 @@
-from .common import (
-    Noise as Noise,
-    NoiseModel as NoiseModel,
-    NoiseModelProvider as NoiseModelProvider,
-)
-from .basic import (
-    NumPyNoiseCovarianceArrayDescription as NumPyNoiseCovarianceArrayDescription,
-    NumPyNoiseCovarianceDescription as NumPyNoiseCovarianceDescription,
-    NumPyGaussianBelief as NumPyGaussianBelief,
-    NumPyNoiseCovariances as NumPyNoiseCovariances,
-    NumPyNoiseModel as NumPyNoiseModel,
-    NumPyNoiseModelProvider as NumPyNoiseModelProvider,
-)
-from .accelerated import (
-    JaxNoiseCovarianceArrayDescription as JaxNoiseCovarianceArrayDescription,
-    JaxNoiseCovarianceDescription as JaxNoiseCovarianceDescription,
-    JaxGaussianBelief as JaxGaussianBelief,
-    JaxNoiseCovariances as JaxNoiseCovariances,
-    JaxNoiseModel as JaxNoiseModel,
-    JaxNoiseModelProvider as JaxNoiseModelProvider,
-)
+import lazy_loader as lazy
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

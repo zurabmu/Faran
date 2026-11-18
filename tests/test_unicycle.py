@@ -7,7 +7,7 @@ from numtypes import array, Array
 import numpy as np
 
 from tests.dsl import model as data, compute
-from pytest import mark
+from tests.dsl import backends
 
 
 type State = types.unicycle.State
@@ -42,12 +42,12 @@ class test_that_vehicle_position_does_not_change_when_velocity_is_zero:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "M", "T", "x_0", "y_0", "theta_0"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.unicycle),
-            *cases(create_model=create_model.jax, data=data.jax.unicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.unicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.unicycle
+        ),
     )
     def test[
         StateT,
@@ -126,7 +126,7 @@ class test_that_vehicle_follows_straight_line_when_linear_velocity_is_constant_a
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "model",
             "inputs",
@@ -135,10 +135,10 @@ class test_that_vehicle_follows_straight_line_when_linear_velocity_is_constant_a
             "expected_y",
             "expected_theta",
         ],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.unicycle),
-            *cases(create_model=create_model.jax, data=data.jax.unicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.unicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.unicycle
+        ),
     )
     def test[
         StateT,
@@ -185,12 +185,12 @@ class test_that_heading_does_not_change_when_angular_velocity_is_zero:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_theta"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.unicycle),
-            *cases(create_model=create_model.jax, data=data.jax.unicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.unicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.unicycle
+        ),
     )
     def test[
         StateT,
@@ -234,12 +234,12 @@ class test_that_vehicle_orientation_returns_to_start_when_angular_velocity_is_re
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_final_theta"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.unicycle),
-            *cases(create_model=create_model.jax, data=data.jax.unicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.unicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.unicycle
+        ),
     )
     def test[
         StateT,
@@ -290,7 +290,7 @@ class test_that_vehicle_returns_to_start_when_completing_a_circle:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "model",
             "inputs",
@@ -299,10 +299,10 @@ class test_that_vehicle_returns_to_start_when_completing_a_circle:
             "expected_final_y",
             "expected_final_theta",
         ],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.unicycle),
-            *cases(create_model=create_model.jax, data=data.jax.unicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.unicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.unicycle
+        ),
     )
     def test[
         StateT,
@@ -352,12 +352,12 @@ class test_that_displacement_is_consistent_with_velocity_input:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "time_step_size"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.unicycle),
-            *cases(create_model=create_model.jax, data=data.jax.unicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.unicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.unicycle
+        ),
     )
     def test[
         StateT,
@@ -431,12 +431,12 @@ class test_that_speed_is_clamped_to_limits:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_speed"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.unicycle),
-            *cases(create_model=create_model.jax, data=data.jax.unicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.unicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.unicycle
+        ),
     )
     def test[
         StateT,
@@ -498,12 +498,12 @@ class test_that_angular_velocity_is_clipped_to_limits:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "inputs", "initial_state", "expected_theta_change"],
-        [
-            *cases(create_model=create_model.numpy, data=data.numpy.unicycle),
-            *cases(create_model=create_model.jax, data=data.jax.unicycle),
-        ],
+        numpy=cases(create_model=create_model.numpy, data=data.numpy.unicycle),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax, data=data.jax.unicycle
+        ),
     )
     def test[
         StateT: State,
@@ -555,18 +555,18 @@ class test_that_simulating_individual_steps_matches_horizon_simulation:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "input_batch", "initial_state", "horizon", "input_of"],
-        [
-            *cases(
-                create_model=create_model.numpy,
-                data=data.numpy.unicycle,
-                types=types.numpy,
-            ),
-            *cases(
-                create_model=create_model.jax, data=data.jax.unicycle, types=types.jax
-            ),
-        ],
+        numpy=cases(
+            create_model=create_model.numpy,
+            data=data.numpy.unicycle,
+            types=types.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax,
+            data=data.jax.unicycle,
+            types=types.jax,
+        ),
     )
     def test[
         StateT: State,
@@ -621,18 +621,18 @@ class test_that_simulating_individual_input_sequence_matches_horizon_simulation:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["model", "input_batch", "initial_state", "input_of"],
-        [
-            *cases(
-                create_model=create_model.numpy,
-                data=data.numpy.unicycle,
-                types=types.numpy,
-            ),
-            *cases(
-                create_model=create_model.jax, data=data.jax.unicycle, types=types.jax
-            ),
-        ],
+        numpy=cases(
+            create_model=create_model.numpy,
+            data=data.numpy.unicycle,
+            types=types.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_model=create_model.jax,
+            data=data.jax.unicycle,
+            types=types.jax,
+        ),
     )
     def test[
         StateT,

@@ -11,7 +11,7 @@ from numtypes import array
 import numpy as np
 
 from tests.dsl import mppi as data
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_state_of_obstacle_is_predicted_to_remain_constant:
@@ -55,12 +55,12 @@ class test_that_state_of_obstacle_is_predicted_to_remain_constant:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["predictor", "history", "expected"],
-        [
-            *cases(create_predictor=create_predictor.numpy, data=data.numpy),
-            *cases(create_predictor=create_predictor.jax, data=data.jax),
-        ],
+        numpy=cases(create_predictor=create_predictor.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            create_predictor=create_predictor.jax, data=data.jax
+        ),
     )
     def test[HistoryT, PredictionT: ObstacleStates](
         self,

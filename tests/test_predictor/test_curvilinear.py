@@ -13,7 +13,7 @@ from numtypes import array
 import numpy as np
 
 from tests.dsl import mppi as data, prediction_creator, compute, model as model_data
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_obstacle_motion_is_predicted_correctly:
@@ -854,22 +854,20 @@ class test_that_obstacle_motion_is_predicted_correctly:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["predictor", "history", "expected"],
-        [
-            *cases(
-                create_predictor=create_predictor.numpy,
-                model=model.numpy,
-                prediction_creator=prediction_creator.numpy,
-                data=data.numpy,
-            ),
-            *cases(
-                create_predictor=create_predictor.jax,
-                model=model.jax,
-                prediction_creator=prediction_creator.jax,
-                data=data.jax,
-            ),
-        ],
+        numpy=cases(
+            create_predictor=create_predictor.numpy,
+            model=model.numpy,
+            prediction_creator=prediction_creator.numpy,
+            data=data.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_predictor=create_predictor.jax,
+            model=model.jax,
+            prediction_creator=prediction_creator.jax,
+            data=data.jax,
+        ),
     )
     def test[HistoryT, PredictionT: ObstacleStates](
         self,
@@ -944,22 +942,20 @@ class test_that_uncertainty_is_small_when_estimator_does_not_provide_it:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["predictor", "history"],
-        [
-            *cases(
-                create_predictor=create_predictor.numpy,
-                model=model.numpy,
-                data=data.numpy,
-                prediction_creator=prediction_creator.numpy,
-            ),
-            *cases(
-                create_predictor=create_predictor.jax,
-                model=model.jax,
-                data=data.jax,
-                prediction_creator=prediction_creator.jax,
-            ),
-        ],
+        numpy=cases(
+            create_predictor=create_predictor.numpy,
+            model=model.numpy,
+            data=data.numpy,
+            prediction_creator=prediction_creator.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_predictor=create_predictor.jax,
+            model=model.jax,
+            data=data.jax,
+            prediction_creator=prediction_creator.jax,
+        ),
     )
     def test[HistoryT, PredictionT: ObstacleStates](
         self,
@@ -1060,22 +1056,20 @@ class test_that_covariance_information_is_provided:
             ],
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["predictor", "prediction_horizon", "history"],
-        [
-            *cases(
-                create_predictor=create_predictor.numpy,
-                model=model.numpy,
-                data=data.numpy,
-                prediction_creator=prediction_creator.numpy,
-            ),
-            *cases(
-                create_predictor=create_predictor.jax,
-                model=model.jax,
-                data=data.jax,
-                prediction_creator=prediction_creator.jax,
-            ),
-        ],
+        numpy=cases(
+            create_predictor=create_predictor.numpy,
+            model=model.numpy,
+            data=data.numpy,
+            prediction_creator=prediction_creator.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_predictor=create_predictor.jax,
+            model=model.jax,
+            data=data.jax,
+            prediction_creator=prediction_creator.jax,
+        ),
     )
     def test[HistoryT, PredictionT: ObstacleStates](
         self,
@@ -1351,22 +1345,20 @@ class test_that_input_assumptions_are_applied_during_prediction:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["predictor", "history", "expected"],
-        [
-            *cases(
-                create_predictor=create_predictor.numpy,
-                model=model.numpy,
-                data=data.numpy,
-                prediction_creator=prediction_creator.numpy,
-            ),
-            *cases(
-                create_predictor=create_predictor.jax,
-                model=model.jax,
-                data=data.jax,
-                prediction_creator=prediction_creator.jax,
-            ),
-        ],
+        numpy=cases(
+            create_predictor=create_predictor.numpy,
+            model=model.numpy,
+            data=data.numpy,
+            prediction_creator=prediction_creator.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_predictor=create_predictor.jax,
+            model=model.jax,
+            data=data.jax,
+            prediction_creator=prediction_creator.jax,
+        ),
     )
     def test[HistoryT, PredictionT: ObstacleStates](
         self,
@@ -1433,24 +1425,22 @@ class test_that_covariance_is_more_isotropic_when_turning:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["predictor", "straight_history", "turning_history"],
-        [
-            *cases(
-                create_predictor=create_predictor.numpy,
-                model=model.numpy,
-                prediction_creator=prediction_creator.numpy,
-                data=data.numpy,
-                model_data=model_data.numpy,
-            ),
-            *cases(
-                create_predictor=create_predictor.jax,
-                model=model.jax,
-                prediction_creator=prediction_creator.jax,
-                data=data.jax,
-                model_data=model_data.jax,
-            ),
-        ],
+        numpy=cases(
+            create_predictor=create_predictor.numpy,
+            model=model.numpy,
+            prediction_creator=prediction_creator.numpy,
+            data=data.numpy,
+            model_data=model_data.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_predictor=create_predictor.jax,
+            model=model.jax,
+            prediction_creator=prediction_creator.jax,
+            data=data.jax,
+            model_data=model_data.jax,
+        ),
     )
     def test[HistoryT](
         self,
@@ -1616,9 +1606,10 @@ class test_that_all_backends_produce_matching_predictions:
             (integrator_predictors(history_shape=(2, 2)),),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["predictors"],
-        cases(
+        numpy=[],
+        jax=lambda cases=cases: cases(
             model=model,
             create_predictor=create_predictor,
             prediction_creator=prediction_creator,
@@ -1758,22 +1749,20 @@ class test_that_higher_initial_state_covariance_leads_to_higher_prediction_covar
             ]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["certain_predictor", "uncertain_predictor", "history"],
-        [
-            *cases(
-                create_predictor=create_predictor.numpy,
-                model=model.numpy,
-                prediction_creator=prediction_creator.numpy,
-                data=data.numpy,
-            ),
-            *cases(
-                create_predictor=create_predictor.jax,
-                model=model.jax,
-                prediction_creator=prediction_creator.jax,
-                data=data.jax,
-            ),
-        ],
+        numpy=cases(
+            create_predictor=create_predictor.numpy,
+            model=model.numpy,
+            prediction_creator=prediction_creator.numpy,
+            data=data.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_predictor=create_predictor.jax,
+            model=model.jax,
+            prediction_creator=prediction_creator.jax,
+            data=data.jax,
+        ),
     )
     def test[HistoryT](
         self,
@@ -1830,22 +1819,20 @@ class test_that_prediction_is_not_created_for_obstacle_when_obstacle_history_is_
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["predictor", "history", "missing_obstacle_index"],
-        [
-            *cases(
-                create_predictor=create_predictor.numpy,
-                model=model.numpy,
-                prediction_creator=prediction_creator.numpy,
-                data=data.numpy,
-            ),
-            *cases(
-                create_predictor=create_predictor.jax,
-                model=model.jax,
-                prediction_creator=prediction_creator.jax,
-                data=data.jax,
-            ),
-        ],
+        numpy=cases(
+            create_predictor=create_predictor.numpy,
+            model=model.numpy,
+            prediction_creator=prediction_creator.numpy,
+            data=data.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_predictor=create_predictor.jax,
+            model=model.jax,
+            prediction_creator=prediction_creator.jax,
+            data=data.jax,
+        ),
     )
     def test[HistoryT, PredictionT: ObstacleStates](
         self,
@@ -1937,26 +1924,24 @@ class test_that_predictor_correctly_predicts_circular_motion_when_steering_angle
             ]
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["predictor", "history", "expected"],
-        [
-            *cases(
-                create_predictor=create_predictor.numpy,
-                model=model.numpy,
-                noise=noise.numpy,
-                prediction_creator=prediction_creator.numpy,
-                data=data.numpy,
-                model_data=model_data.numpy,
-            ),
-            *cases(
-                create_predictor=create_predictor.jax,
-                model=model.jax,
-                noise=noise.jax,
-                prediction_creator=prediction_creator.jax,
-                data=data.jax,
-                model_data=model_data.jax,
-            ),
-        ],
+        numpy=cases(
+            create_predictor=create_predictor.numpy,
+            model=model.numpy,
+            noise=noise.numpy,
+            prediction_creator=prediction_creator.numpy,
+            data=data.numpy,
+            model_data=model_data.numpy,
+        ),
+        jax=lambda cases=cases: cases(
+            create_predictor=create_predictor.jax,
+            model=model.jax,
+            noise=noise.jax,
+            prediction_creator=prediction_creator.jax,
+            data=data.jax,
+            model_data=model_data.jax,
+        ),
     )
     def test[HistoryT, PredictionT: ObstacleStates](
         self,

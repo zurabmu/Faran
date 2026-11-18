@@ -16,7 +16,7 @@ from numtypes import array, Array
 import numpy as np
 
 from tests.dsl import mppi as data
-from pytest import mark
+from tests.dsl import backends
 
 
 class test_that_distance_is_computed_correctly_when_ego_and_obstacle_are_single_circles:
@@ -129,12 +129,12 @@ class test_that_distance_is_computed_correctly_when_ego_and_obstacle_are_single_
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -195,12 +195,12 @@ class test_that_that_distance_is_computed_correctly_when_ego_is_multiple_circles
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -260,12 +260,12 @@ class test_that_closest_obstacle_circle_is_used_when_obstacle_is_multiple_circle
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -333,12 +333,12 @@ class test_that_ego_circle_offsets_are_applied_when_ego_circles_are_not_centered
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -398,12 +398,12 @@ class test_that_obstacle_circle_offsets_are_applied_when_obstacle_circles_are_no
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -462,12 +462,12 @@ class test_that_closest_across_all_obstacles_is_considered_when_multiple_obstacl
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -569,12 +569,12 @@ class test_that_distances_are_computed_when_there_are_multiple_rollouts:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -672,12 +672,12 @@ class test_that_distances_are_computed_when_there_are_multiple_time_steps:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -736,12 +736,12 @@ class test_that_distance_is_computed_correctly_when_obstacle_circle_has_zero_rad
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -872,12 +872,12 @@ class test_that_distance_is_infinite_when_no_obstacles_are_present:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -1008,12 +1008,12 @@ class test_that_distance_accounts_for_obstacle_heading:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -1161,12 +1161,12 @@ class test_that_distance_accounts_for_ego_heading:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -1357,12 +1357,12 @@ class test_that_distance_is_computed_correctly_when_multiple_samples_of_obstacle
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -1516,7 +1516,7 @@ class test_that_distance_is_infinite_for_missing_obstacle_states:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         [
             "extractor",
             "states",
@@ -1524,10 +1524,10 @@ class test_that_distance_is_infinite_for_missing_obstacle_states:
             "infinite_distance_indices",
             "finite_distance_indices",
         ],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -1663,12 +1663,12 @@ class test_that_sat_distance_is_computed_correctly_for_axis_aligned_rectangles:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -1750,12 +1750,12 @@ class test_that_sat_distance_is_computed_correctly_for_rotated_polygons:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -1806,12 +1806,12 @@ class test_that_sat_distance_is_positive_when_separation_exists:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -1856,12 +1856,12 @@ class test_that_sat_distance_is_zero_when_polygons_are_touching_edge_to_edge:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -1936,12 +1936,12 @@ class test_that_sat_distance_is_negative_when_polygons_are_penetrating:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -1997,12 +1997,12 @@ class test_that_sat_works_with_non_rectangular_convex_polygons:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -2076,12 +2076,12 @@ class test_that_sat_uses_closest_obstacle_when_multiple_obstacles_exist:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -2135,12 +2135,12 @@ class test_that_sat_works_with_asymmetric_polygons:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states", "expected_distances"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,
@@ -2204,12 +2204,12 @@ class test_that_sat_works_with_complex_convex_polygons:
             ),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["extractor", "states", "obstacle_states"],
-        [
-            *cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
-            *cases(distance=distance.jax, types=types.jax, data=data.jax),
-        ],
+        numpy=cases(distance=distance.numpy, types=types.numpy, data=data.numpy),
+        jax=lambda cases=cases: cases(
+            distance=distance.jax, types=types.jax, data=data.jax
+        ),
     )
     def test[DistanceT: Distance, ObstacleStatesT: ObstacleStates, StateT: StateBatch](
         self,

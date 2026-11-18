@@ -1,18 +1,3 @@
-from .common import (
-    EstimatedObstacleStates as EstimatedObstacleStates,
-    ObstacleStatesHistory as ObstacleStatesHistory,
-    ObstacleIds as ObstacleIds,
-    ObstacleIdAssignment as ObstacleIdAssignment,
-    ObstacleStatesRunningHistory as ObstacleStatesRunningHistory,
-    ObstacleModel as ObstacleModel,
-    ObstacleStateEstimator as ObstacleStateEstimator,
-    InputAssumptionProvider as InputAssumptionProvider,
-    PredictionCreator as PredictionCreator,
-    ObstacleMotionPredictor as ObstacleMotionPredictor,
-)
-from .basic import (
-    NumPyObstacleStatesHistory as NumPyObstacleStatesHistory,
-)
-from .accelerated import (
-    JaxObstacleStatesHistory as JaxObstacleStatesHistory,
-)
+import lazy_loader as lazy
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

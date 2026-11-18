@@ -9,20 +9,24 @@ from faran import (
     risk as create_risk,
     trajectory as create_trajectory,
     types,
-    UntracedStateError,
 )
-from faran.jax import register
 
 from numtypes import array
 
 import numpy as np
 from numpy.typing import ArrayLike
-import jax
-import jax.numpy as jnp
-from flax import nnx
 
-from tests.dsl import mppi as data, costs, stubs
-from pytest import mark, raises
+from needy import needs
+from tests.dsl import mppi as data, costs, stubs, probe, backends
+from pytest import raises
+
+with needs.modules(probe.jax):
+    from faran import UntracedStateError
+    from faran.jax import register
+
+    import jax
+    import jax.numpy as jnp
+    from flax import nnx
 
 
 class CompileFunction(Protocol):
@@ -631,9 +635,10 @@ class test_that_types_can_be_used_in_compiled_functions:
             *planner_cases(),
         ]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["compile", "value", "operation", "expected"],
-        [
+        numpy=[],
+        jax=lambda cases=cases: [
             (jax.jit, *case)
             for case in cases(
                 types=types.jax,
@@ -701,9 +706,10 @@ class test_that_compiled_components_return_the_same_results_as_the_uncompiled_co
 
         return [waypoints_trajectory(), obstacle_state_provider()]
 
-    @mark.parametrize(
+    @backends.parametrize(
         ["component", "call", "before_each_call"],
-        cases(
+        numpy=[],
+        jax=lambda cases=cases: cases(
             create_obstacles=create_obstacles.jax,
             create_trajectory=create_trajectory.jax,
             types=types.jax,
@@ -740,8 +746,12 @@ class test_that_components_with_state_raise_an_error_when_compiled_in_a_closure:
             ]
         ]
 
-    @mark.parametrize(
-        ["call"], cases(create_obstacles=create_obstacles.jax, types=types.jax)
+    @backends.parametrize(
+        ["call"],
+        numpy=[],
+        jax=lambda cases=cases: cases(
+            create_obstacles=create_obstacles.jax, types=types.jax
+        ),
     )
     def test(self, call: Callable[[], object]) -> None:
         with raises(UntracedStateError):

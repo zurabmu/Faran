@@ -14,3 +14,4 @@ from .numeric import (
 )
 from .prediction import prediction_creator as prediction_creator
 from .estimator import ComponentExtractor as ComponentExtractor
+from .optional import probe as probe, backends as backends

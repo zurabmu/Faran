@@ -1,21 +1,8 @@
-from .registry import (
-    NoCollectedDataWarning as NoCollectedDataWarning,
-    CollectorRegistry as CollectorRegistry,
-)
-from .obstacles import (
-    ObstacleStateCollector as ObstacleStateCollector,
-    ObstacleObservationCollector as ObstacleObservationCollector,
-    ObstacleForecastCollector as ObstacleForecastCollector,
-)
-from .risk import RiskCollector as RiskCollector
-from .accelerated import (
-    JaxRiskCollector as JaxRiskCollector,
-    JaxObstacleForecastCollector as JaxObstacleForecastCollector,
-)
-from .state import (
-    StateCollector as StateCollector,
-    ControlCollector as ControlCollector,
-    TrajectoryCollector as TrajectoryCollector,
-)
+import lazy_loader as lazy
+
+# NOTE: These names are also subpackages. Importing a subpackage for the first time replaces the
+# package attribute of the same name, so the subpackages are imported before the names are bound.
+from . import access as _access  # noqa: F401
 from .access import access as access
-from .factory import collectors as collectors
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)

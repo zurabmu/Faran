@@ -2,7 +2,8 @@ version = 1
 revision = 3
 requires-python = ">=3.13"
 resolution-markers = [
-    "python_full_version >= '3.14'",
+    "python_full_version >= '3.15'",
+    "python_full_version == '3.14.*'",
     "python_full_version < '3.14'",
 ]
 
@@ -221,6 +222,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/96/f0/5eb65b2bb0d09ac6776f2eb54adee6abe8228ea05b20a5ad0e4945de8aac/anyio-4.12.1.tar.gz", hash = "sha256:41cfcc3a4c85d3f05c932da7c26d0201ac36f72abd4435ba90d0464a3ffed703", size = 228685, upload-time = "2026-01-06T11:45:21.246Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/38/0e/27be9fdef66e72d64c0cdc3cc2823101b80585f8119b5c112c2e8f5f7dab/anyio-4.12.1-py3-none-any.whl", hash = "sha256:d405828884fc140aa80a3c667b8beed277f1dfedec42ba031bd6ac3db606ab6c", size = 113592, upload-time = "2026-01-06T11:45:19.497Z" },
+]
+
+[[package]]
+name = "argcomplete"
+version = "3.7.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/87/6f/5a73f04007ca950701765949209f068da628bd11f9c2da287278ce91e0ee/argcomplete-3.7.2.tar.gz", hash = "sha256:aad8b69a0b9969edb62db0d1752354c0d50717b10e0cbb00e2a958381b9fc6b9", size = 74473, upload-time = "2026-08-06T04:53:21.662Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/46/bd/551ee6af426af84ca33e02622be722925c196608e9127d731ef17c47f06e/argcomplete-3.7.2-py3-none-any.whl", hash = "sha256:6029205678bdd9c1c728a155f5f9ecf5812393f969eef58807641a2bc2aa5b19", size = 43294, upload-time = "2026-08-06T04:53:20.246Z" },
 ]
 
 [[package]]
@@ -469,6 +479,18 @@ wheels = [
 ]
 
 [[package]]
+name = "colorlog"
+version = "6.12.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8c/55/ba79756cb90c8d69d599d57785398ac87bba7b19c80e87f4e8a562197c93/colorlog-6.12.0.tar.gz", hash = "sha256:2a7924c1dadf18b22a0eb8b06d1c7b01d5341707ec1641eb6fcc4fde0c3e8e5f", size = 18151, upload-time = "2026-07-23T13:40:40.71Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d4/19/0b6647bf5e331521e55d2b63bfbdc210bd9cd605189273f03614a05f702d/colorlog-6.12.0-py3-none-any.whl", hash = "sha256:30d392604e9110045a2c2aeefc27d7a017abbab63f3a8aee594eac0801df784e", size = 12239, upload-time = "2026-07-23T13:40:39.562Z" },
+]
+
+[[package]]
 name = "coverage"
 version = "7.13.5"
 source = { registry = "https://pypi.org/simple" }
@@ -619,6 +641,18 @@ wheels = [
 ]
 
 [[package]]
+name = "dependency-groups"
+version = "1.3.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b5/16/65e61d8e837e0d70a99a0d4dd76e2af53357c3a03ed1db8ad9b5786d7f25/dependency_groups-1.3.2.tar.gz", hash = "sha256:c81831f43828dbc3987ee247eb198241a0152b8e7ceab10977cc3808eb388ac7", size = 13309, upload-time = "2026-08-22T02:43:30.137Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a1/e4/da5f2f176050efcfb9222a76a3e81c41f69f775be8e563b76ca4292a134f/dependency_groups-1.3.2-py3-none-any.whl", hash = "sha256:8c337f7b92445823b0d0ea507f611390c58dcd2112be00aebcd738a2ca7a1c64", size = 9802, upload-time = "2026-08-22T02:43:28.853Z" },
+]
+
+[[package]]
 name = "distlib"
 version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -681,10 +715,8 @@ name = "faran"
 source = { editable = "." }
 dependencies = [
     { name = "deepmerge" },
-    { name = "equinox" },
-    { name = "flax" },
-    { name = "jax" },
     { name = "jaxtyping" },
+    { name = "lazy-loader" },
     { name = "numtypes" },
     { name = "riskit" },
     { name = "scipy" },
@@ -692,7 +724,14 @@ dependencies = [
 
 [package.optional-dependencies]
 cuda = [
+    { name = "equinox" },
+    { name = "flax" },
     { name = "jax", extra = ["cuda"] },
+]
+jax = [
+    { name = "equinox" },
+    { name = "flax" },
+    { name = "jax" },
 ]
 typechecking = [
     { name = "beartype" },
@@ -710,6 +749,8 @@ benchmark-cuda = [
 ]
 dev = [
     { name = "beartype" },
+    { name = "faran", extra = ["jax"] },
+    { name = "nox" },
     { name = "pre-commit" },
     { name = "pyright" },
     { name = "ruff" },
@@ -726,6 +767,7 @@ doc = [
 test = [
     { name = "aiopath" },
     { name = "faran-visualizer" },
+    { name = "pyneedy" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
@@ -737,16 +779,19 @@ test = [
 requires-dist = [
     { name = "beartype", marker = "extra == 'typechecking'", specifier = ">=0.17.0" },
     { name = "deepmerge", specifier = ">=2.0" },
-    { name = "equinox", specifier = ">=0.13.0" },
-    { name = "flax", specifier = ">=0.12.12" },
-    { name = "jax", specifier = ">=0.9.0" },
+    { name = "equinox", marker = "extra == 'cuda'", specifier = ">=0.13.0" },
+    { name = "equinox", marker = "extra == 'jax'", specifier = ">=0.13.0" },
+    { name = "flax", marker = "extra == 'cuda'", specifier = ">=0.12.12" },
+    { name = "flax", marker = "extra == 'jax'", specifier = ">=0.12.12" },
+    { name = "jax", marker = "extra == 'jax'", specifier = ">=0.9.0" },
     { name = "jax", extras = ["cuda"], marker = "extra == 'cuda'", specifier = ">=0.9.0" },
     { name = "jaxtyping", specifier = ">=0.3.5" },
+    { name = "lazy-loader", specifier = ">=0.6" },
     { name = "numtypes", specifier = ">=0.5.1" },
-    { name = "riskit", specifier = ">=0.3.0" },
+    { name = "riskit", specifier = ">=1.0.4" },
     { name = "scipy", specifier = ">=1.14.1" },
 ]
-provides-extras = ["cuda", "typechecking"]
+provides-extras = ["cuda", "jax", "typechecking"]
 
 [package.metadata.requires-dev]
 benchmark = [
@@ -758,6 +803,8 @@ benchmark = [
 benchmark-cuda = [{ name = "jax", extras = ["cuda"], specifier = ">=0.9.1" }]
 dev = [
     { name = "beartype", specifier = ">=0.22.9" },
+    { name = "faran", extras = ["jax"] },
+    { name = "nox", specifier = ">=2026.4.10" },
     { name = "pre-commit", specifier = ">=4.6.0" },
     { name = "pyright", specifier = ">=1.1.409" },
     { name = "ruff", specifier = ">=0.15.12" },
@@ -774,6 +821,7 @@ doc = [
 test = [
     { name = "aiopath", specifier = ">=0.7.7" },
     { name = "faran-visualizer", editable = "visualizer" },
+    { name = "pyneedy", specifier = ">=1.5.2" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "pytest-asyncio", specifier = ">=1.3.0" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
@@ -1395,6 +1443,18 @@ wheels = [
 ]
 
 [[package]]
+name = "lazy-loader"
+version = "0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/19/8c/0f2ff2a8b7513e68871a74740c17a504b0488c679b379e6445ebb7bd78dc/lazy_loader-0.6.tar.gz", hash = "sha256:2f4b7824d6401958639008a0cae20c776b61dff619accd6890693e2de8260167", size = 18438, upload-time = "2026-09-21T21:31:32.982Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/23/93/4e45e37f26c820216704b36b8e67cc55c490a7abd287a78a26a2c0e21386/lazy_loader-0.6-py3-none-any.whl", hash = "sha256:77253be3391b06124a0e16105bd663b6c54470af1a9ca8e1cf026f38d58ed056", size = 8791, upload-time = "2026-09-21T21:31:31.632Z" },
+]
+
+[[package]]
 name = "markdown"
 version = "3.10.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1897,6 +1957,26 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/24/bf/d1bda4f6168e0b2e9e5958945e01910052158313224ada5ce1fb2e1113b8/nodeenv-1.10.0.tar.gz", hash = "sha256:996c191ad80897d076bdfba80a41994c2b47c68e224c542b48feba42ba00f8bb", size = 55611, upload-time = "2025-12-20T14:08:54.006Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/88/b2/d0896bdcdc8d28a7fc5717c305f1a861c26e18c05047949fb371034d98bd/nodeenv-1.10.0-py2.py3-none-any.whl", hash = "sha256:5bb13e3eed2923615535339b3c620e76779af4cb4c6a90deccc9e36b274d3827", size = 23438, upload-time = "2025-12-20T14:08:52.782Z" },
+]
+
+[[package]]
+name = "nox"
+version = "2026.10.20"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "argcomplete" },
+    { name = "attrs" },
+    { name = "colorlog" },
+    { name = "dependency-groups" },
+    { name = "humanize" },
+    { name = "packaging" },
+    { name = "platformdirs" },
+    { name = "python-discovery" },
+    { name = "virtualenv" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8c/ae/44b519e4074993256fa713a56d97a9e50e2afe0452e8486eaf41e235171f/nox-2026.10.20.tar.gz", hash = "sha256:5da57c009c3dfdd762c068d9079b17966ec967a9eb02cd8ebcf016a946eaf67f", size = 4085873, upload-time = "2026-10-20T22:07:44.499Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/81/5e/91e4a29b20c652283d9dc055400e8259a16a7f957db935f0d9814699a032/nox-2026.10.20-py3-none-any.whl", hash = "sha256:7aff12bb01471f5b087ada34cf0dbe452b02d840593f2e2afecc4bf6e6d6cd3f", size = 99068, upload-time = "2026-10-20T22:07:42.255Z" },
 ]
 
 [[package]]
@@ -2500,6 +2580,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pyneedy"
+version = "1.5.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f1/d7/953c0162f1b6513554ee553da291f347f3ec01b2a968a9b940ee0d45c2da/pyneedy-1.5.2.tar.gz", hash = "sha256:f66027cf89a6da960b5651d89825ae9c85c6a45fff037d0065e09435c4c1a14b", size = 11734, upload-time = "2026-11-15T17:47:40.45Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/47/2c/bd6ad45d59fd0fb2d3a718c8de89a17fd709881579faba827270e000e43a/pyneedy-1.5.2-py3-none-any.whl", hash = "sha256:b1647d4db43519467eae66e9e72fc975fddd66ffc26932cafbd81fff5f60864b", size = 14489, upload-time = "2026-11-15T17:47:39.302Z" },
+]
+
+[[package]]
 name = "pypandoc"
 version = "1.17"
 source = { registry = "https://pypi.org/simple" }
@@ -2731,16 +2820,16 @@ wheels = [
 
 [[package]]
 name = "riskit"
-version = "0.3.0"
+version = "1.0.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "jax" },
     { name = "jaxtyping" },
-    { name = "numtypes" },
+    { name = "lazy-loader" },
+    { name = "numpy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d4/ab/259bb9df7aed76a7f995e37f270aeb965642ab03b90da832d0b0686ae83c/riskit-0.3.0.tar.gz", hash = "sha256:05ce881468b097e120d4703dad45c841a0c92863b1dd53dcb9b706a0cfe14dd0", size = 76136, upload-time = "2026-01-30T15:40:00.159Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/0c/3ad2c2221afde2545827e1f4a8d48788b0227787969171dea0b45f15b199/riskit-1.0.4.tar.gz", hash = "sha256:403306f1945d1df1021c47367a1716f1448559d1b0d352dfd76feb7748d0e453", size = 99948, upload-time = "2026-11-15T18:11:47.258Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/de/c0/1501a74183d5809fd05ef2ecd6e008b492ca38351850e1cf6be0bba871e4/riskit-0.3.0-py3-none-any.whl", hash = "sha256:7a368da20a2bbfd34eebaed241df416408d18cf119e044212f1677aa678b3fd8", size = 36866, upload-time = "2026-01-30T15:39:59.228Z" },
+    { url = "https://files.pythonhosted.org/packages/86/0a/d03910e5b6162aa9956bafabb5c07aee6d6a3a9cffdf85d71fd53c709c74/riskit-1.0.4-py3-none-any.whl", hash = "sha256:e192dd4f244459210ebac24e2f595103560c13b5a51460c589e6bb481f882058", size = 41703, upload-time = "2026-11-15T18:11:46.041Z" },
 ]
 
 [[package]]

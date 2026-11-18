@@ -1,10 +1,3 @@
-from .basic import (
-    NumPyBoundaryCost as NumPyBoundaryCost,
-    NumPyFixedWidthBoundary as NumPyFixedWidthBoundary,
-    NumPyPiecewiseFixedWidthBoundary as NumPyPiecewiseFixedWidthBoundary,
-)
-from .accelerated import (
-    JaxBoundaryCost as JaxBoundaryCost,
-    JaxFixedWidthBoundary as JaxFixedWidthBoundary,
-    JaxPiecewiseFixedWidthBoundary as JaxPiecewiseFixedWidthBoundary,
-)
+import lazy_loader as lazy
+
+__getattr__, __dir__, __all__ = lazy.attach_stub(__name__, __file__)
