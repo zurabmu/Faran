@@ -39,6 +39,6 @@ There are many algorithms for solving the MPC optimization problem, which can be
 | Gradient-based | Nonlinear programming (NLP) | Differentiable dynamics and cost |
 | Sampling-based | Monte Carlo evaluation      | Forward simulation only          |
 
-**Gradient-based** methods (e.g., iLQR, SQP) compute locally optimal trajectories using derivative information. **Sampling-based** methods (e.g., [MPPI](../../api/mppi/index.md#mppi)) draw many candidate trajectories and combine them through cost-weighted averaging. Sampling-based methods have the advantage that they can handle non-differentiable costs and dynamics, and are easier to parallelize on accelerators.
+**Gradient-based** methods (e.g., iLQR, SQP) compute locally optimal trajectories using derivative information. **Sampling-based** methods (e.g., [MPPI](../../api/mppi/index.md#mppi)) render many candidate trajectories and combine them through cost-weighted averaging. Sampling-based methods have the advantage that they can handle non-differentiable costs and dynamics, and are easier to parallelize on accelerators.
 
 \bibliography

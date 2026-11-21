@@ -2,6 +2,11 @@ from typing import Final
 from dataclasses import dataclass
 from pathlib import Path
 
+import anyio
+
+type OutputPath = str | Path | anyio.Path
+"""A path to save visualizations in."""
+
 
 @dataclass
 class VisualizerConfig:
@@ -9,7 +14,7 @@ class VisualizerConfig:
 
     output_directory: Path = Path.cwd() / "visualizations"
 
-    def configure(self, *, output_directory: str | Path) -> None:
+    def configure(self, *, output_directory: OutputPath) -> None:
         """Configure the visualizer globally.
 
         Args:

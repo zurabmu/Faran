@@ -56,7 +56,7 @@ asyncio.run(visualize(result))
 
 The visualization shows the reference path with a 1.5 m corridor on each side:
 
-<iframe src="../../../visualizations/mpcc-simulation/doc-path-following-with-boundary.html" width="100%" height="800" frameborder="0"></iframe>
+<iframe src="../../viewer/index.html?visualization=../visualizations/mpcc-simulation/doc-path-following-with-boundary.frn" width="100%" height="800" frameborder="0"></iframe>
 
 ??? note "Full example"
 

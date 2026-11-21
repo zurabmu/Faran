@@ -112,9 +112,9 @@ import asyncio
 asyncio.run(visualize(result))
 ```
 
-Voilà! This produces a standalone HTML file you can open in any browser:
+Voilà! This produces a visualization for your viewing pleasure. You can open it with `faran-visualizer view mpcc-simulation/visualization.frn` and it should look like the one below:
 
-<iframe src="../../visualizations/mpcc-simulation/doc-basic-path-following.html"
+<iframe src="../viewer/index.html?visualization=../visualizations/mpcc-simulation/doc-basic-path-following.frn"
         width="100%" height="700px" frameborder="0"></iframe>
 
 ??? note "Full example"

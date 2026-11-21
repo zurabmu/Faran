@@ -73,7 +73,7 @@ asyncio.run(visualize(result))
 
 The visualization shows three obstacles placed at (20, 2.5), (35, 7.5), and (50, 2.5) along the reference path, with a 3.0 m corridor on each side:
 
-<iframe src="../../../visualizations/mpcc-simulation/doc-static-obstacles.html" width="100%" height="800" frameborder="0"></iframe>
+<iframe src="../../viewer/index.html?visualization=../visualizations/mpcc-simulation/doc-static-obstacles.frn" width="100%" height="800" frameborder="0"></iframe>
 
 ??? note "Full example"
 

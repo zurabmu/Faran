@@ -2,11 +2,7 @@
 integration-tests command="" test="": (_integration-tests (if command =~ '^(list|visualize)$' { command } else { "run" }) (if command =~ '^(list|visualize)$' { test } else { command }))
 
 [private]
-_integration-tests mode filter: (_build-visualizer-before mode) (_pytest-integration ((if mode == "list" { "--collect-only -q" } else if mode == "visualize" { "--visualize" } else { "" }) + (if filter == "" { "" } else { " -k " + quote(filter) })))
-
-[private]
-_build-visualizer-before mode:
-    {{ if mode == "visualize" { "just build-visualizer" } else { "" } }}
+_integration-tests mode filter: (_pytest-integration ((if mode == "list" { "--collect-only -q" } else if mode == "visualize" { "--visualize" } else { "" }) + (if filter == "" { "" } else { " -k " + quote(filter) })))
 
 # PYTEST_ADDOPTS carries the -k expression because cmd mangles double quotes in recipe lines.
 [private]

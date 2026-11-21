@@ -28,7 +28,7 @@ The changes from [Obstacle Avoidance](obstacle-avoidance.md):
 | `create_obstacles.dynamic(...)`                          | Four obstacles with constant velocities — three moving, one stationary                                                                                 |
 | `model.bicycle.estimator.ekf(...)`                       | [Extended Kalman Filter](../../api/estimation/index.md) replaces finite-difference estimation — propagates covariance through the bicycle motion model |
 | `risk.mean_variance(gamma=0.5, sample_count=10)`         | [Mean-variance risk metric](../../api/costs/risk.md) penalizes both expected collision cost and its variance                                           |
-| `metric=risk_collector` on `costs.safety.collision(...)` | Collision cost evaluates risk over 10 sampled obstacle poses drawn from the predicted distribution, not just the mean prediction                       |
+| `metric=risk_collector` on `costs.safety.collision(...)` | Collision cost evaluates risk over 10 sampled obstacle poses rendered from the predicted distribution, not just the mean prediction                       |
 
 The EKF propagates covariance through the motion model at each prediction step. Its `process_noise_covariance` (1e-4) and `observation_noise_covariance` (1e-8) control the trust balance between the model and observations — low observation noise means the filter trusts observations heavily, while moderate process noise allows the model prediction to drift. The observation history was increased from 2 to 10 time steps (`horizon=10` in `obstacle_states_running_history`) to give the EKF more data for state estimation.
 
@@ -63,7 +63,7 @@ asyncio.run(visualize(result))
 
 The visualization shows four obstacles — three moving with constant velocities of up to 2.5 m/s and one stationary — along a 100 m reference path with a 3.0 m corridor:
 
-<iframe src="../../../visualizations/mpcc-simulation/doc-dynamic-obstacles-uncertain.html" width="100%" height="800" frameborder="0"></iframe>
+<iframe src="../../viewer/index.html?visualization=../visualizations/mpcc-simulation/doc-dynamic-obstacles-uncertain.frn" width="100%" height="800" frameborder="0"></iframe>
 
 ??? note "Full example"
 

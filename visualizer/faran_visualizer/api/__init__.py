@@ -1,14 +1,10 @@
 from .mpcc import (
     MpccSimulationResult as MpccSimulationResult,
+    MpccPlots as MpccPlots,
+    PlotSelection as PlotSelection,
     MpccVisualizer as MpccVisualizer,
 )
-from .simulation import (
-    SimulationVisualizer as SimulationVisualizer,
-    Types as Types,
-    Arrays as Arrays,
-    Plot as Plot,
-    Road as Road,
-    Visualizable as Visualizable,
-)
-from .config import configure as configure
+from .simulation import SimulationVisualizer as SimulationVisualizer
+from .config import OutputPath as OutputPath, configure as configure
 from .factory import visualizer as visualizer
+from .visualizations import show as show, view as view

@@ -96,7 +96,7 @@ collision = costs.safety.collision(
 
 ## Obstacle Pose Sampler
 
-Draws samples from predicted obstacle state distributions parameterized by covariance matrices. Used for risk-aware collision cost evaluation.
+Renders samples from predicted obstacle state distributions parameterized by covariance matrices. Used for risk-aware collision cost evaluation.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|

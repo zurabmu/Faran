@@ -17,7 +17,6 @@ uv add faran-visualizer
 ## Requirements
 
 - **Python 3.13+**
-- **Node.js 18+** (required at runtime for generating HTML visualizations)
 
 ## Usage
 
@@ -42,22 +41,15 @@ result = MpccSimulationResult(
     max_lag_error=max_lag_error,
 )
 
-# Generate visualization
+# Create the visualization
 await mpcc_viz(result, key="my-simulation")
 ```
 
 ## Output
 
-Visualizations are saved as:
-- `<key>.json` - Raw simulation data
-- `<key>.html` - Interactive HTML visualization with Plotly
-
-## Development
-
-The bundled CLI (`visualizer/faran_visualizer/assets/cli.js`) is included in the package distribution. See `visualizer/core/README.md` for build instructions.
-
-To make sure the CLI bundle is ignored by VCS, run:
+The visualization is saved as `<key>.frn`, which you can open with:
 
 ```bash
-git update-index --skip-worktree visualizer/faran_visualizer/assets/cli.js
-``` 
+faran-visualizer view visualizations/mpcc-simulation/my-simulation.frn            # viewer
+faran-visualizer view visualizations/mpcc-simulation/my-simulation.frn --browser  # browser
+```

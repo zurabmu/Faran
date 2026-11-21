@@ -15,7 +15,7 @@ $$
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `obstacle_states` | state provider | Predicted obstacle states |
-| `sampler` | obstacle sampler | Draws position samples from belief |
+| `sampler` | obstacle sampler | Renders position samples from belief |
 | `distance` | distance extractor | Computes signed distances |
 | `distance_threshold` | array of shape $(V,)$ | Per-part threshold $d_0^{(i)}$ |
 | `weight` | `float` | $k_{\text{col}}$ |

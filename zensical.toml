@@ -7,7 +7,6 @@ repo_url = "https://gitlab.com/risk-metrics/faran"
 repo_name = "risk-metrics/faran"
 
 exclude_docs = """
-visualizations/**/*.json
 extensions/
 """
 

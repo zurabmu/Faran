@@ -4,7 +4,7 @@ status: draft
 
 # visualizer
 
-Interactive HTML visualizations for simulation results. Distributed as a separate package. For setup and usage, see the [Visualizer guide](../../guide/visualizer.md).
+Interactive visualization of simulation results. Distributed as a separate package. For setup and usage, see the [Visualizer guide](../../guide/visualizer.md).
 
 ## Installation
 
@@ -23,16 +23,33 @@ mpcc_viz = visualizer.mpcc(
 )
 ```
 
-## MpccSimulationResult
+## Scene
 
-::: faran_visualizer.api.mpcc.MpccSimulationResult
+::: faran_visualizer.Scene
     options:
       show_root_heading: true
       heading_level: 3
 
-## MpccVisualizer
+## render
 
-::: faran_visualizer.api.mpcc.MpccVisualizer
+::: faran_visualizer.render
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members:
+        - lines
+        - dots
+
+## Info
+
+::: faran_visualizer.Info
+    options:
+      show_root_heading: true
+      heading_level: 3
+
+## SimulationVisualizer
+
+::: faran_visualizer.SimulationVisualizer
     options:
       show_root_heading: true
       heading_level: 3
@@ -40,32 +57,76 @@ mpcc_viz = visualizer.mpcc(
         - create
         - __call__
 
+## MpccSimulationResult
+
+::: faran_visualizer.MpccSimulationResult
+    options:
+      show_root_heading: true
+      heading_level: 3
+
+## MpccVisualizer
+
+::: faran_visualizer.MpccVisualizer
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members:
+        - create
+        - __call__
+        - scene_of
+        - plots_from
+
+## MpccPlots
+
+::: faran_visualizer.MpccPlots
+    options:
+      show_root_heading: true
+      heading_level: 3
+
+## PlotSelection
+
+::: faran_visualizer.PlotSelection
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members:
+        - __call__
+
 ## Plot Types
 
-### Plot.Series
+### Plot
 
-::: faran_visualizer.api.simulation.Plot.Series
+::: faran_visualizer.Plot
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members:
+        - line
+
+### Plot.Chart
+
+::: faran_visualizer.Plot.Chart
     options:
       show_root_heading: true
       heading_level: 3
 
-### Plot.Additional
+### Plot.Line
 
-::: faran_visualizer.api.simulation.Plot.Additional
-    options:
-      show_root_heading: true
-      heading_level: 3
-
-### Plot.Bound
-
-::: faran_visualizer.api.simulation.Plot.Bound
+::: faran_visualizer.Plot.Line
     options:
       show_root_heading: true
       heading_level: 3
 
 ### Plot.Band
 
-::: faran_visualizer.api.simulation.Plot.Band
+::: faran_visualizer.Plot.Band
+    options:
+      show_root_heading: true
+      heading_level: 3
+
+### Plot.Bound
+
+::: faran_visualizer.Plot.Bound
     options:
       show_root_heading: true
       heading_level: 3
@@ -74,14 +135,14 @@ mpcc_viz = visualizer.mpcc(
 
 ### Road.Lane
 
-::: faran_visualizer.api.simulation.Road.Lane
+::: faran_visualizer.Road.Lane
     options:
       show_root_heading: true
       heading_level: 3
 
 ### Road.Network
 
-::: faran_visualizer.api.simulation.Road.Network
+::: faran_visualizer.Road.Network
     options:
       show_root_heading: true
       heading_level: 3

@@ -13,17 +13,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Design guidelines for developers to provide more details on the testing philosophy.
 - `faran.jax.register` and `faran.pytree` for compiling your own functions that use JAX components using Flax.
 - Support for using the NumPy backend without JAX installed, which also makes Faran usable in Pyodide.
+- `Scene`, `render` and `Info` for visualizing any simulation, not only vehicles on a road. A scene describes the renderings of each step, the plots and the info table, and `SimulationVisualizer` saves it as a visualization.
+- `MpccVisualizer.create(plots=...)` for choosing the plots to include in the visualization of the simulation.
 
 ### Changed
 
 - The step function of the MPPI planner for the JAX backend can be compiled as a single graph. This makes one step of the JAX implementation about 50% faster.
 - **Breaking:** JAX, Equinox and Flax are no longer installed by default. Install `faran[jax]` (or `faran[cuda]`) to use the JAX backend.
+- **Breaking:** `faran-visualizer` creates visualizations (`<key>.frn`) instead of HTML and JSON files. To view them, use `faran-visualizer view <key>.frn`. It no longer needs Node.js.
+- **Breaking:** `faran-visualizer` has a new plots API. Plots are passed as `plots` instead of `additional_plots`, and `Plot` replaces `Plot.Additional`. A `Plot` has any number of lines, bands and bounds, `Plot.line` creates a plot with one line, and `Plot.Chart` renders several plots in one chart with a shared y axis.
+- **Breaking:** `SimulationVisualizer` takes a `Scene` instead of a `Visualizable.SimulationResult`. Use `MpccSimulationResult` for MPCC simulations, or describe a `Scene` for anything else. `MpccVisualizer.extract` is renamed to `scene_of` and returns that `Scene`, and `SimulationVisualizer` saves to `simulation/` by default instead of `mpcc-simulation/`.
 - **Breaking:** Collectors are now backend-specific. Import them from `faran.numpy` or `faran.jax` (e.g. `from faran.jax import collectors`) instead of from `faran` directly.
 
 ### Fixed
 
 - Overly strict typing for obstacle state covariances.
 - Hungarian obstacle assignment unable to handle NaN values in the obstacles states for the current time step.
+- `faran-visualizer` failing to import on Python 3.14, because `aiopath` does not support it. The project was switched to `anyio`.
+- `MpccSimulationResult` rejecting JAX arrays for tracking errors and obstacle states in type checking.
 
 ## [0.3.1] — 2026-03-21
 

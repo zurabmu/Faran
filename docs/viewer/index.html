@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Faran Visualization Viewer</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #1c1c1c; overflow: hidden; }
+    body { display: flex; flex-direction: column; }
+    #toolbar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      flex: none;
+      height: 28px;
+      padding: 0 8px;
+      border-bottom: 1px solid #333;
+    }
+    #viewer { flex: 1; min-height: 0; width: 100%; }
+    #reset-layout {
+      padding: 2px 10px;
+      font: 12px system-ui, sans-serif;
+      color: #e6e6e6;
+      background: rgba(40, 40, 40, 0.85);
+      border: 1px solid #555;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #reset-layout:hover:enabled { border-color: #999; }
+    #reset-layout:disabled { opacity: 0.5; cursor: default; }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <button id="reset-layout" type="button" disabled>Reset layout</button>
+  </div>
+  <div id="viewer"></div>
+  <script type="module">
+    import { WebViewer } from "https://unpkg.com/@rerun-io/web-viewer@0.43.2/index.js";
+
+    const visualization = new URLSearchParams(window.location.search).get("visualization");
+    const parent = document.getElementById("viewer");
+    const resetButton = document.getElementById("reset-layout");
+    const visualizationBlueprint = { kind: "recording" };
+
+    function nextFrame() {
+      return new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+
+    async function waitUntilLoaded(viewer) {
+      for (;;) {
+        const state = await viewer.getState();
+        if (state.loading.length === 0 && state.views.length > 0) {
+          return;
+        }
+        await nextFrame();
+      }
+    }
+
+    async function enableLayoutReset(viewer) {
+      await waitUntilLoaded(viewer);
+      const { blueprint } = await viewer.getBlueprint(visualizationBlueprint);
+
+      resetButton.addEventListener("click", () =>
+        viewer.setBlueprint(blueprint, visualizationBlueprint),
+      );
+      resetButton.disabled = false;
+    }
+
+    if (visualization === null) {
+      parent.textContent = "Add ?visualization=<path to .frn file> to the address.";
+      parent.style.color = "white";
+    } else {
+      const response = await fetch(new URL(visualization, window.location.href));
+      const contents = new Uint8Array(await response.arrayBuffer());
+
+      const viewer = new WebViewer();
+      await viewer.start(null, parent, {
+        width: "100%",
+        height: "100%",
+        hideWelcomeScreen: true,
+        theme: "system",
+      });
+      viewer.overridePanelState("top", "hidden");
+      viewer.overridePanelState("blueprint", "hidden");
+      viewer.overridePanelState("selection", "hidden");
+      viewer.overridePanelState("time", "collapsed");
+
+      const channel = viewer.openChannel(visualization);
+      channel.sendRrd(contents);
+      channel.close();
+
+      await enableLayoutReset(viewer);
+    }
+  </script>
+</body>
+</html>

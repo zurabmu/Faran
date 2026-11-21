@@ -1,5 +1,5 @@
-from typing import Sequence, Protocol
-from dataclasses import dataclass
+from typing import Callable, Sequence, Protocol
+from dataclasses import dataclass, field
 
 from faran import (
     Trajectory,
@@ -13,16 +13,33 @@ from faran import (
     types,
 )
 
-from faran_visualizer.api.simulation import (
-    Arrays,
-    Plot,
-    Road,
-    Types,
-    Visualizable,
-    SimulationVisualizer,
+from faran_visualizer.api.config import OutputPath
+from faran_visualizer.api.simulation import SimulationVisualizer
+from faran_visualizer.array import Array, JaxArray
+from faran_visualizer.driving import (
+    DrivingGeometry,
+    Poses,
+    Sizes,
+    Strips,
+    boundaries,
+    ego_body,
+    ego_info,
+    forecasts,
+    ghost,
+    nominal_plan,
+    obstacle_bodies,
+    observations,
+    optimal_plan,
+    points_from,
+    reference,
+    road,
+    traveled_path,
+    uncertainties,
 )
+from faran_visualizer.data import Plot, Plots, Road, Types
+from faran_visualizer.scene import Rendering, Points, Scene
 
-from numtypes import Array, Dim1, Dims, D
+from jaxtyping import Float
 
 import numpy as np
 
@@ -36,37 +53,83 @@ type AugmentedStateSequence = types.augmented.State[
     PhysicalStateSequence, VirtualStateSequence
 ]
 type PathParameters = types.numpy.PathParameters
+type ObstacleStateValues = Float[Array, "T K"] | Float[JaxArray, "T K"]
+type ObstacleCovariances = Float[Array, "T D_x D_x K"] | Float[JaxArray, "T D_x D_x K"]
+type TrackingErrors = Float[Array, " T"] | Float[JaxArray, " T"]
 
 
-class ObstacleStates[T: int, D_x: int, K: int](Protocol):
-    def x(self) -> Array[Dims[T, K]]:
+class ObstacleStates(Protocol):
+    def x(self) -> ObstacleStateValues:
         """Returns the x-coordinates of the obstacles."""
         ...
 
-    def y(self) -> Array[Dims[T, K]]:
+    def y(self) -> ObstacleStateValues:
         """Returns the y-coordinates of the obstacles."""
         ...
 
-    def heading(self) -> Array[Dims[T, K]]:
+    def heading(self) -> ObstacleStateValues:
         """Returns the headings of the obstacles."""
         ...
 
-    def covariance(self) -> Array[Dims[T, D_x, D_x, K]] | None:
+    def covariance(
+        self,
+    ) -> ObstacleCovariances | None:
         """Returns the covariances of the obstacle states, or None if not available."""
         ...
 
 
 @dataclass(kw_only=True, frozen=True)
 class MpccSimulationResult:
+    """Data for one simulation where an MPCC problem formulation was used for
+    the trajectory planning of an automated driving vehicle.
+
+    Attributes:
+        reference: The reference path the ego follows.
+        states: The ego states. The first virtual state must be the path parameter.
+        contouring_errors: The contouring error at each step, in meters.
+        lag_errors: The lag error at each step, in meters.
+        time_step_size: The time between two steps, in seconds.
+        wheelbase: The length of the boxes rendered for the ego and obstacles, in
+            meters. Required when either is rendered as a box.
+        vehicle_width: The width of the boxes rendered for the ego and obstacles, in
+            meters. Required when either is rendered as a box.
+        max_contouring_error: Rendered as upper and lower bounds on the contouring
+            error plot.
+        max_lag_error: Rendered as upper and lower bounds on the lag error plot.
+        vehicle_type: `"car"` and `"triangle"` render the ego as a box, `"circle"` as
+            a circle.
+        obstacle_shape: `"rectangle"` renders obstacles as boxes, `"circle"` as
+            circles.
+        vehicle_radius: The radius of the ego, in meters. Required when
+            `vehicle_type` is `"circle"`.
+        obstacle_radius: The radius of the obstacles, in meters. Required when
+            `obstacle_shape` is `"circle"`.
+        optimal_trajectories: The optimal plan of each step.
+        nominal_trajectories: The nominal plan of each step. Rendered only together
+            with `optimal_trajectories`.
+        obstacles: The obstacle states at each step.
+        obstacle_observations: The observed obstacle states at each step. Rendered
+            only together with `obstacles`.
+        obstacle_forecasts: The forecast of the obstacle states at each step. Rendered
+            only together with `obstacles`. The first two state dimensions of a
+            covariance must be x and y.
+        controls: The control of each step. Its rollout weights are used for the
+            risk plot.
+        risks: The risk of each rollout at each step. The risk plot is rendered only
+            when both `risks` and `controls` are given.
+        network: The lanes to render.
+        boundary: The corridor boundary to render.
+    """
+
     reference: Trajectory[PathParameters, ReferencePoints]
     states: AugmentedStateSequence
-    contouring_errors: Array[Dim1]
-    lag_errors: Array[Dim1]
+    contouring_errors: TrackingErrors
+    lag_errors: TrackingErrors
     time_step_size: float
     wheelbase: float | None = None
+    vehicle_width: float | None = None
     max_contouring_error: float | None = None
     max_lag_error: float | None = None
-    vehicle_width: float | None = None
     vehicle_type: Types.Vehicle = "car"
     obstacle_shape: Types.ObstacleShape = "rectangle"
     vehicle_radius: float | None = None
@@ -83,12 +146,85 @@ class MpccSimulationResult:
 
 
 @dataclass(kw_only=True, frozen=True)
+class MpccPlots:
+    """The plots `MpccVisualizer` creates for one simulation result.
+
+    Attributes:
+        progress: The path parameter, with the path length as a bound.
+        tracking_errors: The chart of the contouring and lag errors.
+        contouring_error: The contouring error, bounded by its maximum if given.
+        lag_error: The lag error, bounded by its maximum if given.
+        risk: The risk of the selected and median rollouts, or None without risks
+            and controls.
+    """
+
+    progress: Plot
+    tracking_errors: Plot.Chart
+    contouring_error: Plot
+    lag_error: Plot
+    risk: Plot | None
+
+    @property
+    def all(self) -> list[Plot | Plot.Chart]:
+        """The plots in the order `MpccVisualizer` shows them by default."""
+        return [
+            self.progress,
+            self.tracking_errors,
+            *([self.risk] if self.risk is not None else []),
+        ]
+
+
+class PlotSelection(Protocol):
+    def __call__(self, plots: MpccPlots, result: MpccSimulationResult, /) -> Plots:
+        """Returns the plots to show for `result`, given the `plots` that
+        `MpccVisualizer` creates for it. Return other plots to override them, or
+        add to `MpccPlots.all` to extend them.
+
+        Example:
+            Show the speed of the ego after the default plots:
+
+            ```python
+            MpccVisualizer.create(
+                plots=lambda plots, result: [
+                    *plots.all,  # show the default plots first
+                    Plot.line(
+                        name="Speed",
+                        values=np.asarray(result.states.physical.speed()),
+                        unit="m/s",
+                    ),
+                ]
+            )
+            ```
+        """
+        ...
+
+
+type FramePart = Callable[[int], list[Rendering]]
+"""Returns the renderings of one part of the scene at a step."""
+
+
+def _all_plots(plots: MpccPlots, result: MpccSimulationResult) -> Plots:
+    return plots.all
+
+
+@dataclass(kw_only=True, frozen=True)
 class MpccVisualizer:
-    """Visualizer for MPCC simulation results."""
+    """Visualizer for MPCC simulation results.
+
+    Attributes:
+        inner: The visualizer that saves the converted simulation result.
+        reference_sample_count: The number of points rendered along the reference path.
+        boundary_sample_count: The number of points rendered along each corridor
+            boundary.
+        plots: Chooses the plots to show for each simulation result.
+        geometry: Computes the positions and outlines that are rendered.
+    """
 
     inner: SimulationVisualizer
     reference_sample_count: int
     boundary_sample_count: int
+    plots: PlotSelection = _all_plots
+    geometry: DrivingGeometry = field(default_factory=DrivingGeometry.create)
 
     @staticmethod
     def create(
@@ -96,298 +232,315 @@ class MpccVisualizer:
         output: str = "mpcc-simulation",
         reference_sample_count: int = 200,
         boundary_sample_count: int = 100,
-        output_directory: str | None = None,
+        output_directory: OutputPath | None = None,
+        plots: PlotSelection = _all_plots,
     ) -> "MpccVisualizer":
+        """Creates a visualizer that saves visualizations in
+        `<output_directory>/<output>`. Without `output_directory`, it uses the
+        configured output directory."""
         return MpccVisualizer(
             inner=SimulationVisualizer.create(
                 output=output, output_directory=output_directory
             ),
             reference_sample_count=reference_sample_count,
             boundary_sample_count=boundary_sample_count,
+            plots=plots,
         )
 
     async def __call__(self, data: MpccSimulationResult, *, key: str) -> None:
-        await self.inner(self.extract(data), key=key)
+        """Saves the simulation as a visualization at `<output>/<key>.frn`."""
+        await self.inner(self.scene_of(data), key=key)
 
     async def can_visualize(self, data: object) -> bool:
         return isinstance(data, MpccSimulationResult)
 
-    def extract(self, result: MpccSimulationResult) -> Visualizable.SimulationResult:
-        return Visualizable.SimulationResult.create(
-            info=self.info_from(result),
-            reference=self.reference_trajectory_from(result),
-            ego=self.ego_from(result),
-            trajectories=self.planned_trajectories_from(result),
-            obstacles=self.obstacles_from(result),
-            network=result.network,
-            additional_plots=self.additional_plots_from(result),
-            boundaries=self.boundaries_from(result),
-        )
-
-    def info_from(self, result: MpccSimulationResult) -> Visualizable.SimulationInfo:
-        return Visualizable.SimulationInfo(
-            path_length=result.reference.path_length,
+    def scene_of(self, result: MpccSimulationResult) -> Scene:
+        """Converts the simulation result into the scene `SimulationVisualizer`
+        shows."""
+        path_parameters = self._path_parameters_from(result)
+        parts = [
+            self._ego_path_part(result),
+            *self._plan_parts(result),
+            *self._obstacle_parts(result),
+            self._ghost_part(result, path_parameters=path_parameters),
+            self._ego_body_part(result),
+        ]
+        return Scene(
             time_step=result.time_step_size,
-            wheelbase=result.wheelbase,
-            vehicle_width=result.vehicle_width,
-            vehicle_type=result.vehicle_type,
-            obstacle_shape=result.obstacle_shape,
-            vehicle_radius=result.vehicle_radius,
-            obstacle_radius=result.obstacle_radius,
+            step_count=len(path_parameters),
+            background=self._background_from(result),
+            at_step=lambda step: [
+                rendering for part in parts for rendering in part(step)
+            ],
+            plots=self.plots(self.plots_from(result), result),
+            info=ego_info(
+                time_step=result.time_step_size,
+                x=np.asarray(result.states.physical.x()),
+                y=np.asarray(result.states.physical.y()),
+                heading=np.asarray(result.states.physical.heading()),
+                path_parameters=path_parameters,
+                path_length=result.reference.path_length,
+            ),
         )
 
-    def reference_trajectory_from(
-        self, result: MpccSimulationResult
-    ) -> Visualizable.ReferenceTrajectory:
-        path_parameters = np.linspace(
-            0, result.reference.path_length, self.reference_sample_count
-        ).reshape(-1, 1)
-
-        reference_points = result.reference.query(
-            types.numpy.path_parameters(path_parameters)
+    def plots_from(self, result: MpccSimulationResult) -> MpccPlots:
+        """Returns the plots `MpccVisualizer` creates for the simulation result."""
+        return MpccPlots(
+            progress=Plot(
+                name="Path Progress",
+                unit="m",
+                lines=[
+                    Plot.Line(
+                        label="Progress", values=self._path_parameters_from(result)
+                    )
+                ],
+                bounds=[
+                    Plot.Bound(label="Path Length", values=result.reference.path_length)
+                ],
+            ),
+            tracking_errors=Plot.Chart(
+                name="Tracking Errors",
+                unit="m",
+                plots=[
+                    contouring_error := Plot(
+                        name="Contouring Error",
+                        lines=[
+                            Plot.Line(
+                                label="Contouring Error",
+                                values=np.asarray(result.contouring_errors).flatten(),
+                            )
+                        ],
+                        bounds=_symmetric_bounds(result.max_contouring_error),
+                    ),
+                    lag_error := Plot(
+                        name="Lag Error",
+                        lines=[
+                            Plot.Line(
+                                label="Lag Error",
+                                values=np.asarray(result.lag_errors).flatten(),
+                                color="#9b59b6",
+                            )
+                        ],
+                        bounds=_symmetric_bounds(result.max_lag_error),
+                    ),
+                ],
+            ),
+            contouring_error=contouring_error,
+            lag_error=lag_error,
+            risk=self._risk_plot_from(result),
         )
 
-        return Visualizable.ReferenceTrajectory(
-            x=reference_points.x()[:, 0], y=reference_points.y()[:, 0]
+    def _background_from(self, result: MpccSimulationResult) -> list[Rendering]:
+        return [
+            *self._road_from(result),
+            reference(
+                self.geometry.samples_of(
+                    result.reference, sample_count=self.reference_sample_count
+                )
+            ),
+            *self._boundaries_from(result),
+        ]
+
+    def _road_from(self, result: MpccSimulationResult) -> list[Rendering]:
+        if (network := result.network) is None:
+            return []
+
+        return road(
+            surfaces=[self.geometry.lane_surface(lane) for lane in network.lanes],
+            edges_by_pattern=self.geometry.marked_edges(network),
         )
 
-    def ego_from(self, result: MpccSimulationResult) -> Visualizable.Ego:
-        return Visualizable.Ego(
-            x=result.states.physical.x(),
-            y=result.states.physical.y(),
-            heading=result.states.physical.heading(),
-            path_parameter=(path_parameters := self.path_parameters_from(result)),
-            ghost=self.ego_ghost_from(result, path_parameters),
+    def _boundaries_from(self, result: MpccSimulationResult) -> list[Rendering]:
+        if (boundary := result.boundary) is None:
+            return []
+
+        return [
+            boundaries(
+                left=_positions_in(
+                    boundary.left(sample_count=self.boundary_sample_count)
+                ),
+                right=_positions_in(
+                    boundary.right(sample_count=self.boundary_sample_count)
+                ),
+            )
+        ]
+
+    def _ego_path_part(self, result: MpccSimulationResult) -> FramePart:
+        x = np.asarray(result.states.physical.x())
+        y = np.asarray(result.states.physical.y())
+        return lambda step: [
+            traveled_path(self.geometry.traveled_positions(x=x, y=y, step=step))
+        ]
+
+    def _ego_body_part(self, result: MpccSimulationResult) -> FramePart:
+        x = np.asarray(result.states.physical.x())
+        y = np.asarray(result.states.physical.y())
+        heading = np.asarray(result.states.physical.heading())
+        shape = self.geometry.vehicle_shape(
+            result.vehicle_type, sizes=_sizes_of(result)
+        )
+        return lambda step: ego_body(
+            Poses(
+                x=x[step : step + 1],
+                y=y[step : step + 1],
+                heading=heading[step : step + 1],
+            ),
+            shape=shape,
         )
 
-    def path_parameters_from(self, result: MpccSimulationResult) -> Array[Dim1]:
+    def _ghost_part(
+        self, result: MpccSimulationResult, *, path_parameters: Float[Array, " T"]
+    ) -> FramePart:
+        positions = self.geometry.positions_on(
+            result.reference, path_parameters=path_parameters
+        )
+        return lambda step: [ghost(positions[step : step + 1])]
+
+    def _path_parameters_from(self, result: MpccSimulationResult) -> Float[Array, " T"]:
         # NOTE: We assume the first virtual dimension is the path parameter.
         return np.asarray(result.states.virtual)[:, 0]
 
-    def ego_ghost_from(
-        self, result: MpccSimulationResult, path_parameters: Array[Dim1]
-    ) -> Visualizable.EgoGhost:
-        positions = result.reference.query(
-            types.numpy.path_parameters(path_parameters.reshape(-1, 1))
+    def _plan_parts(self, result: MpccSimulationResult) -> list[FramePart]:
+        if (optimal := result.optimal_trajectories) is None:
+            return []
+
+        return [
+            lambda step: optimal_plan(_positions_of(optimal[step])),
+            *self._nominal_plan_parts(result),
+        ]
+
+    def _nominal_plan_parts(self, result: MpccSimulationResult) -> list[FramePart]:
+        if (nominal := result.nominal_trajectories) is None:
+            return []
+
+        return [lambda step: nominal_plan(_positions_of(nominal[step]))]
+
+    def _obstacle_parts(self, result: MpccSimulationResult) -> list[FramePart]:
+        if (obstacles := result.obstacles) is None:
+            return []
+
+        shape = self.geometry.obstacle_shape(
+            result.obstacle_shape, sizes=_sizes_of(result)
         )
-
-        return Visualizable.EgoGhost(x=positions.x()[:, 0], y=positions.y()[:, 0])
-
-    def planned_trajectories_from(
-        self, result: MpccSimulationResult
-    ) -> Visualizable.PlannedTrajectories | None:
-        if result.optimal_trajectories is None:
-            return
-
-        return Visualizable.PlannedTrajectories(
-            optimal=self.planned_trajectory_from(result.optimal_trajectories),
-            nominal=self.planned_trajectory_from(result.nominal_trajectories),
-        )
-
-    def planned_trajectory_from(
-        self, trajectories: Sequence[AugmentedStateSequence] | None
-    ) -> Visualizable.PlannedTrajectory | None:
-        if trajectories is None:
-            return
-
-        return Visualizable.PlannedTrajectory(
-            x=np.stack([it.physical.x() for it in trajectories], axis=0),
-            y=np.stack([it.physical.y() for it in trajectories], axis=0),
-        )
-
-    def obstacles_from(
-        self, result: MpccSimulationResult
-    ) -> Visualizable.Obstacles | None:
-        if result.obstacles is None:
-            return
-
-        return Visualizable.Obstacles(
-            x=result.obstacles.x(),
-            y=result.obstacles.y(),
-            heading=result.obstacles.heading(),
-            forecast=self.obstacle_forecast_from(result),
-            observations=self.obstacle_observations_from(result),
-        )
-
-    def obstacle_forecast_from(
-        self, result: MpccSimulationResult
-    ) -> Visualizable.ObstacleForecast | None:
-        if result.obstacle_forecasts is None:
-            return
-
-        return Visualizable.ObstacleForecast(
-            x=np.stack([it.x() for it in result.obstacle_forecasts], axis=0),
-            y=np.stack([it.y() for it in result.obstacle_forecasts], axis=0),
-            heading=np.stack(
-                [it.heading() for it in result.obstacle_forecasts], axis=0
+        return [
+            *self._forecast_parts(result),
+            lambda step: obstacle_bodies(
+                self._present_at(obstacles, step=step), shape=shape
             ),
-            covariance=self.obstacle_forecast_covariance_from(result),
-        )
+            *self._observation_parts(result),
+        ]
 
-    def obstacle_forecast_covariance_from(
-        self, result: MpccSimulationResult
-    ) -> Arrays.ObstacleForecastCovariances | None:
-        if (forecasts := result.obstacle_forecasts) is None or (
-            template_covariance := self.template_covariance_from(forecasts)
-        ) is None:
-            return
+    def _forecast_parts(self, result: MpccSimulationResult) -> list[FramePart]:
+        if (predicted := result.obstacle_forecasts) is None:
+            return []
 
-        no_covariance = np.zeros_like(template_covariance)
-
-        return np.stack(
-            [
-                self.position_covariance_from(covariance)
-                if (covariance := it.covariance()) is not None
-                else no_covariance
-                for it in forecasts
-            ],
-            axis=0,
-        )
-
-    def template_covariance_from(
-        self, forecasts: Sequence[ObstacleStates]
-    ) -> Array | None:
-        for it in forecasts:
-            if (covariance := it.covariance()) is not None:
-                return self.position_covariance_from(covariance)
-
-    def position_covariance_from[T: int = int, D_x: int = int, K: int = int](
-        self, covariance: Array[Dims[T, D_x, D_x, K]]
-    ) -> Array[Dims[T, D[2], D[2], K]]:
-        # NOTE: We assume first two dimensions correspond to covariance of (x, y).
-        return covariance[:, :2, :2, :]
-
-    def obstacle_observations_from(
-        self, result: MpccSimulationResult
-    ) -> Visualizable.ObstacleObservations | None:
-        if result.obstacle_observations is None:
-            return
-
-        return Visualizable.ObstacleObservations(
-            x=result.obstacle_observations.x(),
-            y=result.obstacle_observations.y(),
-            heading=result.obstacle_observations.heading(),
-        )
-
-    def boundaries_from(
-        self, result: MpccSimulationResult
-    ) -> Visualizable.Boundaries | None:
-        if result.boundary is None:
-            return
-
-        return Visualizable.Boundaries(
-            left=self.boundary_from(
-                result.boundary.left(sample_count=self.boundary_sample_count)
-            ),
-            right=self.boundary_from(
-                result.boundary.right(sample_count=self.boundary_sample_count)
-            ),
-        )
-
-    def boundary_from(self, points: BoundaryPoints) -> Visualizable.Boundary:
-        return Visualizable.Boundary(x=points[:, 0], y=points[:, 1])
-
-    def additional_plots_from(
-        self, result: MpccSimulationResult
-    ) -> list[Plot.Additional]:
-        path_parameters = self.path_parameters_from(result)
-        plots = [
-            Plot.Additional(
-                id="progress",
-                name="Path Progress",
-                series=[Plot.Series(label="Progress", values=path_parameters)],
-                y_axis_label="Progress (m)",
-                upper_bound=Plot.Bound(
-                    values=result.reference.path_length, label="Path Length"
-                ),
-            ),
-            Plot.Additional(
-                id="contouring-error",
-                name="Contouring Error",
-                series=[
-                    Plot.Series(
-                        label="Contouring Error",
-                        values=np.asarray(result.contouring_errors).flatten(),
-                    )
-                ],
-                y_axis_label="Error (m)",
-                upper_bound=Plot.Bound(values=result.max_contouring_error)
-                if result.max_contouring_error is not None
-                else None,
-                lower_bound=Plot.Bound(values=-result.max_contouring_error)
-                if result.max_contouring_error is not None
-                else None,
-                group="errors",
-            ),
-            Plot.Additional(
-                id="lag-error",
-                name="Lag Error",
-                series=[
-                    Plot.Series(
-                        label="Lag Error",
-                        values=np.asarray(result.lag_errors).flatten(),
-                        color="#9b59b6",
-                    )
-                ],
-                y_axis_label="Error (m)",
-                upper_bound=Plot.Bound(values=result.max_lag_error)
-                if result.max_lag_error is not None
-                else None,
-                lower_bound=Plot.Bound(values=-result.max_lag_error)
-                if result.max_lag_error is not None
-                else None,
-                group="errors",
+        return [
+            lambda step: [uncertainties(self._ellipses_of(predicted[step]))],
+            lambda step: forecasts(
+                self.geometry.forecast_paths(
+                    x=np.asarray(predicted[step].x()),
+                    y=np.asarray(predicted[step].y()),
+                )
             ),
         ]
 
-        if risk_plot := self.risk_plot_from(result):
-            plots.append(risk_plot)
+    def _observation_parts(self, result: MpccSimulationResult) -> list[FramePart]:
+        if (observed := result.obstacle_observations) is None:
+            return []
 
-        return plots
+        return [lambda step: observations(self._present_at(observed, step=step))]
 
-    def risk_plot_from(self, result: MpccSimulationResult) -> Plot.Additional | None:
+    def _present_at(self, obstacles: ObstacleStates, *, step: int) -> Poses:
+        return self.geometry.present(
+            x=np.asarray(obstacles.x())[step],
+            y=np.asarray(obstacles.y())[step],
+            heading=np.asarray(obstacles.heading())[step],
+        )
+
+    def _ellipses_of(self, forecast: ObstacleStates) -> Strips:
+        if (covariance := forecast.covariance()) is None:
+            return np.empty((0, 0, 2))
+
+        return self.geometry.uncertainty_ellipses(
+            x=np.asarray(forecast.x()),
+            y=np.asarray(forecast.y()),
+            covariance=np.asarray(covariance),
+        )
+
+    def _risk_plot_from(self, result: MpccSimulationResult) -> Plot | None:
         if (
             result.risks is None
             or result.controls is None
             or len(result.risks) == 0
             or len(result.controls) == 0
         ):
-            return
+            return None
 
         risks = np.stack([np.asarray(risk) for risk in result.risks], axis=0).sum(
             axis=1
         )
         weights = np.stack(
-            [np.asarray(c.debug.trajectory_weights) for c in result.controls], axis=0
+            [
+                np.asarray(control.debug.trajectory_weights)
+                for control in result.controls
+            ],
+            axis=0,
         )
 
         # NOTE: avoid zero risks for log scale plotting
         risks = np.maximum(risks, 1e-10)
         selected = (risks * weights).sum(axis=1)
 
-        return Plot.Additional(
-            id="risk",
+        return Plot(
             name="Risk",
-            series=[
-                Plot.Series(label="Selected", values=selected, color="#e63946"),
-                Plot.Series(
+            scale="log",
+            lines=[
+                Plot.Line(label="Selected", values=selected, color="#e63946"),
+                Plot.Line(
                     label="Median", values=np.median(risks, axis=1), color="#457b9d"
                 ),
             ],
             bands=[
                 Plot.Band(
+                    label="10-90%",
                     lower=np.percentile(risks, 10, axis=1),
                     upper=np.percentile(risks, 90, axis=1),
                     color="#adb5bd",
-                    label="10-90%",
                 ),
                 Plot.Band(
+                    label="25-75%",
                     lower=np.percentile(risks, 25, axis=1),
                     upper=np.percentile(risks, 75, axis=1),
                     color="#457b9d",
-                    label="25-75%",
                 ),
             ],
-            y_axis_label="Risk",
-            y_axis_scale="log",
         )
+
+
+def _symmetric_bounds(maximum: float | None) -> list[Plot.Bound]:
+    if maximum is None:
+        return []
+
+    return [
+        Plot.Bound(label="Upper Bound", values=maximum),
+        Plot.Bound(label="Lower Bound", values=-maximum),
+    ]
+
+
+def _sizes_of(result: MpccSimulationResult) -> Sizes:
+    return Sizes(
+        wheelbase=result.wheelbase,
+        vehicle_width=result.vehicle_width,
+        vehicle_radius=result.vehicle_radius,
+        obstacle_radius=result.obstacle_radius,
+    )
+
+
+def _positions_of(trajectory: AugmentedStateSequence) -> Points:
+    return points_from(
+        np.asarray(trajectory.physical.x()), np.asarray(trajectory.physical.y())
+    )
+
+
+def _positions_in(points: BoundaryPoints) -> Points:
+    return np.asarray(points)[:, :2]

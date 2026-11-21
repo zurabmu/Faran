@@ -23,12 +23,18 @@ classifiers = [
 ]
 dependencies = [
     "faran",
-    "aiofiles>=25.1.0",
-    "aiopath>=0.7.7",
-    "msgspec>=0.20.0",
-    "numtypes>=0.5.1",
+    "jaxtyping>=0.3.5",
+    "typer>=0.25.1",
     "numpy>=2.4.2",
+    "rerun-sdk==0.43.2",
+    "anyio>=4.16.0",
 ]
+
+[project.optional-dependencies]
+notebook = ["rerun-sdk[notebook]==0.43.2"]
+
+[project.scripts]
+faran-visualizer = "faran_visualizer.cli:main"
 
 [tool.uv.sources]
 faran = { path = "..", editable = true }
@@ -40,6 +46,8 @@ dev = [
     "ruff>=0.15.1",
 ]
 test = [
+    "faran[jax]",
+    "pyneedy>=1.5.2",
     "pytest>=9.0.2",
     "pytest-asyncio>=1.3.0",
 ]
@@ -67,20 +75,23 @@ include = [
     "README.md",
     "pyproject.toml",
 ]
-exclude = ["core/"]
-
-[tool.hatch.build.targets.sdist.force-include]
-"faran_visualizer/assets/cli.js" = "faran_visualizer/assets/cli.js"
 
 [tool.hatch.build.targets.wheel]
 packages = ["faran_visualizer"]
 
-[tool.hatch.build.targets.wheel.force-include]
-"faran_visualizer/assets/cli.js" = "faran_visualizer/assets/cli.js"
-
 [tool.pyright]
-include = ["faran_visualizer"]
+include = ["faran_visualizer", "tests"]
 exclude = ["**/__pycache__"]
 
 [tool.ruff.lint]
 extend-select = ["RUF018"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/*.py" = [
+    "F722", # Ignore syntax error in forward references for jaxtyping types
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["."]

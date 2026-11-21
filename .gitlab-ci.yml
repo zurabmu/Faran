@@ -77,28 +77,11 @@ coverage:
       chmod +x codecov
       ./codecov upload-process $COVERAGE_FILES --token $CODECOV_TOKEN
 
-build-visualizer-cli:
-  stage: build
-  image: node:22
-  needs: []
-  script:
-    - npm install -g pnpm
-    - cd visualizer/core
-    - pnpm install --frozen-lockfile
-    - pnpm build
-  artifacts:
-    paths:
-      - visualizer/faran_visualizer/assets/cli.js
-    expire_in: 1 day
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
 pages:
   stage: pages
   extends:
     - .base
   script:
-    - apt-get update -qq && apt-get install -qq -y nodejs
     - uv run pytest -v -m docs --visualize --notebooks
     - uv run zensical build --clean --strict
     - mv site public
@@ -109,9 +92,6 @@ pages:
     expire_in: 1 day
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  needs:
-    - job: build-visualizer-cli
-      artifacts: true
 
 mirror-github:
   stage: mirror
@@ -130,7 +110,7 @@ mirror-github:
     - git add -f notebooks/
     - echo "python-3.13" > runtime.txt
     - echo "faran" >> requirements.txt
-    - echo "faran_visualizer" >> requirements.txt
+    - echo "faran_visualizer[notebook]" >> requirements.txt
     - echo "tqdm" >> requirements.txt
     - git add runtime.txt requirements.txt
     - "git diff --cached --quiet || git commit -m 'chore: update generated notebooks [skip ci]'"

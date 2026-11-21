@@ -1,6 +1,3 @@
-# Build the visualizer CLI that pytest --visualize runs
-[working-directory("visualizer/core")]
-build-visualizer:
-    pnpm install --frozen-lockfile
-    pnpm build
-    git update-index --skip-worktree ../faran_visualizer/assets/cli.js
+# Open recordings in the viewer: just view <.frn files> [--browser]
+view +recordings:
+    uv run faran-visualizer view {{recordings}}
