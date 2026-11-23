@@ -7,6 +7,7 @@ from .animation import (
     DotStyle as DotStyle,
     Rendering as Rendering,
     Frame as Frame,
+    LegendEntry as LegendEntry,
     Lines as Lines,
     LinePattern as LinePattern,
     LineStyle as LineStyle,

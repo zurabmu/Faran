@@ -39,6 +39,7 @@ class DotStyle:
 @dataclass(kw_only=True, frozen=True)
 class Lines:
     name: str
+    label: str
     strips: Sequence[Points]
     style: LineStyle
 
@@ -46,12 +47,25 @@ class Lines:
 @dataclass(kw_only=True, frozen=True)
 class Dots:
     name: str
+    label: str
     positions: Points
     style: DotStyle
 
 
 type Rendering = Lines | Dots
-"""Something rendered in the x-y plane. Its name is the name it has in the viewer."""
+"""Something rendered in the x-y plane. Its name is the name it has in the viewer, and
+its label is the text of its legend entry."""
+
+
+@dataclass(kw_only=True, frozen=True)
+class LegendEntry:
+    """A legend entry: a label, and the styles that draw its sample. The styles are
+    the first line style and the first dot style rendered with the label, in that
+    order, with their colors at least half opaque so that a single sample of a faint
+    rendering stays visible."""
+
+    label: str
+    styles: Sequence[LineStyle | DotStyle]
 
 
 class Row(NamedTuple):
@@ -92,9 +106,12 @@ class Chart:
 class Animation:
     """A scene with every step rendered and every style resolved, in the form a
     renderer saves. Background renderings are rendered below the renderings of every
-    frame."""
+    frame, on the background color, which charts share. The legend has one entry per
+    label, in the order the labels first appear."""
 
     time_step: float
+    background_color: Color
     background: Sequence[Rendering]
     frames: Sequence[Frame]
     charts: Sequence[Chart]
+    legend: Sequence[LegendEntry]

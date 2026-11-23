@@ -1,6 +1,17 @@
 from dataclasses import dataclass
 
-from faran_visualizer.scene import Animation, Chart, Dots, Lines, PlotLine, Rendering
+from faran_visualizer.scene import (
+    Animation,
+    Chart,
+    Color,
+    Dots,
+    DotStyle,
+    LegendEntry,
+    Lines,
+    LineStyle,
+    PlotLine,
+    Rendering,
+)
 
 import numpy as np
 
@@ -38,10 +49,37 @@ class Visualization:
             line.name for chart in self.animation.charts for line in chart.lines
         )
 
+    def color_of(self, *, at: str, step: int) -> str:
+        """Returns the color of the named rendering at the step, as `#rrggbbaa`."""
+        rendering = self._rendering(at, step=step)
+        return hex_of(rendering.style.color)
+
+    def plot_line_color(self, *, at: str) -> str:
+        """Returns the color of the plot line with the name in its legend, as
+        `#rrggbbaa`."""
+        return hex_of(self._plot_line(at).style.color)
+
+    def background_color(self) -> str:
+        """Returns the color behind the scene and the charts, as `#rrggbbaa`."""
+        return hex_of(self.animation.background_color)
+
     def info(self, *, at: str, step: int) -> float:
         """Returns the value of the labeled row of the info table at the step."""
         (row,) = [row for row in self.animation.frames[step].info if row.label == at]
         return row.value
+
+    def legend(self) -> list[str]:
+        """Returns the labels of the legend entries, in legend order."""
+        return [entry.label for entry in self.animation.legend]
+
+    def legend_sample(self, *, at: str) -> list[str]:
+        """Returns how the sample of the labeled legend entry is drawn, one
+        description per style, such as `dashed line #ff0000ff` or `dot #ff0000ff`."""
+        return [description_of(style) for style in self._legend_entry(at).styles]
+
+    def _legend_entry(self, label: str) -> LegendEntry:
+        (entry,) = [entry for entry in self.animation.legend if entry.label == label]
+        return entry
 
     def _rendering(self, name: str, *, step: int) -> Rendering:
         matches = [
@@ -71,3 +109,15 @@ class Visualization:
             f"Expected one plot with a line named {name}, found {len(matches)}."
         )
         return matches[0]
+
+
+def hex_of(color: Color) -> str:
+    return "#" + "".join(f"{channel:02x}" for channel in color)
+
+
+def description_of(style: LineStyle | DotStyle) -> str:
+    match style:
+        case LineStyle(color=color, pattern=pattern):
+            return f"{pattern} line {hex_of(color)}"
+        case DotStyle(color=color):
+            return f"dot {hex_of(color)}"

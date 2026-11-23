@@ -21,6 +21,7 @@ from faran_visualizer.driving import (
     Poses,
     Sizes,
     Strips,
+    Styles,
     boundaries,
     ego_body,
     ego_info,
@@ -37,7 +38,8 @@ from faran_visualizer.driving import (
     uncertainties,
 )
 from faran_visualizer.data import Plot, Plots, Road, Types
-from faran_visualizer.scene import Rendering, Points, Scene
+from faran_visualizer.scene import Renderer, Rendering, Points, Scene
+from faran_visualizer.theme import Theme
 
 from jaxtyping import Float
 
@@ -216,6 +218,7 @@ class MpccVisualizer:
         reference_sample_count: The number of points rendered along the reference path.
         boundary_sample_count: The number of points rendered along each corridor
             boundary.
+        styles: How each part of the scene is drawn.
         plots: Chooses the plots to show for each simulation result.
         geometry: Computes the positions and outlines that are rendered.
     """
@@ -223,6 +226,7 @@ class MpccVisualizer:
     inner: SimulationVisualizer
     reference_sample_count: int
     boundary_sample_count: int
+    styles: Styles
     plots: PlotSelection = _all_plots
     geometry: DrivingGeometry = field(default_factory=DrivingGeometry.create)
 
@@ -234,21 +238,29 @@ class MpccVisualizer:
         boundary_sample_count: int = 100,
         output_directory: OutputPath | None = None,
         plots: PlotSelection = _all_plots,
+        theme: Theme | None = None,
+        renderer: Renderer | None = None,
     ) -> "MpccVisualizer":
         """Creates a visualizer that saves visualizations in
-        `<output_directory>/<output>`. Without `output_directory`, it uses the
-        configured output directory."""
+        `<output_directory>/<output>`, in the colors of `theme`, with `renderer`.
+        Omitted configuration values are taken from the global configuration."""
+        inner = SimulationVisualizer.create(
+            output=output,
+            output_directory=output_directory,
+            theme=theme,
+            renderer=renderer,
+        )
         return MpccVisualizer(
-            inner=SimulationVisualizer.create(
-                output=output, output_directory=output_directory
-            ),
+            inner=inner,
             reference_sample_count=reference_sample_count,
             boundary_sample_count=boundary_sample_count,
+            styles=Styles.of(inner.theme),
             plots=plots,
         )
 
     async def __call__(self, data: MpccSimulationResult, *, key: str) -> None:
-        """Saves the simulation as a visualization at `<output>/<key>.frn`."""
+        """Saves the simulation as a visualization at `<output>/<key>` with the
+        extension of the renderer."""
         await self.inner(self.scene_of(data), key=key)
 
     async def can_visualize(self, data: object) -> bool:
@@ -318,7 +330,6 @@ class MpccVisualizer:
                             Plot.Line(
                                 label="Lag Error",
                                 values=np.asarray(result.lag_errors).flatten(),
-                                color="#9b59b6",
                             )
                         ],
                         bounds=_symmetric_bounds(result.max_lag_error),
@@ -336,7 +347,8 @@ class MpccVisualizer:
             reference(
                 self.geometry.samples_of(
                     result.reference, sample_count=self.reference_sample_count
-                )
+                ),
+                styles=self.styles,
             ),
             *self._boundaries_from(result),
         ]
@@ -348,6 +360,7 @@ class MpccVisualizer:
         return road(
             surfaces=[self.geometry.lane_surface(lane) for lane in network.lanes],
             edges_by_pattern=self.geometry.marked_edges(network),
+            styles=self.styles,
         )
 
     def _boundaries_from(self, result: MpccSimulationResult) -> list[Rendering]:
@@ -362,6 +375,7 @@ class MpccVisualizer:
                 right=_positions_in(
                     boundary.right(sample_count=self.boundary_sample_count)
                 ),
+                styles=self.styles,
             )
         ]
 
@@ -369,7 +383,10 @@ class MpccVisualizer:
         x = np.asarray(result.states.physical.x())
         y = np.asarray(result.states.physical.y())
         return lambda step: [
-            traveled_path(self.geometry.traveled_positions(x=x, y=y, step=step))
+            traveled_path(
+                self.geometry.traveled_positions(x=x, y=y, step=step),
+                styles=self.styles,
+            )
         ]
 
     def _ego_body_part(self, result: MpccSimulationResult) -> FramePart:
@@ -386,6 +403,7 @@ class MpccVisualizer:
                 heading=heading[step : step + 1],
             ),
             shape=shape,
+            styles=self.styles,
         )
 
     def _ghost_part(
@@ -394,7 +412,7 @@ class MpccVisualizer:
         positions = self.geometry.positions_on(
             result.reference, path_parameters=path_parameters
         )
-        return lambda step: [ghost(positions[step : step + 1])]
+        return lambda step: [ghost(positions[step : step + 1], styles=self.styles)]
 
     def _path_parameters_from(self, result: MpccSimulationResult) -> Float[Array, " T"]:
         # NOTE: We assume the first virtual dimension is the path parameter.
@@ -405,7 +423,7 @@ class MpccVisualizer:
             return []
 
         return [
-            lambda step: optimal_plan(_positions_of(optimal[step])),
+            lambda step: optimal_plan(_positions_of(optimal[step]), styles=self.styles),
             *self._nominal_plan_parts(result),
         ]
 
@@ -413,7 +431,9 @@ class MpccVisualizer:
         if (nominal := result.nominal_trajectories) is None:
             return []
 
-        return [lambda step: nominal_plan(_positions_of(nominal[step]))]
+        return [
+            lambda step: nominal_plan(_positions_of(nominal[step]), styles=self.styles)
+        ]
 
     def _obstacle_parts(self, result: MpccSimulationResult) -> list[FramePart]:
         if (obstacles := result.obstacles) is None:
@@ -425,7 +445,7 @@ class MpccVisualizer:
         return [
             *self._forecast_parts(result),
             lambda step: obstacle_bodies(
-                self._present_at(obstacles, step=step), shape=shape
+                self._present_at(obstacles, step=step), shape=shape, styles=self.styles
             ),
             *self._observation_parts(result),
         ]
@@ -435,12 +455,15 @@ class MpccVisualizer:
             return []
 
         return [
-            lambda step: [uncertainties(self._ellipses_of(predicted[step]))],
+            lambda step: [
+                uncertainties(self._ellipses_of(predicted[step]), styles=self.styles)
+            ],
             lambda step: forecasts(
                 self.geometry.forecast_paths(
                     x=np.asarray(predicted[step].x()),
                     y=np.asarray(predicted[step].y()),
-                )
+                ),
+                styles=self.styles,
             ),
         ]
 
@@ -448,7 +471,11 @@ class MpccVisualizer:
         if (observed := result.obstacle_observations) is None:
             return []
 
-        return [lambda step: observations(self._present_at(observed, step=step))]
+        return [
+            lambda step: observations(
+                self._present_at(observed, step=step), styles=self.styles
+            )
+        ]
 
     def _present_at(self, obstacles: ObstacleStates, *, step: int) -> Poses:
         return self.geometry.present(
@@ -495,23 +522,19 @@ class MpccVisualizer:
             name="Risk",
             scale="log",
             lines=[
-                Plot.Line(label="Selected", values=selected, color="#e63946"),
-                Plot.Line(
-                    label="Median", values=np.median(risks, axis=1), color="#457b9d"
-                ),
+                Plot.Line(label="Selected", values=selected),
+                Plot.Line(label="Median", values=np.median(risks, axis=1)),
             ],
             bands=[
                 Plot.Band(
                     label="10-90%",
                     lower=np.percentile(risks, 10, axis=1),
                     upper=np.percentile(risks, 90, axis=1),
-                    color="#adb5bd",
                 ),
                 Plot.Band(
                     label="25-75%",
                     lower=np.percentile(risks, 25, axis=1),
                     upper=np.percentile(risks, 75, axis=1),
-                    color="#457b9d",
                 ),
             ],
         )

@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, Sequence
 
 from faran_visualizer.scene.animation import Color
 
@@ -21,17 +21,6 @@ NAMED_COLORS: Final = {
     "navy": "#000080",
 }
 
-LINE_PALETTE: Final = (
-    "#3498db",
-    "#e74c3c",
-    "#2ecc71",
-    "#9b59b6",
-    "#f39c12",
-    "#1abc9c",
-    "#e91e63",
-    "#795548",
-)
-
 
 class InvalidColorError(ValueError):
     """Raised when a color is neither a hex color nor a supported color name."""
@@ -50,11 +39,9 @@ def color(value: str, *, alpha: float = 1.0) -> Color:
     return Color(red=red, green=green, blue=blue, alpha=round(own_alpha * alpha))
 
 
-def line_color(value: str | None, *, index: int) -> Color:
+def line_color(value: str | None, *, index: int, palette: Sequence[str]) -> Color:
     """Returns the given color, or the palette color for the line at `index`."""
-    return color(
-        value if value is not None else LINE_PALETTE[index % len(LINE_PALETTE)]
-    )
+    return color(value if value is not None else palette[index % len(palette)])
 
 
 def full_hex_digits(value: str, *, original: str) -> str:

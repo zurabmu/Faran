@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>$title</title>
+        <style>
+            html,
+            body {
+                margin: 0;
+                height: 100%;
+                background: #0f0d17;
+            }
+
+            #animation {
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="animation"></div>
+        <script>$engine</script>
+        <script type="application/json" id="animation-data">$animation</script>
+        <script>
+            FaranCanvas.mountAnimation(
+                document.getElementById("animation"),
+                JSON.parse(document.getElementById("animation-data").textContent),
+                { autoplay: true, controls: true },
+            );
+        </script>
+    </body>
+</html>

@@ -9,6 +9,7 @@ from faran_visualizer.renderers.rerun.renderings import (
     log_scene_frame,
 )
 from faran_visualizer.renderers.rerun.info import log_info
+from faran_visualizer.renderers.rerun.legend import log_legend
 from faran_visualizer.renderers.rerun.layout import blueprint_for
 from faran_visualizer.renderers.rerun.timeline import Timeline
 from faran_visualizer.scene import Animation
@@ -32,5 +33,6 @@ def save(animation: Animation, *, name: str, to: Path) -> None:
     log_frames(stream, animation, timeline=timeline, patterns=patterns)
     log_info(stream, animation, timeline=timeline)
     log_charts(stream, animation, timeline=timeline)
+    log_legend(stream, animation)
     stream.flush()
     stream.disconnect()

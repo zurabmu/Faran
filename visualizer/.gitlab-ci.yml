@@ -13,3 +13,29 @@ include:
     file:
       - "/python/verify.yml"
       - "/python/publish.yml"
+
+build:engine:
+  stage: verify
+  image: node:22
+  needs: []
+  script:
+    - npm install -g pnpm
+    - cd visualizer/engine
+    - pnpm install --frozen-lockfile
+    - pnpm build
+  artifacts:
+    paths:
+      - visualizer/faran_visualizer/renderers/canvas/engine.js
+    expire_in: 1 day
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_TAG'
+
+test:
+  needs:
+    - job: build:engine
+      artifacts: true
+
+publish:pypi:
+  needs:
+    - job: build:engine
+      artifacts: true

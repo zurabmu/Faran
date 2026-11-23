@@ -70,6 +70,7 @@ doc = [
     "tqdm>=4.67.3",
     "zensical>=0.1.1",
     "pybtex>=0.26.1",
+    "citeproc-py>=0.9.0",
 ]
 test = [
     "anyio>=4.16.0",
@@ -79,7 +80,7 @@ test = [
     "pytest-subtests>=0.15.0",
     "pytest-watcher>=0.6.3",
     "pyneedy>=1.5.2",
-    "faran-visualizer",
+    "faran-visualizer[rerun]",
 ]
 benchmark = [
     "anyio>=4.16.0",
@@ -136,7 +137,7 @@ markers = [
 addopts = "-m 'not integration and not docs and not benchmark and not risk_benchmark'"
 
 [tool.pyright]
-include = ["faran", "tests/tasks", "tests/utilities", "tests/benchmarks", "tests/notebooks"]
+include = ["faran", "tests/tasks", "tests/utilities", "tests/benchmarks", "tests/notebooks", "docs/scripts", "docs/lab"]
 exclude = ["**/__pycache__", "tests/benchmarks/bench_risk.py"]
 
 [tool.ruff]

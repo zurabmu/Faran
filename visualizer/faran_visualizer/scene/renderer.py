@@ -5,12 +5,17 @@ from faran_visualizer.scene.animation import Animation
 
 
 class Renderer(Protocol):
+    @property
+    def extension(self) -> str:
+        """The file extension of the visualizations it saves, with the leading dot."""
+        ...
+
     def save(self, animation: Animation, *, to: Path) -> None:
         """Saves the animation as a visualization file that `view` and `show` can open."""
         ...
 
-    def view(self, visualizations: Sequence[Path], *, in_browser: bool) -> None:
-        """Opens the visualizations in a viewer and returns when the viewer closes."""
+    def view(self, visualizations: Sequence[Path]) -> None:
+        """Opens the visualizations in a viewer."""
         ...
 
     def show(self, visualization: Path) -> None:

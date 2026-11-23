@@ -5,22 +5,26 @@ from faran_visualizer.data import Plot, Plots, plots_in
 from faran_visualizer.scene.colors import color, line_color
 from faran_visualizer.scene.animation import Chart, Color, LineStyle, PlotLine
 from faran_visualizer.scene.styles import styles
+from faran_visualizer.theme import Theme
 
 from jaxtyping import Float
 
 import numpy as np
 
 
-def charts_from(plots: Plots, *, step_count: int) -> list[Chart]:
+def charts_from(plots: Plots, *, step_count: int, theme: Theme) -> list[Chart]:
     """Returns one chart per entry: a plot gets a chart of its own, and a
-    `Plot.Chart` renders all of its plots in one chart."""
+    `Plot.Chart` renders all of its plots in one chart. Lines and bands without a
+    color of their own take the colors of the theme."""
     return [
-        chart_of(entry, chart_id=str(index), step_count=step_count)
+        chart_of(entry, chart_id=str(index), step_count=step_count, theme=theme)
         for index, entry in enumerate(plots)
     ]
 
 
-def chart_of(entry: Plot | Plot.Chart, *, chart_id: str, step_count: int) -> Chart:
+def chart_of(
+    entry: Plot | Plot.Chart, *, chart_id: str, step_count: int, theme: Theme
+) -> Chart:
     plots = plots_in(entry)
     line_offsets = np.cumsum([0, *(len(plot.lines) for plot in plots)])
     return Chart(
@@ -31,14 +35,20 @@ def chart_of(entry: Plot | Plot.Chart, *, chart_id: str, step_count: int) -> Cha
         lines=[
             line
             for plot, offset in zip(plots, line_offsets)
-            for line in lines_of(plot, line_offset=int(offset), step_count=step_count)
+            for line in lines_of(
+                plot, line_offset=int(offset), step_count=step_count, theme=theme
+            )
         ],
     )
 
 
-def lines_of(plot: Plot, *, line_offset: int, step_count: int) -> list[PlotLine]:
+def lines_of(
+    plot: Plot, *, line_offset: int, step_count: int, theme: Theme
+) -> list[PlotLine]:
     guide_color = line_color(
-        plot.lines[0].color if plot.lines else None, index=line_offset
+        plot.lines[0].color if plot.lines else None,
+        index=line_offset,
+        palette=theme.lines,
     )
     return [
         *(
@@ -46,7 +56,9 @@ def lines_of(plot: Plot, *, line_offset: int, step_count: int) -> list[PlotLine]
                 name=line.label,
                 values=line.values,
                 style=LineStyle(
-                    color=line_color(line.color, index=line_offset + index),
+                    color=line_color(
+                        line.color, index=line_offset + index, palette=theme.lines
+                    ),
                     width=styles.line_width,
                 ),
             )
@@ -56,7 +68,7 @@ def lines_of(plot: Plot, *, line_offset: int, step_count: int) -> list[PlotLine]
             bound_line(bound, color=guide_color, step_count=step_count)
             for bound in plot.bounds
         ),
-        *(line for band in plot.bands for line in band_lines(band)),
+        *(line for band in plot.bands for line in band_lines(band, theme=theme)),
     ]
 
 
@@ -68,10 +80,10 @@ def bound_line(bound: Plot.Bound, *, color: Color, step_count: int) -> PlotLine:
     )
 
 
-def band_lines(band: Plot.Band) -> Sequence[PlotLine]:
+def band_lines(band: Plot.Band, *, theme: Theme) -> Sequence[PlotLine]:
     style = LineStyle(
         color=color(
-            band.color if band.color is not None else styles.band_color,
+            band.color if band.color is not None else theme.bands,
             alpha=styles.band_alpha,
         ),
         width=styles.guide_width,

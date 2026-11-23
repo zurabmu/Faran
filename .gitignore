@@ -33,9 +33,26 @@ node_modules/
 
 # Documentation build
 site/
+docs/assets/pyodide/faran-*.whl
+docs/assets/pyodide/faran-wheel.txt
+docs/assets/pyodide/faran_visualizer-*.whl
+docs/assets/pyodide/visualizer-wheel.txt
+docs/assets/pyodide/lab.zip
 
 # Generated notebooks
 notebooks/*.ipynb
 
 # Agent Files
 CODEBASE.md
+
+# Documentation components build
+docs/javascripts/ui/
+docs/assets/logo.svg
+docs/assets/logo-mark.svg
+docs/assets/favicon.svg
+docs/assets/favicon.ico
+docs/assets/apple-touch-icon.png
+docs/assets/katex/
+
+# Canvas engine bundle, built from visualizer/engine with `just visualizer-engine`
+visualizer/faran_visualizer/renderers/canvas/engine.js

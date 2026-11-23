@@ -15,14 +15,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for using the NumPy backend without JAX installed, which also makes Faran usable in Pyodide.
 - `Scene`, `render` and `Info` for visualizing any simulation, not only vehicles on a road. A scene describes the renderings of each step, the plots and the info table, and `SimulationVisualizer` saves it as a visualization.
 - `MpccVisualizer.create(plots=...)` for choosing the plots to include in the visualization of the simulation.
+- `Theme` for the colors of a visualization. Pass it to `configure`, or the specific visualizer.
+- `CanvasRenderer`, a renderer for `faran-visualizer` that saves visualizations as `<key>.json` and draws them in the browser with a canvas engine. Choose a renderer with `configure(renderer=...)`, `SimulationVisualizer.create(renderer=...)` or `MpccVisualizer.create(renderer=...)`, when generating a visualization. `view` and `show` pick the right renderer automatically.
 
 ### Changed
 
 - The step function of the MPPI planner for the JAX backend can be compiled as a single graph. This makes one step of the JAX implementation about 50% faster.
 - **Breaking:** JAX, Equinox and Flax are no longer installed by default. Install `faran[jax]` (or `faran[cuda]`) to use the JAX backend.
-- **Breaking:** `faran-visualizer` creates visualizations (`<key>.frn`) instead of HTML and JSON files. To view them, use `faran-visualizer view <key>.frn`. It no longer needs Node.js.
+- **Breaking:** `faran-visualizer` now longer generated standalone HTML files automatically and only a JSON file is generated. To view the visualization, use `faran-visualizer view <key>.json`.
 - **Breaking:** `faran-visualizer` has a new plots API. Plots are passed as `plots` instead of `additional_plots`, and `Plot` replaces `Plot.Additional`. A `Plot` has any number of lines, bands and bounds, `Plot.line` creates a plot with one line, and `Plot.Chart` renders several plots in one chart with a shared y axis.
+- The lag error and risk plots of `MpccVisualizer` take their line and band colors from the theme instead of fixed colors.
 - **Breaking:** `SimulationVisualizer` takes a `Scene` instead of a `Visualizable.SimulationResult`. Use `MpccSimulationResult` for MPCC simulations, or describe a `Scene` for anything else. `MpccVisualizer.extract` is renamed to `scene_of` and returns that `Scene`, and `SimulationVisualizer` saves to `simulation/` by default instead of `mpcc-simulation/`.
+- The MPCC plan is drawn dashed and the reference path dotted in visualizations.
 - **Breaking:** Collectors are now backend-specific. Import them from `faran.numpy` or `faran.jax` (e.g. `from faran.jax import collectors`) instead of from `faran` directly.
 
 ### Fixed

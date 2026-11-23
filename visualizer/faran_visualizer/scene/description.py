@@ -22,34 +22,40 @@ class render:
     def lines(
         *,
         name: str,
+        label: str,
         strips: Sequence[Points],
         color: str,
         width: float = 2.0,
         pattern: LinePattern = "solid",
     ) -> Rendering:
         """Renders polylines through the points of each strip. `width` is in screen
-        points.
+        points. `label` is the text of the legend entry, which renderings with the same
+        label share.
 
         Raises:
             InvalidColorError: If the color is not supported.
         """
         return Lines(
             name=name,
+            label=label,
             strips=strips,
             style=LineStyle(color=color_from(color), width=width, pattern=pattern),
         )
 
     @staticmethod
     def dots(
-        *, name: str, positions: Points, color: str, size: float = 4.0
+        *, name: str, label: str, positions: Points, color: str, size: float = 4.0
     ) -> Rendering:
         """Renders a dot at each position. `size` is the dot diameter in screen points.
+        `label` is the text of the legend entry, which renderings with the same label
+        share.
 
         Raises:
             InvalidColorError: If the color is not supported.
         """
         return Dots(
             name=name,
+            label=label,
             positions=positions,
             style=DotStyle(color=color_from(color), size=size),
         )

@@ -4,15 +4,19 @@ from faran_visualizer.data import plots_in
 from faran_visualizer.scene.charts import charts_from
 from faran_visualizer.scene.description import Scene
 from faran_visualizer.scene.info import rows_at
+from faran_visualizer.scene.legend import legend_of
 from faran_visualizer.scene.animation import Animation, Rendering, Frame
+from faran_visualizer.scene.colors import color
+from faran_visualizer.theme import Theme
 
 
 class InconsistentRenderingsError(ValueError):
     """Raised when the steps of a scene render differently named renderings."""
 
 
-def animation_from(scene: Scene) -> Animation:
-    """Renders every step of the scene and resolves its plots and info table.
+def animation_from(scene: Scene, *, theme: Theme) -> Animation:
+    """Renders every step of the scene and resolves its plots and info table, in the
+    colors of the theme where the scene sets none.
 
     Raises:
         InconsistentRenderingsError: If a step renders renderings with other names, or in
@@ -23,14 +27,20 @@ def animation_from(scene: Scene) -> Animation:
     check_names(frames)
     return Animation(
         time_step=scene.time_step,
+        background_color=color(theme.background),
         background=scene.background,
         frames=frames,
-        charts=charts_from(scene.plots, step_count=scene.step_count),
+        charts=charts_from(scene.plots, step_count=scene.step_count, theme=theme),
+        legend=legend_of([*scene.background, *first_renderings(frames)]),
     )
 
 
 def frame_at(scene: Scene, *, step: int) -> Frame:
     return Frame(renderings=scene.at_step(step), info=rows_at(scene.info, step=step))
+
+
+def first_renderings(frames: Sequence[Frame]) -> Sequence[Rendering]:
+    return frames[0].renderings if frames else []
 
 
 def check_step_counts(scene: Scene) -> None:

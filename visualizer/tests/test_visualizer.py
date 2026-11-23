@@ -1,3 +1,4 @@
+from dataclasses import replace
 from pathlib import Path
 
 from faran_visualizer import (
@@ -5,7 +6,10 @@ from faran_visualizer import (
     InconsistentRenderingsError,
     InvalidColorError,
     Plot,
+    RerunRenderer,
     Scene,
+    Theme,
+    configure,
     render,
     visualizer,
 )
@@ -19,7 +23,9 @@ import numpy as np
 async def test_that_the_visualization_is_saved_at_the_correct_path(
     tmp_path: Path,
 ) -> None:
-    visualize = visualizer.simulation(output="results", output_directory=tmp_path)
+    visualize = visualizer.simulation(
+        output="results", output_directory=tmp_path, renderer=RerunRenderer()
+    )
 
     await visualize(Scene(time_step=0.1, step_count=1), key="run")
 
@@ -32,7 +38,7 @@ async def test_that_the_visualization_is_saved_at_the_correct_path(
         (candidate := Scene(time_step=0.1, step_count=1), can_visualize := True),
         (
             candidate := render.dots(
-                name="dot", positions=np.array([[0.0, 0.0]]), color="red"
+                name="dot", label="dot", positions=np.array([[0.0, 0.0]]), color="red"
             ),
             can_visualize := False,
         ),
@@ -55,9 +61,14 @@ async def test_that_the_renderings_of_each_step_are_shown(
         time_step=0.1,
         step_count=3,
         at_step=lambda step: [
-            render.lines(name="path", strips=[positions[: step + 1]], color="red"),
+            render.lines(
+                name="path", label="path", strips=[positions[: step + 1]], color="red"
+            ),
             render.dots(
-                name="robot", positions=positions[step : step + 1], color="red"
+                name="robot",
+                label="robot",
+                positions=positions[step : step + 1],
+                color="red",
             ),
         ],
     )
@@ -84,6 +95,7 @@ async def test_that_the_background_is_shown_at_every_step(
         background=[
             render.lines(
                 name="reference",
+                label="reference",
                 strips=[np.array([[0.0, 0.0], [10.0, 0.0]])],
                 color="gray",
             )
@@ -105,7 +117,10 @@ async def test_that_renderings_that_change_between_steps_are_rejected(
         step_count=2,
         at_step=lambda step: [
             render.dots(
-                name=f"robot {step}", positions=np.array([[0.0, 0.0]]), color="red"
+                name=f"robot {step}",
+                label=f"robot {step}",
+                positions=np.array([[0.0, 0.0]]),
+                color="red",
             )
         ],
     )
@@ -245,7 +260,12 @@ async def test_that_supported_colors_are_accepted(
         time_step=0.1,
         step_count=1,
         at_step=lambda step: [
-            render.dots(name="robot", positions=np.array([[0.0, 0.0]]), color=color)
+            render.dots(
+                name="robot",
+                label="robot",
+                positions=np.array([[0.0, 0.0]]),
+                color=color,
+            )
         ],
     )
 
@@ -262,7 +282,12 @@ async def test_that_colors_that_are_not_supported_are_rejected(
         time_step=0.1,
         step_count=1,
         at_step=lambda step: [
-            render.dots(name="robot", positions=np.array([[0.0, 0.0]]), color=color)
+            render.dots(
+                name="robot",
+                label="robot",
+                positions=np.array([[0.0, 0.0]]),
+                color=color,
+            )
         ],
     )
 
@@ -284,3 +309,115 @@ async def test_that_the_info_value_of_each_step_is_shown(
     assert visualization.info(at="Altitude", step=0) == approx(1.0)
     assert visualization.info(at="Altitude", step=1) == approx(2.0)
     assert visualization.info(at="Altitude", step=2) == approx(3.0)
+
+
+def test_that_a_visualizer_uses_the_globally_configured_theme_when_none_is_given(
+    tmp_path: Path,
+) -> None:
+    theme = replace(Theme.default(), background="#20192b")
+    configure(output_directory=tmp_path, theme=theme)
+
+    try:
+        assert visualizer.simulation().theme == theme
+        assert visualizer.mpcc().inner.theme == theme
+    finally:
+        configure(output_directory=tmp_path)
+
+
+async def test_that_renderings_with_the_same_label_share_one_legend_entry(
+    visualize: Visualize,
+) -> None:
+    scene = Scene(
+        time_step=0.1,
+        step_count=1,
+        at_step=lambda step: [
+            render.lines(
+                name="obstacles/bodies",
+                label="Obstacles",
+                strips=[np.array([[0.0, 0.0], [1.0, 0.0]])],
+                color="red",
+            ),
+            render.lines(
+                name="obstacles/headings",
+                label="Obstacles",
+                strips=[np.array([[0.0, 0.0], [0.5, 0.0]])],
+                color="red",
+            ),
+        ],
+    )
+
+    visualization = await visualize.scene(scene)
+
+    assert visualization.legend() == ["Obstacles"]
+
+
+async def test_that_the_legend_lists_labels_in_the_order_they_first_appear(
+    visualize: Visualize,
+) -> None:
+    scene = Scene(
+        time_step=0.1,
+        step_count=1,
+        background=[
+            render.lines(
+                name="reference",
+                label="Reference path",
+                strips=[np.array([[0.0, 0.0], [10.0, 0.0]])],
+                color="gray",
+            )
+        ],
+        at_step=lambda step: [
+            render.lines(
+                name="plan",
+                label="Plan",
+                strips=[np.array([[0.0, 0.0], [1.0, 0.0]])],
+                color="blue",
+            ),
+            render.dots(
+                name="robot",
+                label="Robot",
+                positions=np.array([[0.0, 0.0]]),
+                color="red",
+            ),
+        ],
+    )
+
+    visualization = await visualize.scene(scene)
+
+    assert visualization.legend() == ["Reference path", "Plan", "Robot"]
+
+
+async def test_that_a_legend_sample_shows_the_first_line_and_dot_of_its_label(
+    visualize: Visualize,
+) -> None:
+    scene = Scene(
+        time_step=0.1,
+        step_count=1,
+        at_step=lambda step: [
+            render.dots(
+                name="plan/points",
+                label="Plan",
+                positions=np.array([[0.0, 0.0]]),
+                color="#00ff00",
+            ),
+            render.lines(
+                name="plan",
+                label="Plan",
+                strips=[np.array([[0.0, 0.0], [1.0, 0.0]])],
+                color="#0000ff",
+                pattern="dashed",
+            ),
+            render.lines(
+                name="plan/outline",
+                label="Plan",
+                strips=[np.array([[0.0, 0.0], [1.0, 0.0]])],
+                color="#ff0000",
+            ),
+        ],
+    )
+
+    visualization = await visualize.scene(scene)
+
+    assert visualization.legend_sample(at="Plan") == [
+        "dashed line #0000ffff",
+        "dot #00ff00ff",
+    ]

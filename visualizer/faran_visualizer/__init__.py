@@ -1,4 +1,5 @@
 from .array import Array as Array, JaxArray as JaxArray
+from .theme import Theme as Theme
 from .data import (
     Types as Types,
     Road as Road,
@@ -31,4 +32,11 @@ from .api import (
     configure as configure,
     show as show,
     view as view,
+    UnknownVisualizationError as UnknownVisualizationError,
 )
+from .renderers import (
+    CanvasRenderer as CanvasRenderer,
+    EngineMissingError as EngineMissingError,
+    RerunRenderer as RerunRenderer,
+)
+from .scene import Renderer as Renderer

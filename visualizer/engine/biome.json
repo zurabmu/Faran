@@ -1,0 +1,25 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
+	"files": { "includes": ["src/**/*.ts", "src/**/*.svelte", "tests/**/*.ts", "vite.config.ts"] },
+	"formatter": { "enabled": false },
+	"assist": { "enabled": false },
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "none",
+			"style": {
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"patterns": [
+							{
+								"group": ["./**", "../**"],
+								"message": "Import through @/, @test/ or @faran/engine instead of a relative path."
+							}
+						]
+					}
+				}
+			}
+		}
+	}
+}

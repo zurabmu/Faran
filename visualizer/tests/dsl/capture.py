@@ -5,6 +5,7 @@ from pathlib import Path
 from faran_visualizer import (
     Scene,
     SimulationVisualizer,
+    Theme,
 )
 from faran_visualizer.scene import Animation
 from tests.dsl.visualization import Visualization
@@ -16,10 +17,14 @@ class CapturingRenderer:
 
     animations: list[Animation] = field(default_factory=list)
 
+    @property
+    def extension(self) -> str:
+        return ".captured"
+
     def save(self, animation: Animation, *, to: Path) -> None:
         self.animations.append(animation)
 
-    def view(self, visualizations: Sequence[Path], *, in_browser: bool) -> None:
+    def view(self, visualizations: Sequence[Path]) -> None:
         raise NotImplementedError
 
     def show(self, visualization: Path) -> None:
@@ -32,11 +37,13 @@ class Visualize:
 
     directory: Path
 
-    async def scene(self, scene: Scene) -> Visualization:
+    async def scene(
+        self, scene: Scene, *, theme: Theme = Theme.default()
+    ) -> Visualization:
         renderer = CapturingRenderer()
-        await SimulationVisualizer(output=self.directory, renderer=renderer)(
-            scene, key="scene"
-        )
+        await SimulationVisualizer(
+            output=self.directory, renderer=renderer, theme=theme
+        )(scene, key="scene")
         return visualization_from(renderer)
 
 
