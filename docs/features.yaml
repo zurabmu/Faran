@@ -1,0 +1,227 @@
+areas:
+- name: Backends
+  features:
+  - name: NumPy backend
+    status: available
+    description: Implements the full API with NumPy. It runs without JAX installed, so it also works in Pyodide.
+    links:
+    - text: Backends
+      href: backends.md
+  - name: JAX backend
+    status: available
+    description: Implements the same API with JAX, with JIT compilation and GPU support. Install it with the `jax` extra, or with the `cuda` extra for NVIDIA GPUs. The JAX planner compiles each planning step as a single graph.
+    links:
+    - text: Backends
+      href: backends.md
+  - name: Compiling your own functions
+    status: available
+    description: JAX backend only. `register` prepares JAX components, including components with state such as an obstacle history, to be passed to your own functions compiled with `nnx.jit`.
+    links:
+    - text: Compiling your own functions
+      href: backends.md#compiling-your-own-functions
+    - text: Compilation
+      href: ../api/types/index.md#compilation
+
+- name: Planners
+  features:
+  - name: MPPI
+    status: available
+    description: 'Model Predictive Path Integral control is an MPC algorithm that samples control sequences and averages them with weights computed from their costs. It needs no gradients or convexity, so it can solve many different MPC formulations, and the rollouts can be evaluated in parallel. Three factories configure it: `mppi.base` for any MPC problem, `mppi.augmented` for problems with additional virtual states and `mppi.mpcc` for MPCC.'
+    links:
+    - text: MPPI
+      href: ../api/mppi/index.md
+  - name: Savitzky-Golay filter
+    status: available
+    description: Smooths the optimal control sequence of each planning step by fitting a low-degree polynomial in a sliding window. Every MPPI factory accepts it as `filter_function`.
+    links:
+    - text: Filters
+      href: ../api/mppi/filter.md
+  - name: Additional planning algorithms
+    status: planned
+    description: For example iLQR.
+
+- name: MPC formulations
+  features:
+  - name: MPCC
+    status: available
+    description: Model Predictive Contouring Control splits the tracking error into contouring (lateral) and lag (longitudinal) components, and a virtual path parameter tracks the progress along the path. The path parameter can wrap around at the end of a closed path.
+    links:
+    - text: Concepts
+      href: concepts/mpcc.md
+    - text: Tracking costs
+      href: ../api/costs/tracking.md
+  - name: Additional MPC formulations
+    status: planned
+    description: For example waypoint tracking.
+
+- name: Dynamics models
+  features:
+  - name: Kinematic bicycle
+    status: available
+    description: 4-state model ($x, y, \theta, v$) with acceleration and steering inputs.
+    links:
+    - text: Bicycle model
+      href: ../api/model/bicycle.md
+  - name: Unicycle
+    status: available
+    description: 3-state model ($x, y, \theta$) with speed and angular velocity inputs.
+    links:
+    - text: Unicycle model
+      href: ../api/model/unicycle.md
+  - name: Integrator
+    status: available
+    description: Generic $n$-dimensional single integrator. The state can wrap around at its limits instead of being clamped. MPCC uses it for the path parameter.
+    links:
+    - text: Single integrator
+      href: ../api/model/integrator.md
+  - name: Models beyond mobile robots
+    status: planned
+    description: Components and application examples beyond mobile robots.
+
+- name: Samplers
+  features:
+  - name: Gaussian
+    status: available
+    description: Zero-mean Gaussian perturbations around a nominal control sequence, drawn independently for each time step.
+    links:
+    - text: Gaussian sampler
+      href: ../api/sampler/gaussian.md
+  - name: Halton spline
+    status: available
+    description: Halton quasi-random sequences mapped to a Gaussian distribution and interpolated over the horizon with cubic splines. The perturbations are smooth over time and have low discrepancy. With the JAX backend, the control dimension times the knot count can be at most 180.
+    links:
+    - text: Halton spline sampler
+      href: ../api/sampler/halton.md
+
+- name: Cost functions
+  features:
+  - name: Tracking
+    status: available
+    description: Contouring (lateral deviation from the reference path), lag (longitudinal deviation from the reference point) and progress (rewards forward motion along the path).
+    links:
+    - text: Tracking costs
+      href: ../api/costs/tracking.md
+  - name: Safety
+    status: available
+    description: Collision (proximity to obstacles via signed distance) and boundary (states approaching corridor edges).
+    links:
+    - text: Safety costs
+      href: ../api/costs/safety.md
+  - name: Comfort
+    status: available
+    description: Control smoothing (rate of change between consecutive inputs) and control effort (input magnitude).
+    links:
+    - text: Comfort costs
+      href: ../api/costs/comfort.md
+  - name: Risk metrics
+    status: available
+    description: 'Risk-aware collision costs with the [riskit](https://gitlab.com/risk-metrics/riskit) library: expected value, mean-variance, VaR, CVaR and entropic risk. A risk metric reduces the collision costs of a rollout over sampled obstacle states to one value.'
+    links:
+    - text: Risk metrics
+      href: ../api/costs/risk.md
+  - name: Preference
+    status: available
+    description: Converts a preference score for each rollout, computed by a function you provide, into a cost. A higher preference gives a lower cost.
+  - name: Combined costs
+    status: available
+    description: '`costs.combined` sums any number of cost functions into one.'
+    links:
+    - text: Combining costs
+      href: ../api/costs/index.md#combining-costs
+
+- name: Obstacles
+  features:
+  - name: Obstacle simulation
+    status: available
+    description: Simulators for static obstacles, for obstacles that move with constant velocity, and for a scene without obstacles.
+    links:
+    - text: Obstacle simulators
+      href: ../api/obstacles/simulator.md
+  - name: Observation handling
+    status: available
+    description: A noisy observer that adds Gaussian noise to observations, ID assignment with the Hungarian algorithm that matches detected obstacles to tracked ones, and a running history of observations aligned by obstacle ID.
+    links:
+    - text: Observers
+      href: ../api/obstacles/observer.md
+  - name: State estimation
+    status: available
+    description: Finite difference estimators for every model, a Kalman filter for the integrator model, and extended and unscented Kalman filters for the bicycle and unicycle models. Noise models estimate the process and observation noise covariances from the filter innovations and can clamp them to bounds.
+    links:
+    - text: State estimation
+      href: ../api/estimation/index.md
+    - text: Noise models
+      href: ../api/estimation/noise.md
+  - name: Motion prediction
+    status: available
+    description: The curvilinear predictor propagates estimated obstacle states with the obstacle variant of the bicycle, unicycle or integrator model, and propagates the covariance too when the estimator is a Kalman filter. The static predictor repeats the last observed state over the horizon. The predicting obstacle state provider combines a predictor with the observation history.
+    links:
+    - text: Motion prediction
+      href: ../api/predictor/index.md
+  - name: Obstacle state sampling
+    status: available
+    description: A Gaussian pose sampler draws obstacle poses from the predicted covariances for risk-aware collision costs.
+    links:
+    - text: Obstacle pose sampler
+      href: ../api/obstacles/index.md#obstacle-pose-sampler
+  - name: Distance computation
+    status: available
+    description: Circle-to-circle distance between multi-circle approximations, and SAT distance between convex polygon approximations.
+    links:
+    - text: Distance computation
+      href: ../api/obstacles/index.md#distance-computation
+
+- name: References and boundaries
+  features:
+  - name: Trajectories
+    status: available
+    description: Waypoints (a natural cubic spline through a sequence of 2D waypoints) and line (a straight segment between two endpoints), both parameterized by arc length.
+    links:
+    - text: Trajectories
+      href: ../api/trajectory/index.md
+  - name: Boundaries
+    status: available
+    description: Fixed-width corridors with symmetric or asymmetric constant width, and piecewise fixed-width corridors with widths that change at arc-length breakpoints.
+    links:
+    - text: Boundaries
+      href: ../api/boundary/index.md
+
+- name: Evaluation
+  features:
+  - name: Data collection
+    status: available
+    description: Collectors wrap planners, obstacle observers, obstacle state providers and risk metrics, and record their states, controls, trajectories, observations, forecasts and risks. With the JAX backend, the risk and forecast collectors also record inside compiled functions.
+    links:
+    - text: Collectors
+      href: ../api/collectors/index.md
+  - name: Evaluation metrics
+    status: available
+    description: 'Metrics for benchmarking, computed from collected data: collision, MPCC error, task completion, constraint violation and comfort. The metric registry caches each result and computes it again after new data is collected, so a simulation loop can read a metric at every step.'
+    links:
+    - text: Metrics
+      href: ../api/metrics/index.md
+
+- name: Tooling
+  features:
+  - name: Visualizer
+    status: available
+    description: '`faran-visualizer` saves a simulation as a visualization with renderings in the x-y plane, plots over time, an info table and a legend. `MpccSimulationResult` builds the scene of an MPCC simulation, and a `Scene` describes any other simulation. A `Theme` sets the colors.'
+    links:
+    - text: Visualizer
+      href: visualizer.md
+    - text: Visualizer API
+      href: ../api/visualizer/index.md
+  - name: Renderers
+    status: available
+    description: The canvas renderer, the default, saves `.json` files that a canvas engine draws in the browser, and needs no extra packages. The Rerun renderer saves `.frn` files for the Rerun viewer and needs the `rerun` extra. `faran-visualizer view` opens both kinds of files, and `show` shows them in a Jupyter notebook.
+    links:
+    - text: Renderers
+      href: visualizer.md#renderers
+  - name: Live snippets in the documentation
+    status: available
+    description: Pages of this documentation contain code snippets that you can edit and run in the browser. Pyodide runs the code with the NumPy backend, and the canvas engine plays its visualization.
+    links:
+    - text: 'Example: Halton spline sampler'
+      href: ../api/sampler/halton.md
+  - name: Less configuration code
+    status: planned
+    description: Planner configuration with less boilerplate.

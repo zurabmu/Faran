@@ -64,6 +64,8 @@ dev = [
     "ruff>=0.15.12",
 ]
 doc = [
+    "msgspec>=0.21.1",
+    "pyyaml>=6.0.3",
     "typi>=0.1.1",
     "mkdocstrings[python]>=1.0.4",
     "ipython>=9.13.0",
@@ -85,6 +87,7 @@ test = [
 benchmark = [
     "anyio>=4.16.0",
     "msgspec>=0.21.1",
+    "pyyaml>=6.0.3",
     "pytest-benchmark>=5.2.3",
     "rich>=15.0.0",
     "typer>=0.25.1",

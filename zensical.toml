@@ -197,6 +197,13 @@ show_docstring_yields = true
 [project.markdown_extensions."docs.extensions.citations"]
 bib_file = "docs/references.bib"
 
+[project.markdown_extensions."docs.extensions.columns"]
+
+[project.markdown_extensions."docs.extensions.equation"]
+
+[project.markdown_extensions."docs.extensions.features"]
+data_file = "docs/features.yaml"
+
 [project.markdown_extensions."pymdownx.highlight"]
 anchor_linenums = true
 line_spans = "__span"
