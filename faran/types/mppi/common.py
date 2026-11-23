@@ -169,11 +169,25 @@ class Weights(Protocol):
 
 @dataclass(kw_only=True, frozen=True)
 class DebugData[WeightsT]:
+    """Data for inspecting a planner step.
+
+    Attributes:
+        trajectory_weights: Softmax weight of each rollout.
+    """
+
     trajectory_weights: WeightsT
 
 
 @dataclass(frozen=True)
 class Control[InputSequenceT, WeightsT]:
+    """Control sequences that a planner step returns.
+
+    Attributes:
+        optimal: Weighted average of the sampled control sequences, after filtering.
+        nominal: Control sequence that the next planner step samples around.
+        debug: Data for inspecting the planner step.
+    """
+
     optimal: InputSequenceT
     nominal: InputSequenceT
     debug: DebugData[WeightsT]

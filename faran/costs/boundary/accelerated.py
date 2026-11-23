@@ -40,6 +40,16 @@ class JaxBoundaryCost[StateT](CostFunction[ControlInputBatch, StateT, JaxCosts])
         distance_threshold: float,
         weight: float,
     ) -> "JaxBoundaryCost[S]":
+        """Creates a hinge-loss cost that penalizes rollouts that come close to the
+        corridor boundary.
+
+        Args:
+            distance: Computes the signed distance to the corridor boundary, which
+                is positive inside the corridor.
+            distance_threshold: Distance to the boundary below which the cost
+                activates, in meters.
+            weight: Scales the hinge loss.
+        """
         return JaxBoundaryCost(
             distance=distance,
             distance_threshold=jnp.array(distance_threshold),

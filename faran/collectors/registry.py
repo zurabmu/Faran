@@ -104,6 +104,7 @@ class CollectorRegistry:
 
     @staticmethod
     def of(*args: Collector) -> "CollectorRegistry":
+        """Creates a registry of the given collectors."""
         registry = CollectorRegistry(collectors=(), _data=None)
         registry.collectors = tuple(
             registry._with_callback(collector)
@@ -114,11 +115,18 @@ class CollectorRegistry:
         return registry
 
     def on_modified(self, callback: OnModifyCallback) -> None:
+        """Registers a callback that runs whenever any of the collectors collects new data."""
         for collector in self.collectors:
             collector.on_modified(callback)
 
     @property
     def data(self) -> SimulationData:
+        """The collected data, keyed by collector key, and cut to the step count of the
+        collector with the fewest steps. Collectors without data are left out.
+
+        Warns:
+            NoCollectedDataWarning: For each collector that has not collected any data.
+        """
         if self._data is None:
             self._data = self._collect_data()
 

@@ -20,6 +20,12 @@ class JaxGaussianObstacle2dPoseSampler(
 
     @staticmethod
     def create(*, seed: int = 42) -> "JaxGaussianObstacle2dPoseSampler":
+        """Creates a sampler that draws obstacle poses from the Gaussian distributions of
+        the predicted obstacle states.
+
+        Args:
+            seed: Seed of the random number generator.
+        """
         return JaxGaussianObstacle2dPoseSampler(
             key=pytree.variable(jax.random.key(seed))
         )

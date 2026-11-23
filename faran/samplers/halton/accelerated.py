@@ -73,6 +73,19 @@ class JaxHaltonSplineSampler[
         to_batch: JaxControlInputBatchCreator,
         seed: int,
     ) -> "JaxHaltonSplineSampler":
+        """Creates a sampler generating temporally smooth perturbations using Halton
+        sequences and cubic splines around the specified control input sequence.
+
+        Args:
+            standard_deviation: Standard deviation of the perturbations, as one
+                value for all control dimensions or one value per dimension.
+            rollout_count: Number of rollouts M.
+            to_batch: Wraps the sampled array in a control input batch.
+            knot_count: Number of spline knots over the horizon. Must be at least 2
+                and at most the horizon length. The product of `knot_count` and the
+                control dimension can be at most 180.
+            seed: Index of the first point of the Halton sequence.
+        """
         return JaxHaltonSplineSampler(
             standard_deviation=standardize.std(standard_deviation),
             to_batch=to_batch,

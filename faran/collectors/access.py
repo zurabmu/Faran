@@ -11,7 +11,17 @@ from faran.types import (
 
 
 class access:
-    """Namespace of typed accessors for retrieving simulation data by key."""
+    """Namespace of typed accessors for retrieving simulation data by key.
+
+    Attributes:
+        states: Initial state of each planning step.
+        controls: Control output of each planning step.
+        risks: Risk values of each evaluation.
+        trajectories: Rollout state trajectories of each planning step.
+        obstacle_states: Obstacle states before observation.
+        obstacle_observations: Observed obstacle states.
+        obstacle_forecasts: Predicted obstacle states of each planning step.
+    """
 
     states: Final = SimulationDataAccessor.create(StateSequence, key="states")
     controls: Final = SimulationDataAccessor.create(Sequence[Control], key="controls")

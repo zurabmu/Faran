@@ -551,7 +551,21 @@ class NumPyBicycleModel(
         steering_limits: tuple[float, float] | None = None,
         acceleration_limits: tuple[float, float] | None = None,
     ) -> "NumPyBicycleModel":
+        """Creates a kinematic bicycle model, integrated with the explicit Euler method.
 
+        Args:
+            time_step_size: Integration step, in seconds.
+            wheelbase: Distance between the axles, in meters.
+            rear_axle_distance: Distance from the reference point to the rear axle,
+                in meters.
+            speed_limits: Bounds that the speed is clamped to after each step, in
+                m/s. Without limits, the speed is not clamped.
+            steering_limits: Bounds that the steering angle is clamped to after each
+                step, in radians. Without limits, the steering angle is not clamped.
+            acceleration_limits: Bounds that the acceleration input is clamped to
+                after each step, in m/s². Without limits, the acceleration input is
+                not clamped.
+        """
         return NumPyBicycleModel(
             _time_step_size=time_step_size,
             wheelbase=wheelbase,
@@ -877,6 +891,15 @@ class NumPyFiniteDifferenceBicycleStateEstimator(
     def create(
         *, time_step_size: float, wheelbase: float, rear_axle_distance: float = 0.0
     ) -> "NumPyFiniteDifferenceBicycleStateEstimator":
+        """Creates a bicycle state estimator that differentiates consecutive pose
+        observations.
+
+        Args:
+            time_step_size: Time between consecutive observations, in seconds.
+            wheelbase: Distance between the axles, in meters.
+            rear_axle_distance: Distance from the reference point to the rear axle,
+                in meters.
+        """
         return NumPyFiniteDifferenceBicycleStateEstimator(
             time_step_size=time_step_size,
             wheelbase=wheelbase,

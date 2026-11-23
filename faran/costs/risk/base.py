@@ -53,6 +53,16 @@ class RisKitRiskMetric[
         to_risk: RiskConverter[RKR, R],
         name: str,
     ) -> "RisKitRiskMetric[SB, SOS, R, RKR, C, A]":
+        """Creates a risk metric computed using the `riskit` library. The factories
+        in `risk` create these, so most code does not call this directly.
+
+        Args:
+            backend: The riskit backend that matches the array backend.
+            creator: Creates the riskit metric from a cost function and the backend.
+            to_risk: Converts the riskit result to the risk that the collision cost
+                uses.
+            name: Name of the metric.
+        """
         return RisKitRiskMetric(
             backend=backend, creator=creator, to_risk=to_risk, _name=name
         )

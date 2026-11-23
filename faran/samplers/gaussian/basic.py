@@ -37,6 +37,13 @@ class NumPyGaussianSampler[
     ) -> "NumPyGaussianSampler":
         """Creates a sampler generating Gaussian noise around the specified control input
         sequence.
+
+        Args:
+            standard_deviation: Standard deviation of the perturbations, as one
+                value for all control dimensions or one value per dimension.
+            rollout_count: Number of rollouts M.
+            to_batch: Wraps the sampled array in a control input batch.
+            seed: Seed of the random number generator.
         """
         return NumPyGaussianSampler(
             standard_deviation=standardize.std(standard_deviation),

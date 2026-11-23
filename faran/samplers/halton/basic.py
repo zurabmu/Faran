@@ -45,6 +45,15 @@ class NumPyHaltonSplineSampler[
     ) -> "NumPyHaltonSplineSampler":
         """Creates a sampler generating temporally smooth perturbations using Halton
         sequences and cubic splines around the specified control input sequence.
+
+        Args:
+            standard_deviation: Standard deviation of the perturbations, as one
+                value for all control dimensions or one value per dimension.
+            rollout_count: Number of rollouts M.
+            to_batch: Wraps the sampled array in a control input batch.
+            knot_count: Number of spline knots over the horizon. Must be at least 2
+                and at most the horizon length.
+            seed: Seed of the Halton sequence's scrambling.
         """
         return NumPyHaltonSplineSampler(
             standard_deviation=standardize.std(standard_deviation),

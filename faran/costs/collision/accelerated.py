@@ -123,6 +123,22 @@ class JaxCollisionCost[
         weight: float,
         metric: JaxRiskMetric[S, OS, SOS] | None = None,
     ) -> "JaxCollisionCost[S, OS, SOS, D]":
+        """Creates a hinge-loss collision cost that penalizes rollouts whose signed
+        distance to an obstacle falls below a threshold.
+
+        Args:
+            obstacle_states: Provides the predicted obstacle states over the
+                planning horizon.
+            sampler: Draws obstacle state samples from the predicted distribution
+                for the risk metric.
+            distance: Computes the signed distances between the ego parts and the
+                sampled obstacles. Negative distances mean overlap.
+            distance_threshold: Distance below which the cost of each ego part
+                activates, in meters.
+            weight: Scales the hinge loss.
+            metric: The risk metric to be used when aggregating the distribution
+                information about the future obstacle states into a single cost.
+        """
         return JaxCollisionCost(
             obstacle_states=obstacle_states,
             sampler=sampler,

@@ -228,6 +228,20 @@ class JaxHungarianObstacleIdAssignment[
         orientation_cutoff: float | None = None,
         start_id: int = 0,
     ) -> "JaxHungarianObstacleIdAssignment":
+        """Creates an ID assignment that matches detected obstacles to tracked obstacles
+        with the Hungarian algorithm.
+
+        Args:
+            position_extractor: Extracts the obstacle positions from detections and
+                history.
+            orientation_extractor: Extracts the obstacle orientations, which the
+                assignment then also matches. Requires `orientation_cutoff`.
+            cutoff: Largest position distance at which a detection matches a tracked
+                obstacle, in meters. Detections farther away get new IDs.
+            orientation_cutoff: Largest orientation difference at which a detection
+                matches, in radians. Requires `orientation_extractor`.
+            start_id: ID given to the first new obstacle.
+        """
         return JaxHungarianObstacleIdAssignment(
             inner=NumPyHungarianObstacleIdAssignment.create(
                 position_extractor=PositionExtractorAdapter.adapt(position_extractor),

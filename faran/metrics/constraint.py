@@ -39,10 +39,12 @@ class ConstraintViolationMetricResult:
 
     @cached_property
     def violations(self) -> Bool[Array, " T"]:
+        """Whether the vehicle was outside the corridor at each time step."""
         return self.boundary_distances <= 0
 
     @cached_property
     def violation_detected(self) -> bool:
+        """Whether the vehicle was outside the corridor at any time step."""
         return bool(self.violations.any())
 
 
@@ -63,6 +65,15 @@ class ConstraintViolationMetric[StateBatchT, PositionsT, LateralT, BoundaryDista
         boundary: BoundaryDistanceExtractor[S, BD],
         position_extractor: PositionExtractor[S, P],
     ) -> "ConstraintViolationMetric[S, P, L, BD]":
+        """Creates a metric that records the distances to the corridor boundary and flags
+        the time steps where the vehicle is outside the corridor.
+
+        Args:
+            reference: Reference trajectory that the lateral deviations are measured
+                from.
+            boundary: Computes the signed distances to the corridor boundary.
+            position_extractor: Extracts the positions from the collected states.
+        """
         return ConstraintViolationMetric(
             reference=reference,
             boundary=boundary,

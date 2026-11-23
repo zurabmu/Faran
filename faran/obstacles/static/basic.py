@@ -29,6 +29,13 @@ class NumPyStaticObstacleSimulator(
     def create(
         *, positions: Float[Array, "K 2"], headings: Float[Array, " K"] | None = None
     ) -> "NumPyStaticObstacleSimulator":
+        """Creates a simulator of obstacles that do not move.
+
+        Args:
+            positions: Position of each obstacle, in meters.
+            headings: Heading of each obstacle, in radians. Without headings, all
+                headings are zero.
+        """
         count = positions.shape[0]
         headings = headings if headings is not None else np.zeros(shape=(count,))
 

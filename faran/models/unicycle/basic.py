@@ -519,7 +519,16 @@ class NumPyUnicycleModel(
         speed_limits: tuple[float, float] | None = None,
         angular_velocity_limits: tuple[float, float] | None = None,
     ) -> "NumPyUnicycleModel":
+        """Creates a unicycle model, integrated with the explicit Euler method.
 
+        Args:
+            time_step_size: Integration step, in seconds.
+            speed_limits: Bounds that the speed input is clamped to after each step,
+                in m/s. Without limits, the speed input is not clamped.
+            angular_velocity_limits: Bounds that the angular velocity input is
+                clamped to after each step, in rad/s. Without limits, the angular
+                velocity input is not clamped.
+        """
         return NumPyUnicycleModel(
             _time_step_size=time_step_size,
             speed_limits=speed_limits if speed_limits is not None else NO_LIMITS,
@@ -796,6 +805,12 @@ class NumPyFiniteDifferenceUnicycleStateEstimator(
     def create(
         *, time_step_size: float
     ) -> "NumPyFiniteDifferenceUnicycleStateEstimator":
+        """Creates a unicycle state estimator that differentiates consecutive pose
+        observations.
+
+        Args:
+            time_step_size: Time between consecutive observations, in seconds.
+        """
         return NumPyFiniteDifferenceUnicycleStateEstimator(
             time_step_size=time_step_size
         )

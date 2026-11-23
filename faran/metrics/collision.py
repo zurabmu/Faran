@@ -33,14 +33,17 @@ class CollisionMetricResult:
 
     @cached_property
     def min_distances(self) -> Float[Array, " V"]:
+        """Minimum distance of each ego part over all time steps."""
         return self.distances.min(axis=0)
 
     @cached_property
     def collisions(self) -> Bool[Array, "T V"]:
+        """Whether each ego part collided at each time step."""
         return self.distances <= self.distance_threshold
 
     @cached_property
     def collision_detected(self) -> bool:
+        """Whether any ego part collided at any time step."""
         return bool(self.collisions.any())
 
 
@@ -59,6 +62,15 @@ class CollisionMetric[StateBatchT, SampledObstacleStatesT](
         distance_threshold: float,
         distance: DistanceExtractor[S, SOS, Distance],
     ) -> "CollisionMetric":
+        """Creates a metric that records the distances between the ego vehicle and the
+        obstacles and flags collisions.
+
+        Args:
+            distance_threshold: Distance at or below which a collision is
+                registered, in meters.
+            distance: Computes the signed distances between the ego parts and the
+                obstacles.
+        """
         return CollisionMetric(distance=distance, distance_threshold=distance_threshold)
 
     def compute(self, data: SimulationData) -> CollisionMetricResult:

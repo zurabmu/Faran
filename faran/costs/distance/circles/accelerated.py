@@ -47,6 +47,23 @@ class JaxCircleDistanceExtractor[StateT, SampledObstacleStatesT](
         obstacle_position_extractor: JaxSampledObstaclePositionExtractor[SOS],
         obstacle_heading_extractor: JaxSampledObstacleHeadingExtractor[SOS],
     ) -> "JaxCircleDistanceExtractor[S, SOS]":
+        """Creates an extractor of signed distances between the ego vehicle and sampled
+        obstacles, which approximates the geometry of the ego and obstacles using circles.
+        Negative distances indicate overlap.
+
+        Args:
+            ego: Circles approximating the ego vehicle, relative to its reference
+                point.
+            obstacle: Circles approximating each obstacle, relative to the
+                obstacle's position.
+            position_extractor: Extracts the ego positions from a state batch.
+            heading_extractor: Extracts the ego headings from a state batch, in
+                radians.
+            obstacle_position_extractor: Extracts the positions of the sampled
+                obstacle states.
+            obstacle_heading_extractor: Extracts the headings of the sampled
+                obstacle states, in radians.
+        """
         return JaxCircleDistanceExtractor(
             ego_origins=jnp.asarray(ego.origins),
             ego_radii=jnp.asarray(ego.radii),

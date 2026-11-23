@@ -22,6 +22,12 @@ class NumPyGaussianObstacle2dPoseSampler(
 
     @staticmethod
     def create(*, seed: int = 42) -> "NumPyGaussianObstacle2dPoseSampler":
+        """Creates a sampler that draws obstacle poses from the Gaussian distributions of
+        the predicted obstacle states.
+
+        Args:
+            seed: Seed of the random number generator.
+        """
         return NumPyGaussianObstacle2dPoseSampler(rng=np.random.default_rng(seed))
 
     def __call__(

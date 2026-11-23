@@ -23,6 +23,13 @@ class JaxDynamicObstacleSimulator(JaxObstacleSimulator[JaxObstacle2dPosesForTime
     def create(
         *, positions: Float[JaxArray, "K 2"], velocities: Float[JaxArray, "K 2"]
     ) -> "JaxDynamicObstacleSimulator":
+        """Creates a simulator of obstacles that move with constant velocity. Each heading
+        follows the direction of the obstacle's velocity.
+
+        Args:
+            positions: Initial position of each obstacle, in meters.
+            velocities: Velocity of each obstacle, in m/s.
+        """
         headings = headings_from(velocities)
 
         return JaxDynamicObstacleSimulator(

@@ -48,6 +48,16 @@ class ComfortMetric[StateBatchT, PositionsT, LateralT](Metric[ComfortMetricResul
         time_step_size: float,
         position_extractor: PositionExtractor[S, P],
     ) -> "ComfortMetric[S, P, L]":
+        """Creates a metric that computes the lateral acceleration and jerk from the
+        lateral deviations by finite differences.
+
+        Args:
+            reference: Reference trajectory that the lateral deviations are measured
+                from.
+            time_step_size: Time between consecutive states, in seconds. Must be
+                positive.
+            position_extractor: Extracts the positions from the collected states.
+        """
         assert time_step_size > 0, (
             f"Time step size must be positive, got {time_step_size}"
         )

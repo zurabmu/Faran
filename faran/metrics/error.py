@@ -55,6 +55,12 @@ class MpccErrorMetric[StateBatchT](Metric[MpccErrorMetricResult]):
         contouring: ContouringCost[Any, StateBatchT],
         lag: LagCost[Any, StateBatchT],
     ) -> "MpccErrorMetric[StateBatchT]":
+        """Creates a metric that reports the contouring and lag errors of an MPCC planner.
+
+        Args:
+            contouring: The contouring cost returned by `mppi.mpcc`.
+            lag: The lag cost returned by `mppi.mpcc`.
+        """
         return MpccErrorMetric(contouring=contouring, lag=lag)
 
     def compute(self, data: SimulationData) -> MpccErrorMetricResult:

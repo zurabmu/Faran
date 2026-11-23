@@ -79,7 +79,14 @@ type JaxMpccCostFunction[CB: JaxControlInputBatch, SB: JaxStateBatch, C: JaxCost
 
 
 class JaxMpccWeightConfig:
-    """Weight configuration for contouring, lag, and progress costs."""
+    """Weights of the contouring, lag and progress costs. Keys left out of the `config`
+    of `mppi.mpcc` take their default values.
+
+    Attributes:
+        contouring: Weight of the contouring cost.
+        lag: Weight of the lag cost.
+        progress: Weight of the progress cost.
+    """
 
     class Full(TypedDict):
         contouring: float
@@ -93,7 +100,18 @@ class JaxMpccWeightConfig:
 
 
 class JaxMpccVirtualStateConfig:
-    """Configuration for the virtual (path parameter) state in MPCC."""
+    """Settings of the path parameter, the virtual state of MPCC. Keys left out of the
+    `config` of `mppi.mpcc` take their default values.
+
+    Attributes:
+        state_limits: Bounds of the path parameter.
+        velocity_limits: Bounds of the path velocity.
+        sampling_standard_deviation: Standard deviation of the path velocity
+            perturbations.
+        sampling_seed: Seed of the path velocity sampler.
+        periodic: Whether the path parameter wraps around at its limits, for closed
+            paths.
+    """
 
     class Full(TypedDict):
         state_limits: tuple[float, float]
@@ -201,6 +219,31 @@ class JaxMpccMppi:
         JaxContouringCost[JaxMpccAugmentedStateBatch[SB]],
         JaxLagCost[JaxMpccAugmentedStateBatch[SB]],
     ]:
+        """Creates an MPPI planner for model predictive contouring control. The planner
+        augments the state of `model` with the path parameter and adds the contouring,
+        lag and progress costs.
+
+        Args:
+            model: Simulates the physical state of each rollout.
+            sampler: Draws the perturbations of the physical control inputs.
+            costs: Cost terms added to the contouring, lag and progress costs.
+            reference: Reference path to follow.
+            position_extractor: Extracts the (x, y) positions from an augmented
+                state batch.
+            config: Weights of the tracking costs and settings of the path
+                parameter. Keys that it leaves out take their defaults.
+            planning_interval: Number of time steps that the nominal sequence is
+                shifted by after each planner step. Must be positive.
+            update_function: Computes the next nominal sequence from the optimal
+                one. Without one, the optimal sequence becomes the nominal sequence.
+            padding_function: Fills the time steps at the end of the shifted nominal
+                sequence. Without one, they are filled with zeros.
+            filter_function: Smooths the optimal sequence, for example a
+                Savitzky-Golay filter. Without one, it is not filtered.
+
+        Returns:
+            The planner, the augmented model and the contouring and lag costs.
+        """
         full_config = fill_defaults(config, reference=reference)
 
         planner, augmented_model = JaxAugmentedMppi.create(

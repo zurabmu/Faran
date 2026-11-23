@@ -42,6 +42,7 @@ class TaskCompletionMetricResult:
 
     @cached_property
     def completed(self) -> bool:
+        """Whether the goal was reached at any time step."""
         return bool(self.completion.any())
 
 
@@ -71,6 +72,19 @@ class TaskCompletionMetric[
         position_extractor: PositionExtractor[S, P],
         lap_detection_threshold: float = 0.5,
     ) -> "TaskCompletionMetric[S, P, L]":
+        """Creates a metric that tracks the progress along the reference trajectory and
+        whether the vehicle reached its end.
+
+        Args:
+            reference: Reference trajectory, whose end is the goal. Must have a
+                positive length.
+            distance_threshold: Distance to the goal within which the goal counts as
+                reached, in meters.
+            time_step_size: Time between consecutive states, in seconds.
+            position_extractor: Extracts the positions from the collected states.
+            lap_detection_threshold: Drop in progress, as a fraction of the path
+                length, that counts as starting a new lap.
+        """
         assert reference.natural_length > 0.0, (
             f"Reference trajectory must have positive length, got {reference.natural_length}."
         )

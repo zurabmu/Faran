@@ -39,6 +39,14 @@ class JaxGaussianSampler[BatchT: JaxControlInputBatch](
     ) -> "JaxGaussianSampler":
         """Creates a sampler generating Gaussian noise around the specified control input
         sequence.
+
+        Args:
+            standard_deviation: Standard deviation of the perturbations, as one
+                value for all control dimensions or one value per dimension.
+            rollout_count: Number of rollouts M.
+            to_batch: Wraps the sampled array in a control input batch.
+            key: JAX random key. Takes precedence over `seed`.
+            seed: Seed of the random key, used when `key` is not given.
         """
         return JaxGaussianSampler(
             standard_deviation=standardize.std(standard_deviation),

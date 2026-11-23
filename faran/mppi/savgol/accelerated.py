@@ -18,6 +18,14 @@ class JaxSavGolFilter:
 
     @staticmethod
     def create(*, window_length: int, polynomial_order: int) -> "JaxSavGolFilter":
+        """Creates a Savitzky-Golay filter that smooths each control dimension of the
+        optimal control sequence.
+
+        Args:
+            window_length: Number of time steps in each window. Must be odd.
+            polynomial_order: Degree of the fitted polynomial. Must be less than
+                `window_length`.
+        """
         assert window_length % 2 == 1, f"Window length must be odd, got {window_length}"
         assert 0 <= polynomial_order < window_length, (
             f"Polynomial order must be non-negative and less than window length, got {polynomial_order}"

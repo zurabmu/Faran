@@ -72,6 +72,26 @@ class JaxAugmentedMppi:
         Mppi[AS, ACS, JaxWeights],
         AugmentedModel[PS, PSS, PSB, PCS, PCB, VS, VSS, VSB, VCS, VCB, AS, ASS, ASB],
     ]:
+        """Creates an MPPI planner whose state joins the states of a physical and a virtual
+        model, for example the path parameter of MPCC.
+
+        Args:
+            models: The physical and the virtual dynamics model.
+            samplers: Samplers for the physical and the virtual control inputs.
+            cost: Scores each rollout of the augmented state.
+            state: Creates an augmented state from a physical and a virtual state.
+            state_sequence: Creates an augmented state sequence.
+            state_batch: Creates an augmented state batch.
+            input_batch: Creates an augmented control input batch.
+            planning_interval: Number of time steps that the nominal sequence is
+                shifted by after each planner step. Must be positive.
+            update_function: Computes the next nominal sequence from the optimal
+                one. Without one, the optimal sequence becomes the nominal sequence.
+            padding_function: Fills the time steps at the end of the shifted nominal
+                sequence. Without one, they are filled with zeros.
+            filter_function: Smooths the optimal sequence, for example a
+                Savitzky-Golay filter. Without one, it is not filtered.
+        """
         return AugmentedMppi.create(
             mppi=lambda model, sampler, cost: JaxMppi.create(
                 planning_interval=planning_interval,

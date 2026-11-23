@@ -193,8 +193,6 @@ class JaxIntegratorModel(
         This model represents a particle that moves according to velocity commands.
         State dimension must equal control dimension (D_x == D_u).
 
-        $$x_{t+1} = \\text{clip}(x_t + \\text{clip}(u_t,\\; v_{\\text{lim}}) \\cdot \\Delta t,\\; s_{\\text{lim}})$$
-
         Args:
             time_step_size: The time step size for the integrator.
             state_limits: Optional tuple of (min, max) limits for the state values.
@@ -446,6 +444,12 @@ class JaxFiniteDifferenceIntegratorStateEstimator(
     def create(
         *, time_step_size: float
     ) -> "JaxFiniteDifferenceIntegratorStateEstimator":
+        """Creates an integrator state estimator that differentiates consecutive position
+        observations.
+
+        Args:
+            time_step_size: Time between consecutive observations, in seconds.
+        """
         return JaxFiniteDifferenceIntegratorStateEstimator(
             time_step_size=jnp.asarray(time_step_size)
         )
@@ -507,16 +511,18 @@ class JaxKfIntegratorStateEstimator(
         Args:
             time_step_size: The time step size for the integrator.
             process_noise_covariance: The process noise covariance, either as a full
-                matrix, a vector of diagonal entries, or a single scalar representing
-                isotropic noise across all state dimensions.
-            observation_noise_covariance: The observation noise covariance, either as
-                a full matrix, a vector of diagonal entries, or a single scalar
+                matrix, a vector of diagonal entries, or a single scalar
                 representing isotropic noise across all state dimensions.
-            initial_state_covariance: The initial state covariance for the Kalman filter.
-                If not provided, low uncertainty will be assumed for observed states and high
-                uncertainty for unobserved velocities.
+            observation_noise_covariance: The observation noise covariance, either
+                as a full matrix, a vector of diagonal entries, or a single scalar
+                representing isotropic noise across all state dimensions.
+            initial_state_covariance: The initial state covariance for the Kalman
+                filter. If not provided, low uncertainty will be assumed for
+                observed states and high uncertainty for unobserved velocities.
             observation_dimension: The observation dimension for the Kalman filter.
                 Mandatory if both noise covariances are specified as scalars.
+            noise_model: Adapts the noise covariances from the observations at each
+                update. Without one, the covariances stay fixed.
         """
         observation_dimension = observation_dimension_from(
             process_noise_covariance=process_noise_covariance,

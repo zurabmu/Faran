@@ -99,6 +99,21 @@ class JaxMppi[
         padding_function: JaxPaddingFunction[CIS, CIP] | None = None,
         filter_function: JaxFilterFunction[CIS] | None = None,
     ) -> "JaxMppi[S, SB, CIS, CIB, CIP]":
+        """Creates an MPPI planner.
+
+        Args:
+            model: Simulates each rollout.
+            cost_function: Scores each rollout at each time step.
+            sampler: Draws the control perturbations of the rollouts.
+            planning_interval: Number of time steps that the nominal sequence is
+                shifted by after each planner step. Must be positive.
+            update_function: Computes the next nominal sequence from the optimal
+                one. Without one, the optimal sequence becomes the nominal sequence.
+            padding_function: Fills the time steps at the end of the shifted nominal
+                sequence. Without one, they are filled with zeros.
+            filter_function: Smooths the optimal sequence, for example a
+                Savitzky-Golay filter. Without one, it is not filtered.
+        """
         return JaxMppi(
             planning_interval=planning_interval,
             model=model,

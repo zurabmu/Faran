@@ -38,6 +38,16 @@ class NumPyBoundaryCost[StateT](CostFunction[ControlInputBatch, StateT, NumPyCos
         distance_threshold: float,
         weight: float,
     ) -> "NumPyBoundaryCost[S]":
+        """Creates a hinge-loss cost that penalizes rollouts that come close to the
+        corridor boundary.
+
+        Args:
+            distance: Computes the signed distance to the corridor boundary, which
+                is positive inside the corridor.
+            distance_threshold: Distance to the boundary below which the cost
+                activates, in meters.
+            weight: Scales the hinge loss.
+        """
         return NumPyBoundaryCost(
             distance=distance, distance_threshold=distance_threshold, weight=weight
         )
