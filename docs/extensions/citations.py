@@ -5,9 +5,9 @@ from typing import Any, Final
 
 from markdown import Extension, Markdown
 from markdown.preprocessors import Preprocessor
-from pybtex.backends.html import Backend as HtmlBackend
 from pybtex.database import BibliographyData, parse_file
-from pybtex.style.formatting.plain import Style as PlainStyle
+
+from docs.extensions.references import formatted_references
 
 CITATION: Final = re.compile(r"\[@([^\]\s]+)\]")
 BIBLIOGRAPHY_MARKER: Final = "\\bibliography"
@@ -69,15 +69,16 @@ class CitationPreprocessor(Preprocessor):
                 yield CITATION.sub(lambda match: citation_link(match[1], numbers), line)
 
     def reference_list(self, numbers: dict[str, int]) -> str:
+        keys = list(numbers)
         items = "".join(
-            f'<li id="{reference_id(key)}">{self.formatted_entry(key)}</li>'
-            for key in numbers
+            f'<li id="{reference_id(key)}">'
+            f'<span class="faran-reference__label">[{numbers[key]}]</span>'
+            f'<span class="faran-reference__text">{text}</span></li>'
+            for key, text in zip(
+                keys, formatted_references(self.bibliography, keys), strict=True
+            )
         )
         return self.md.htmlStash.store(f'<ol class="faran-references">{items}</ol>')
-
-    def formatted_entry(self, key: str) -> str:
-        entry = PlainStyle().format_entry(key, self.bibliography.entries[key])
-        return entry.text.render(HtmlBackend())
 
 
 def cited_keys(lines: list[str]) -> list[str]:
