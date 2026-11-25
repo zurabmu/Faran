@@ -1,5 +1,10 @@
-from typing import Sequence, Final, Callable, Protocol
-from dataclasses import dataclass
+from typing import (
+    Sequence,
+    Final,
+    Protocol,
+    get_protocol_members,
+    runtime_checkable,
+)
 from types import ModuleType
 from importlib import import_module
 from pathlib import Path
@@ -7,11 +12,13 @@ from functools import lru_cache
 
 from faran import Trajectory, MpccErrorMetricResult
 from faran_visualizer import (
+    RerunRenderer,
     MpccSimulationResult,
     visualizer,
     configure as configure_visualizer,
 )
 
+from docs.lab import dusk
 from tests.utilities import VisualizationData, doc_example, project_root
 from pytest import mark, fixture
 
@@ -20,7 +27,11 @@ EXAMPLES_DIRECTORY: Final = Path("docs/examples")
 
 @fixture(scope="session", autouse=True)
 def configure_visualization_output_directory() -> None:
-    configure_visualizer(output_directory=project_root() / "docs" / "content" / "visualizations")
+    configure_visualizer(
+        output_directory=project_root() / "docs" / "content" / "visualizations",
+        theme=dusk,
+        renderer=RerunRenderer(),
+    )
 
 
 class ExampleResult(Protocol):
@@ -31,15 +42,40 @@ class ExampleResult(Protocol):
     collision_detected: bool
 
 
-@dataclass(frozen=True)
-class ExampleModule[*ComponentsT]:
-    seed: int
-    reference: Trajectory
-    goal_fraction: float
-    max_contouring_error: float
-    max_lag_error: float
-    create: Callable[[], *ComponentsT]
-    run: Callable[[*ComponentsT], ExampleResult]
+@runtime_checkable
+class ExampleModule(Protocol):
+    @property
+    def SEED(self) -> str:
+        """Key that the visualization of the example is saved under."""
+        ...
+
+    @property
+    def REFERENCE(self) -> Trajectory:
+        """Path that the vehicle follows."""
+        ...
+
+    @property
+    def MAX_CONTOURING_ERROR(self) -> float:
+        """Upper bound on the contouring error in meters, exclusive."""
+        ...
+
+    @property
+    def MAX_LAG_ERROR(self) -> float:
+        """Upper bound on the lag error in meters, exclusive."""
+        ...
+
+    @property
+    def GOAL_FRACTION(self) -> float:
+        """Fraction of the path length the vehicle must reach, between 0 and 1."""
+        ...
+
+    def create(self) -> Sequence[object]:
+        """Builds the components that `run` takes, in the order it takes them."""
+        ...
+
+    def run(self, *components: object) -> ExampleResult:
+        """Runs the simulation with the components from `create`."""
+        ...
 
 
 @lru_cache
@@ -57,77 +93,23 @@ class extract:
         return module_path.rsplit(".", 1)[-1]
 
     @staticmethod
-    def component_creator(module: ModuleType) -> Callable[[], Sequence]:
-        assert hasattr(module, "create"), (
-            f"Module {module.__name__} must define a create() function "
-            f"that returns the components for the test"
+    def missing_members(module: ModuleType) -> Sequence[str]:
+        return sorted(
+            member
+            for member in get_protocol_members(ExampleModule)
+            if not hasattr(module, member)
         )
-
-        return getattr(module, "create")
-
-    @staticmethod
-    def simulation_runner(
-        module: ModuleType,
-    ) -> Callable[[Sequence], MpccSimulationResult]:
-        assert hasattr(module, "run"), (
-            f"Module {module.__name__} must define a run(*components) "
-            f"function that executes the simulation and returns an MpccSimulationResult"
-        )
-
-        return getattr(module, "run")
-
-    @staticmethod
-    def seed(module: ModuleType) -> int:
-        assert hasattr(module, "SEED"), (
-            f"Module {module.__name__} must define a SEED variable"
-        )
-
-        return getattr(module, "SEED")
-
-    @staticmethod
-    def reference(module: ModuleType) -> Trajectory:
-        assert hasattr(module, "REFERENCE"), (
-            f"Module {module.__name__} must define a REFERENCE variable "
-            f"of type Trajectory"
-        )
-
-        return getattr(module, "REFERENCE")
-
-    @staticmethod
-    def goal_fraction(module: ModuleType) -> float:
-        return getattr(module, "GOAL_FRACTION", 0.9)
-
-    @staticmethod
-    def max_contouring_error(module: ModuleType) -> float:
-        assert hasattr(module, "MAX_CONTOURING_ERROR"), (
-            f"Module {module.__name__} must define a MAX_CONTOURING_ERROR "
-            f"variable specifying the maximum allowed contouring error in meters"
-        )
-
-        return getattr(module, "MAX_CONTOURING_ERROR")
-
-    @staticmethod
-    def max_lag_error(module: ModuleType) -> float:
-        assert hasattr(module, "MAX_LAG_ERROR"), (
-            f"Module {module.__name__} must define a MAX_LAG_ERROR "
-            f"variable specifying the maximum allowed lag error in meters"
-        )
-
-        return getattr(module, "MAX_LAG_ERROR")
 
 
 def load(module_path: str) -> ExampleModule:
     module = import_module(module_path)
 
-    return ExampleModule(
-        seed=extract.seed(module),
-        reference=extract.reference(module),
-        goal_fraction=extract.goal_fraction(module),
-        max_contouring_error=extract.max_contouring_error(module),
-        max_lag_error=extract.max_lag_error(module),
-        create=extract.component_creator(module),
-        run=extract.simulation_runner(module),
+    assert isinstance(module, ExampleModule), (
+        f"Module {module_path} does not define the members of ExampleModule. "
+        f"Missing: {', '.join(extract.missing_members(module))}"
     )
+
+    return module
 
 
 @mark.parametrize(
@@ -145,23 +127,27 @@ def test_that_documentation_example_produces_valid_plan(
     components = example.create()
     result = example.run(*components)
 
-    configure_visualizer(output_directory=project_root() / "docs" / "content" / "visualizations")
-    visualization.data_is(result.visualization).seed_is(example.seed)
+    configure_visualizer(
+        output_directory=project_root() / "docs" / "content" / "visualizations",
+        theme=dusk,
+        renderer=RerunRenderer(),
+    )
+    visualization.data_is(result.visualization).seed_is(example.SEED)
 
     assert result.reached_goal, (
         f"Vehicle did not make sufficient progress along the path. "
         f"Final progress: {result.progress:.1f}, "
-        f"expected >= {example.reference.path_length * example.goal_fraction:.1f}"
+        f"expected >= {example.REFERENCE.path_length * example.GOAL_FRACTION:.1f}"
     )
 
-    assert result.tracking_errors.max_contouring < example.max_contouring_error, (
+    assert result.tracking_errors.max_contouring < example.MAX_CONTOURING_ERROR, (
         f"Max contouring error {result.tracking_errors.max_contouring:.2f} m "
-        f"exceeds threshold {example.max_contouring_error:.2f} m"
+        f"exceeds threshold {example.MAX_CONTOURING_ERROR:.2f} m"
     )
 
-    assert result.tracking_errors.max_lag < example.max_lag_error, (
+    assert result.tracking_errors.max_lag < example.MAX_LAG_ERROR, (
         f"Max lag error {result.tracking_errors.max_lag:.2f} m "
-        f"exceeds threshold {example.max_lag_error:.2f} m"
+        f"exceeds threshold {example.MAX_LAG_ERROR:.2f} m"
     )
 
     assert not result.collision_detected, (

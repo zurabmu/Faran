@@ -214,6 +214,7 @@ def run(planner, augmented_model, registry, error_metric, corridor) -> Result:
 SEED = "doc-path-following-with-boundary"
 MAX_CONTOURING_ERROR = 2.5
 MAX_LAG_ERROR = 5.0
+GOAL_FRACTION = 0.9
 
 
 # ── Visualization ──────────────────────────────────────────────────────────────────────────── #

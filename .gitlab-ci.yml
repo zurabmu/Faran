@@ -105,6 +105,7 @@ pages:
     - .base
   script:
     - uv run pytest -v -m docs --visualize --notebooks
+    - uv run python -m docs.scripts.wheel
     - uv run zensical build --clean --strict
     - mv site public
   artifacts:
