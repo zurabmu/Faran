@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { type Bounds, type Point, type Rendering, SceneCanvas } from "@faran/engine";
 import { dots, lines, square } from "@test/dsl/renderings";
 import { StubRenderer } from "@test/stubs/renderer";
+import { StubSizeWatcher } from "@test/stubs/size";
 
 describe("lines", () => {
     it("a line connects its points in order", () => {
@@ -145,6 +146,27 @@ describe("scene canvas", () => {
 
         expect(canvas.renderer.fittedSize).toEqual({ width: 300, height: 100 });
     });
+
+    it("the canvas draws its last drawing again at its new size when its size changes", () => {
+        const canvas = canvasOfSize({ clientWidth: 200, clientHeight: 100 });
+
+        canvas.draw([lines([square()])]);
+        canvas.renderer.canvas.clientWidth = 300;
+        canvas.resize();
+
+        expect(canvas.renderer.renders.length).toBe(2);
+        expect(canvas.renderer.fittedSize).toEqual({ width: 300, height: 100 });
+    });
+
+    it("the canvas draws nothing when its size changes after it is disposed", () => {
+        const canvas = canvasOfSize();
+
+        canvas.draw([lines([square()])]);
+        canvas.dispose();
+        canvas.resize();
+
+        expect(canvas.renderer.renders.length).toBe(1);
+    });
 });
 
 type Drawn =
@@ -167,7 +189,8 @@ function canvasThatDrew(renderings: readonly Rendering[]) {
  */
 function canvasOfSize(size = { clientWidth: 200, clientHeight: 100 }) {
     const renderer = new StubRenderer(size);
-    const scene = new SceneCanvas(renderer);
+    const sizes = new StubSizeWatcher();
+    const scene = new SceneCanvas(renderer, sizes.watch);
     const lastRender = () => renderer.renders.at(-1)!;
     const drawnLayers = () => lastRender().scene.children as Group[];
     const pixelsPerUnit = () => {
@@ -184,6 +207,8 @@ function canvasOfSize(size = { clientWidth: 200, clientHeight: 100 }) {
         renderer,
         draw: (renderings: readonly Rendering[], { bounds = squareBounds({ side: 1 }) }: { bounds?: Bounds } = {}) =>
             scene.draw({ renderings, bounds, padding: 0 }),
+        resize: () => sizes.resize(),
+        dispose: () => scene.dispose(),
         renderOrders: () => drawnLayers().map((layer) => layer.renderOrder),
         picture: () => drawnLayers().map(drawnOf),
         dashes: () => {

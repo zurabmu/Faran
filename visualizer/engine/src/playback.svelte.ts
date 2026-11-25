@@ -2,9 +2,8 @@ import { type FrameClock, screenFrames } from "@/frames";
 import { StepTimer } from "@/timer";
 
 /**
- * Steps through an animation in real time: one step every `timeStep` seconds while playing, at
- * the playback speed. Playing stops at the last step, and playing again from there starts over.
- * Time passes by the frames of `clock`.
+ * Steps through an animation, one step every `timeStep` seconds of real time at the playback
+ * speed. Playing from the last step starts over. Time passes by the frames of `clock`.
  */
 export class Playback {
     readonly stepCount: number;

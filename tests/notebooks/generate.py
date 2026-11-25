@@ -11,7 +11,7 @@ import anyio
 DISPLAY_CODE: Final = """\
 from faran_visualizer import show
 
-show("mpcc-simulation/visualization.frn")
+show("mpcc-simulation/visualization.json")
 """.strip()
 
 

@@ -59,10 +59,7 @@ its label is the text of its legend entry."""
 
 @dataclass(kw_only=True, frozen=True)
 class LegendEntry:
-    """A legend entry: a label, and the styles that draw its sample. The styles are
-    the first line style and the first dot style rendered with the label, in that
-    order, with their colors at least half opaque so that a single sample of a faint
-    rendering stays visible."""
+    """A legend entry: a label, and the styles that draw its sample."""
 
     label: str
     styles: Sequence[LineStyle | DotStyle]
@@ -106,8 +103,7 @@ class Chart:
 class Animation:
     """A scene with every step rendered and every style resolved, in the form a
     renderer saves. Background renderings are rendered below the renderings of every
-    frame, on the background color, which charts share. The legend has one entry per
-    label, in the order the labels first appear."""
+    frame. The legend has one entry per label, in the order the labels first appear."""
 
     time_step: float
     background_color: Color

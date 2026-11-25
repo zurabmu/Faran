@@ -17,8 +17,7 @@ const INSTANCES_PER_SEGMENT = 1;
 const NO_STRIPS: readonly (readonly Point[])[] = [];
 
 /**
- * Shows a lines rendering as one set of line segments, dashed or not, in a single draw call.
- * Dashes start anew at the first point of each strip.
+ * Shows a lines rendering. Dashes start anew at the first point of each strip.
  */
 export class LinesLayer implements Layer {
     readonly object = new Group();

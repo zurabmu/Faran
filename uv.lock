@@ -838,6 +838,7 @@ dependencies = [
     { name = "anyio" },
     { name = "faran" },
     { name = "jaxtyping" },
+    { name = "msgspec" },
     { name = "numpy" },
     { name = "typer" },
 ]
@@ -853,6 +854,7 @@ requires-dist = [
     { name = "faran", editable = "." },
     { name = "ipython", marker = "extra == 'notebook'", specifier = ">=9.0.0" },
     { name = "jaxtyping", specifier = ">=0.3.5" },
+    { name = "msgspec", specifier = ">=0.20.0" },
     { name = "numpy", specifier = ">=2.4.2" },
     { name = "rerun-sdk", marker = "extra == 'rerun'", specifier = "==0.43.2" },
     { name = "rerun-sdk", extras = ["notebook"], marker = "extra == 'notebook'", specifier = "==0.43.2" },

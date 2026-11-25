@@ -5,33 +5,62 @@ import { DotsLayer } from "@/scene/dots";
 import type { Layer, Viewport } from "@/scene/layer";
 import { LinesLayer } from "@/scene/lines";
 import { type SceneRenderer, webGLRendererOn } from "@/scene/renderer";
+import { type SizeWatcher, sizeWatcherOf } from "@/size";
 
 const CIRCLE_SEGMENTS = 24;
 
 /**
- * Draws renderings on a canvas through three.js. The canvas keeps its size on screen, and each
- * `draw` replaces what the previous one drew.
+ * Renderings in drawing order, the `bounds` to keep in view, and `padding` in CSS pixels to
+ * leave free around them.
+ */
+export interface Drawing {
+    readonly renderings: readonly Rendering[];
+    readonly bounds: Bounds;
+    readonly padding: number;
+}
+
+/**
+ * Draws renderings on a canvas with three.js. Each `draw` replaces the previous drawing, which
+ * is drawn again whenever the canvas changes size.
  */
 export class SceneCanvas {
     readonly #scene = new Scene();
     readonly #camera = new OrthographicCamera();
     readonly #circle = new CircleGeometry(1, CIRCLE_SEGMENTS);
     readonly #layers: Layer[] = [];
+    readonly #stopWatchingSize: () => void;
+    #redraw: () => void = () => {};
 
-    constructor(private readonly renderer: SceneRenderer) {}
+    constructor(
+        private readonly renderer: SceneRenderer,
+        watchSize: SizeWatcher,
+    ) {
+        this.#stopWatchingSize = watchSize(() => this.#redraw());
+    }
 
     /**
      * Creates a scene canvas that draws with WebGL on the canvas.
      */
     static on(canvas: HTMLCanvasElement): SceneCanvas {
-        return new SceneCanvas(webGLRendererOn(canvas));
+        return new SceneCanvas(webGLRendererOn(canvas), sizeWatcherOf(canvas));
+    }
+
+    draw(drawing: Drawing): void {
+        this.#redraw = () => this.#render(drawing);
+        this.#render(drawing);
     }
 
     /**
-     * Draws the renderings in order, each later one on top, with all of `bounds` in view and
-     * `padding` CSS pixels left free around it.
+     * Releases the GPU resources of the canvas and stops watching its size.
      */
-    draw({ renderings, bounds, padding }: { renderings: readonly Rendering[]; bounds: Bounds; padding: number }): void {
+    dispose(): void {
+        this.#stopWatchingSize();
+        this.#removeLayersFrom(0);
+        this.#circle.dispose();
+        this.renderer.dispose();
+    }
+
+    #render({ renderings, bounds, padding }: Drawing): void {
         const viewport = this.#fitView(bounds, padding);
         this.#removeLayersFrom(renderings.length);
         renderings.forEach((rendering, order) => {
@@ -39,15 +68,6 @@ export class SceneCanvas {
             if (!shownByCurrentLayer) this.#replaceLayer(order, rendering).show(rendering, viewport);
         });
         this.renderer.render(this.#scene, this.#camera);
-    }
-
-    /**
-     * Releases the GPU resources of the canvas.
-     */
-    dispose(): void {
-        this.#removeLayersFrom(0);
-        this.#circle.dispose();
-        this.renderer.dispose();
     }
 
     #fitView(bounds: Bounds, padding: number): Viewport {

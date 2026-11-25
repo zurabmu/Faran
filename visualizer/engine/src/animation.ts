@@ -105,9 +105,8 @@ export interface Chart {
 }
 
 /**
- * An animation as the canvas renderer of `faran_visualizer` saves it. Background renderings
- * are drawn below the renderings of every frame, on the background color. The legend has one
- * entry per label.
+ * An animation as the canvas renderer of `faran_visualizer` saves it. Background renderings are
+ * drawn below the renderings of every frame.
  */
 export interface Animation {
     readonly timeStep: number;

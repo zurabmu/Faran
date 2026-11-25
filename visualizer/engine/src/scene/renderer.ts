@@ -19,8 +19,7 @@ export interface SceneRenderer {
 }
 
 /**
- * Creates a renderer that draws with WebGL on the canvas, with a transparent background, at the
- * pixel ratio of the screen the page is on.
+ * Creates a renderer that draws with WebGL on the canvas, on a transparent background.
  */
 export function webGLRendererOn(canvas: HTMLCanvasElement): SceneRenderer {
     return new WebGLSceneRenderer(canvas);

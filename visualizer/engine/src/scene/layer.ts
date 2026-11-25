@@ -12,8 +12,7 @@ export interface Viewport {
 }
 
 /**
- * The three.js objects that show one rendering. A layer is kept between draws and updated in
- * place, and it uploads point data to the GPU only when it is shown different points.
+ * The three.js objects that show one rendering, updated in place between draws.
  */
 export interface Layer {
     /**

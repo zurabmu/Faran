@@ -47,9 +47,8 @@ await mpcc_viz(result, key="my-simulation")
 
 ## Output
 
-The visualization is saved as `<key>.frn`, which you can open with:
+The visualization is saved as `<key>.json`, which you can open in the browser with:
 
 ```bash
-faran-visualizer view visualizations/mpcc-simulation/my-simulation.frn            # viewer
-faran-visualizer view visualizations/mpcc-simulation/my-simulation.frn --browser  # browser
+faran-visualizer view visualizations/mpcc-simulation/my-simulation.json
 ```

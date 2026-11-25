@@ -100,7 +100,7 @@ just integration-tests visualize <test>         # Run integration tests and gene
 
 You can filter tests by specifying the optional `<test>` argument, which can be any [expression you would pass to the pytest `-k` option](https://docs.pytest.org/en/stable/example/markers.html#keyword-expressions). For example, `"test_that_planner_avoids_pedestrians[configuration1-jax-unicycle-pedestrian]"`, `pedestrian`, or `three_laps or pedestrian`. Quote the expression when it contains brackets or spaces.
 
-The generated visualizations are saved under `tests/visualizations/` as recordings (`.frn` files). You can view a visualization in the viewer by running `just view <files>`, or in the browser by running `just view <files> --browser`.
+The generated visualizations are saved under `tests/visualizations/` as `.json` files. You can open a visualization in the browser by running `just view <files>`.
 
 If you don't have `just`, run the following commands:
 
