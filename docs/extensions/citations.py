@@ -1,7 +1,7 @@
 import re
 from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Any, Final
+from typing import Final
 
 from markdown import Extension, Markdown
 from markdown.preprocessors import Preprocessor
@@ -26,12 +26,12 @@ class CitationExtension(Extension):
     that line without citing anything raises `CitationError`.
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        self.config = {"bib_file": ["docs/references.bib", "Path to the BibTeX file."]}
-        super().__init__(**kwargs)
+    def __init__(self, *, bib_file: str) -> None:
+        self.bib_file = bib_file
+        super().__init__()
 
     def extendMarkdown(self, md: Markdown) -> None:
-        bibliography = parse_file(Path(self.getConfig("bib_file")), bib_format="bibtex")
+        bibliography = parse_file(Path(self.bib_file), bib_format="bibtex")
         md.preprocessors.register(
             CitationPreprocessor(md, bibliography), "citations", 30
         )
@@ -116,12 +116,13 @@ def with_code_flags(lines: Iterable[str]) -> Iterable[tuple[str, bool]]:
 
 
 def citation_link(key: str, numbers: dict[str, int]) -> str:
-    return f'<a class="faran-citation" href="#{reference_id(key)}">[{numbers[key]}]</a>'
+    link = f'<a class="faran-citation" href="#{reference_id(key)}">[{numbers[key]}]</a>'
+    return f"<faran-citation>{link}</faran-citation>"
 
 
 def reference_id(key: str) -> str:
     return f"reference-{key}"
 
 
-def makeExtension(**kwargs: Any) -> CitationExtension:
-    return CitationExtension(**kwargs)
+def makeExtension(*, bib_file: str) -> CitationExtension:
+    return CitationExtension(bib_file=bib_file)

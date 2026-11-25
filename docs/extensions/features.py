@@ -1,6 +1,5 @@
 from enum import StrEnum
 from pathlib import Path
-from typing import Any
 from xml.etree.ElementTree import Element, SubElement
 
 import msgspec
@@ -59,14 +58,12 @@ class FeaturesBlock(Block):
 class FeaturesExtension(BlocksExtension):
     """Adds the `/// features` block."""
 
-    def __init__(self, **kwargs: Any) -> None:
-        self.config = {
-            "data_file": ["docs/features.yaml", "Path to the features file."]
-        }
-        super().__init__(**kwargs)
+    def __init__(self, *, data_file: str) -> None:
+        self.data_file = data_file
+        super().__init__()
 
     def extendMarkdownBlocks(self, md: Markdown, block_mgr: BlocksProcessor) -> None:
-        block_mgr.register(FeaturesBlock, self.getConfigs())
+        block_mgr.register(FeaturesBlock, {"data_file": self.data_file})
 
 
 def read_areas(path: Path) -> list[Area]:
@@ -121,5 +118,5 @@ def add_links(item: Element, links: list[FeatureLink]) -> None:
         SubElement(paragraph, "a", {"href": link.href}).text = link.text
 
 
-def makeExtension(**kwargs: Any) -> FeaturesExtension:
-    return FeaturesExtension(**kwargs)
+def makeExtension(*, data_file: str) -> FeaturesExtension:
+    return FeaturesExtension(data_file=data_file)

@@ -195,10 +195,26 @@ bib_file = "docs/references.bib"
 
 [project.markdown_extensions."docs.extensions.columns"]
 
+[project.markdown_extensions."docs.extensions.backends"]
+
+[project.markdown_extensions."docs.extensions.contents"]
+
+[project.markdown_extensions."docs.extensions.docsmap"]
+
 [project.markdown_extensions."docs.extensions.equation"]
 
 [project.markdown_extensions."docs.extensions.features"]
 data_file = "docs/features.yaml"
+
+[project.markdown_extensions."docs.extensions.gallery"]
+
+[project.markdown_extensions."docs.extensions.hero"]
+
+[project.markdown_extensions."docs.extensions.live"]
+
+[project.markdown_extensions."docs.extensions.replay"]
+
+[project.markdown_extensions."docs.extensions.variants"]
 
 [project.markdown_extensions."pymdownx.highlight"]
 anchor_linenums = true

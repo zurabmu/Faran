@@ -1,4 +1,3 @@
-from typing import Any
 from xml.etree.ElementTree import Element, SubElement
 
 from markdown import Markdown
@@ -68,5 +67,5 @@ def add_column(block: Element, *, side: str, contents: list[Element]) -> None:
     column.extend(contents)
 
 
-def makeExtension(**kwargs: Any) -> ColumnsExtension:
-    return ColumnsExtension(**kwargs)
+def makeExtension() -> ColumnsExtension:
+    return ColumnsExtension()

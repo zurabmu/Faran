@@ -140,7 +140,7 @@ markers = [
 addopts = "-m 'not integration and not docs and not benchmark and not risk_benchmark'"
 
 [tool.pyright]
-include = ["faran", "tests/tasks", "tests/utilities", "tests/benchmarks", "tests/notebooks", "docs/scripts", "docs/lab"]
+include = ["faran", "tests/tasks", "tests/utilities", "tests/benchmarks", "tests/notebooks", "docs/scripts", "docs/lab", "docs/extensions"]
 exclude = ["**/__pycache__", "tests/benchmarks/bench_risk.py"]
 
 [tool.ruff]

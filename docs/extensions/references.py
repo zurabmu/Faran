@@ -1,5 +1,5 @@
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from html import escape
 from pathlib import Path
 from typing import Final, NamedTuple, TypedDict
@@ -47,6 +47,11 @@ class CslName(TypedDict):
     family: str
 
 
+CslDate = TypedDict("CslDate", {"date-parts": list[list[int]]})
+
+type CslValue = str | list[CslName] | CslDate
+
+
 class Link(NamedTuple):
     text: str
     href: str
@@ -73,11 +78,11 @@ def ieee_references(entries: dict[str, Entry]) -> list[str]:
     return [str(text) for text in references.bibliography()]
 
 
-def csl_item(key: str, entry: Entry) -> dict[str, object]:
+def csl_item(key: str, entry: Entry) -> dict[str, CslValue]:
     return {
         "id": key,
-        "type": CSL_TYPES[entry.type],
-        "author": [csl_name(person) for person in entry.persons.get("author", [])],
+        "type": CSL_TYPES[type_of(entry)],
+        "author": [csl_name(person) for person in persons_of(entry, role="author")],
         "issued": {"date-parts": [[int(field(entry, "year"))]]},
         **csl_variables(entry),
     }
@@ -100,7 +105,7 @@ def csl_variables(entry: Entry) -> dict[str, str]:
 def csl_name(person: Person) -> CslName:
     return CslName(
         given=plain_text(" ".join(person.bibtex_first_names)),
-        family=plain_text(" ".join(person.prelast_names + person.last_names)),
+        family=plain_text(" ".join(family_names_of(person))),
     )
 
 
@@ -113,7 +118,7 @@ def is_arxiv(entry: Entry) -> bool:
 
 
 def arxiv_id(entry: Entry) -> str:
-    return f"arXiv:{entry.fields['eprint']}"
+    return f"arXiv:{fields_of(entry)['eprint']}"
 
 
 def without_label(text: str) -> str:
@@ -145,8 +150,36 @@ def links(entry: Entry) -> list[Link]:
 
 
 def field(entry: Entry, name: str) -> str:
-    return entry.fields.get(name, "").strip()
+    return fields_of(entry).get(name, "").strip()
 
 
 def anchor(link: Link) -> str:
     return f'<a href="{escape(link.href)}">{escape(link.text)}</a>'
+
+
+def type_of(entry: Entry) -> str:
+    assert entry.type is not None, (
+        f"Expected the BibTeX entry {entry.key} to have a type."
+    )
+    return entry.type
+
+
+def fields_of(entry: Entry) -> Mapping[str, str]:
+    assert entry.fields is not None, (
+        f"Expected the BibTeX entry {entry.key} to have fields."
+    )
+    return entry.fields
+
+
+def persons_of(entry: Entry, *, role: str) -> list[Person]:
+    assert entry.persons is not None, (
+        f"Expected the BibTeX entry {entry.key} to have persons."
+    )
+    return entry.persons.get(role, [])
+
+
+def family_names_of(person: Person) -> list[str]:
+    assert person.prelast_names is not None and person.last_names is not None, (
+        f"Expected the BibTeX person {person} to have prelast and last names."
+    )
+    return person.prelast_names + person.last_names
