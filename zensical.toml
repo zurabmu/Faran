@@ -6,9 +6,8 @@ site_author = "Zurab Mujirishvili"
 repo_url = "https://gitlab.com/risk-metrics/faran"
 repo_name = "risk-metrics/faran"
 
-exclude_docs = """
-extensions/
-"""
+docs_dir = "docs/content"
+edit_uri = "edit/main/docs/content/"
 
 extra_javascript = [
     "javascripts/katex.js",

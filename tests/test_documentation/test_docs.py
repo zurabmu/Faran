@@ -20,7 +20,7 @@ EXAMPLES_DIRECTORY: Final = Path("docs/examples")
 
 @fixture(scope="session", autouse=True)
 def configure_visualization_output_directory() -> None:
-    configure_visualizer(output_directory=project_root() / "docs" / "visualizations")
+    configure_visualizer(output_directory=project_root() / "docs" / "content" / "visualizations")
 
 
 class ExampleResult(Protocol):
@@ -145,7 +145,7 @@ def test_that_documentation_example_produces_valid_plan(
     components = example.create()
     result = example.run(*components)
 
-    configure_visualizer(output_directory=project_root() / "docs" / "visualizations")
+    configure_visualizer(output_directory=project_root() / "docs" / "content" / "visualizations")
     visualization.data_is(result.visualization).seed_is(example.seed)
 
     assert result.reached_goal, (

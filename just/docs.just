@@ -10,6 +10,6 @@ docs-build:
 docs-serve:
     uv run zensical serve
 
-# Run the documentation examples and save their visualizations to docs/visualizations/
+# Run the documentation examples and save their visualizations to docs/content/visualizations/
 docs-examples:
     uv run pytest -m docs --visualize
