@@ -1,7 +1,7 @@
 import { type Group, InstancedMesh, Matrix4, type OrthographicCamera, Vector3 } from "three";
 import type { LineSegments2 } from "three/addons/lines/LineSegments2.js";
 import { describe, expect, it } from "vitest";
-import { type Bounds, type Point, type Rendering, SceneCanvas } from "@faran/engine";
+import { type Bounds, type Point, type Rendering, SceneCanvas } from "@engine";
 import { dots, lines, square } from "@test/dsl/renderings";
 import { StubRenderer } from "@test/stubs/renderer";
 import { StubSizeWatcher } from "@test/stubs/size";

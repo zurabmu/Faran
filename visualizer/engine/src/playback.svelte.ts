@@ -1,5 +1,5 @@
-import { type FrameClock, screenFrames } from "@/frames";
-import { StepTimer } from "@/timer";
+import { type FrameClock, screenFrames } from "@engine/frames";
+import { StepTimer } from "@engine/timer";
 
 /**
  * Steps through an animation, one step every `timeStep` seconds of real time at the playback

@@ -1,7 +1,7 @@
 import { mount, unmount } from "svelte";
-import type { Animation } from "@/animation";
-import { Playback } from "@/playback.svelte";
-import Player from "@/player/Player.svelte";
+import type { Animation } from "@engine/animation";
+import { Playback } from "@engine/playback.svelte";
+import Player from "@engine/player/Player.svelte";
 
 const OPEN_LEGEND_MINIMUM_WIDTH = 560;
 

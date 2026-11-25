@@ -14,7 +14,7 @@
 						"patterns": [
 							{
 								"group": ["./**", "../**"],
-								"message": "Import through @/, @test/ or @faran/engine instead of a relative path."
+								"message": "Import through @engine, @engine/ or @test/ instead of a relative path."
 							}
 						]
 					}

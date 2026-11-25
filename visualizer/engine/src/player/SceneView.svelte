@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { Rendering } from "@/animation";
-    import { SceneCanvas } from "@/scene";
-    import type { Bounds } from "@/view";
+    import type { Rendering } from "@engine/animation";
+    import { SceneCanvas } from "@engine/scene";
+    import type { Bounds } from "@engine/view";
 
     const SCENE_PADDING = 24;
 

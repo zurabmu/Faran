@@ -2,12 +2,12 @@ import { DynamicDrawUsage, Group, InstancedInterleavedBuffer, InterleavedBufferA
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
-import type { LineStyle, Point, Rendering } from "@/animation";
-import { type Dashes, dashesFor } from "@/style";
-import type { CameraBox } from "@/view";
-import type { Layer, Viewport } from "@/scene/layer";
-import { paint } from "@/scene/paint";
-import { markWritten } from "@/scene/upload";
+import type { LineStyle, Point, Rendering } from "@engine/animation";
+import { type Dashes, dashesFor } from "@engine/style";
+import type { CameraBox } from "@engine/view";
+import type { Layer, Viewport } from "@engine/scene/layer";
+import { paint } from "@engine/scene/paint";
+import { markWritten } from "@engine/scene/upload";
 
 const POINT_FLOATS = 3;
 const DISTANCE_FLOATS = 1;

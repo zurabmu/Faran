@@ -77,6 +77,28 @@ coverage:
       chmod +x codecov
       ./codecov upload-process $COVERAGE_FILES --token $CODECOV_TOKEN
 
+build-docs-ui:
+  stage: build
+  image: node:22
+  needs: []
+  script:
+    - npm install -g pnpm
+    - (cd visualizer/engine && pnpm install --frozen-lockfile && pnpm build)
+    - (cd docs/ui && pnpm install --frozen-lockfile && pnpm build)
+  artifacts:
+    paths:
+      - visualizer/faran_visualizer/renderers/canvas/engine.js
+      - docs/content/javascripts/ui/
+      - docs/content/assets/logo.svg
+      - docs/content/assets/logo-mark.svg
+      - docs/content/assets/favicon.svg
+      - docs/content/assets/favicon.ico
+      - docs/content/assets/apple-touch-icon.png
+      - docs/content/assets/katex/
+    expire_in: 1 day
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
 pages:
   stage: pages
   extends:
@@ -92,6 +114,9 @@ pages:
     expire_in: 1 day
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  needs:
+    - job: build-docs-ui
+      artifacts: true
 
 mirror-github:
   stage: mirror

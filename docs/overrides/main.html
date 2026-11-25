@@ -2,7 +2,34 @@
 
 {% block extrahead %}
 {{ super() }}
-{% if page and page.meta and page.meta.reading_time %}
-<meta name="reading-time" content="true">
+<link rel="icon" type="image/svg+xml" href="{{ 'assets/favicon.svg' | url }}">
+<link rel="apple-touch-icon" href="{{ 'assets/apple-touch-icon.png' | url }}">
+<noscript><style>.md-typeset .arithmatex { visibility: visible; }</style></noscript>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% if page is defined and page.meta is defined and page.meta.water is defined and page.meta.water %}
+<faran-water></faran-water>
 {% endif %}
+{% endblock %}
+
+{% block content %}
+{% set is_draft = page.meta.status == "draft" %}
+{% set shows_reading_time = page.meta.reading_time %}
+{% if is_draft or shows_reading_time %}
+<div class="faran-page-meta">
+  {% if is_draft %}
+  <p class="faran-page-meta__status">
+    <span class="faran-page-meta__label">Draft</span>
+    <span>This page may be incomplete or inaccurate. You can help finish it by <a href="https://gitlab.com/risk-metrics/faran/-/blob/main/CONTRIBUTING.md">contributing</a>.</span>
+  </p>
+  {% endif %}
+  {% if shows_reading_time %}
+  {% set word_count = page.content | striptags | split | list | length %}
+  <p class="faran-page-meta__reading-time"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.6V8l2.3 1.5"/></svg>{{ [1, (word_count / 200) | round | int] | max }} min read</p>
+  {% endif %}
+</div>
+{% endif %}
+{{ super() }}
 {% endblock %}

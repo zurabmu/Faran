@@ -1,4 +1,4 @@
-import type { Point, Rendering } from "@/animation";
+import type { Point, Rendering } from "@engine/animation";
 
 const SMALLEST_SCENE_EXTENT = 1e-9;
 

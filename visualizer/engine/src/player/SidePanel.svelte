@@ -1,8 +1,8 @@
 <script lang="ts">
     import uPlotStyles from "uplot/dist/uPlot.min.css?raw";
-    import type { Chart, Row } from "@/animation";
-    import ChartFigure from "@/player/ChartFigure.svelte";
-    import { formatValue } from "@/player/format";
+    import type { Chart, Row } from "@engine/animation";
+    import ChartFigure from "@engine/player/ChartFigure.svelte";
+    import { formatValue } from "@engine/player/format";
 
     let { rows, charts, step, seek }: { rows: readonly Row[]; charts: readonly Chart[]; step: number; seek: (step: number) => void } = $props();
 

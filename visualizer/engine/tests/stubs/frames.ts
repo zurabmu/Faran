@@ -1,4 +1,4 @@
-import type { FrameClock } from "@faran/engine";
+import type { FrameClock } from "@engine";
 
 /**
  * Replaces the frames the browser paints in tests. Time stands still and no frame comes until

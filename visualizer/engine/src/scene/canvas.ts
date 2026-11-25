@@ -1,11 +1,11 @@
 import { CircleGeometry, OrthographicCamera, Scene } from "three";
-import type { Rendering } from "@/animation";
-import { type Bounds, type CameraBox, cameraBox } from "@/view";
-import { DotsLayer } from "@/scene/dots";
-import type { Layer, Viewport } from "@/scene/layer";
-import { LinesLayer } from "@/scene/lines";
-import { type SceneRenderer, webGLRendererOn } from "@/scene/renderer";
-import { type SizeWatcher, sizeWatcherOf } from "@/size";
+import type { Rendering } from "@engine/animation";
+import { type Bounds, type CameraBox, cameraBox } from "@engine/view";
+import { DotsLayer } from "@engine/scene/dots";
+import type { Layer, Viewport } from "@engine/scene/layer";
+import { LinesLayer } from "@engine/scene/lines";
+import { type SceneRenderer, webGLRendererOn } from "@engine/scene/renderer";
+import { type SizeWatcher, sizeWatcherOf } from "@engine/size";
 
 const CIRCLE_SEGMENTS = 24;
 

@@ -6,8 +6,8 @@ export default defineConfig({
     plugins: [svelte({ compilerOptions: { css: "injected" } })],
     resolve: {
         alias: [
-            { find: /^@faran\/engine$/, replacement: fileURLToPath(new URL("./src/index.ts", import.meta.url)) },
-            { find: /^@\/(.*)$/, replacement: `${fileURLToPath(new URL("./src/", import.meta.url))}$1` },
+            { find: /^@engine$/, replacement: fileURLToPath(new URL("./src/index.ts", import.meta.url)) },
+            { find: /^@engine\/(.*)$/, replacement: `${fileURLToPath(new URL("./src/", import.meta.url))}$1` },
             { find: /^@test\/(.*)$/, replacement: `${fileURLToPath(new URL("./tests/", import.meta.url))}$1` },
         ],
     },

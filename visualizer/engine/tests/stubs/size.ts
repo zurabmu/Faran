@@ -1,4 +1,4 @@
-import type { SizeWatcher } from "@faran/engine";
+import type { SizeWatcher } from "@engine";
 
 /**
  * A size watcher that reports a resize when the test calls `resize`.

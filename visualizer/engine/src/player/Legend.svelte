@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { LegendEntry } from "@/animation";
-    import LegendSample from "@/player/LegendSample.svelte";
+    import type { LegendEntry } from "@engine/animation";
+    import LegendSample from "@engine/player/LegendSample.svelte";
 
     let { entries, open }: { entries: readonly LegendEntry[]; open: boolean } = $props();
 </script>

@@ -1,6 +1,6 @@
-import type { Chart, ChartLine } from "@/animation";
-import { formatValue } from "@/player/format";
-import { cssColor } from "@/style";
+import type { Chart, ChartLine } from "@engine/animation";
+import { formatValue } from "@engine/player/format";
+import { cssColor } from "@engine/style";
 
 /**
  * The value of one chart line at a step, formatted, with the CSS color of the line.

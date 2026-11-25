@@ -2,6 +2,10 @@
 notebooks:
     uv run python -m tests.notebooks
 
+# Build the Svelte components that the documentation pages use
+docs-ui:
+    cd docs/ui && pnpm install --frozen-lockfile && pnpm build
+
 # Build the documentation site into site/
 docs-build:
     uv run zensical build --clean --strict

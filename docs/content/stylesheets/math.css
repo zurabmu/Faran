@@ -1,0 +1,32 @@
+.md-typeset .arithmatex:not(.faran-typeset) {
+  visibility: hidden;
+}
+
+.md-typeset .katex {
+  color: var(--faran-text);
+  font-size: 1.08em;
+}
+
+.md-typeset div.arithmatex {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.2rem 0;
+}
+
+.md-typeset div.arithmatex > .katex-display {
+  margin: 0.4em 0;
+}
+
+.md-typeset faran-equation > .arithmatex {
+  margin: 0;
+}
+
+.md-typeset faran-equation .is-highlighted {
+  color: var(--faran-start-text);
+}
+
+.md-typeset faran-equation > p {
+  margin: 0;
+  padding: 0 1.2rem 0.5rem;
+  color: var(--faran-text-muted);
+}

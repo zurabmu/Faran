@@ -6,23 +6,25 @@ site_author = "Zurab Mujirishvili"
 repo_url = "https://gitlab.com/risk-metrics/faran"
 repo_name = "risk-metrics/faran"
 
+copyright = """
+<faran-entry data-water-strength="0.15"></faran-entry>
+"""
+
 docs_dir = "docs/content"
 edit_uri = "edit/main/docs/content/"
 
 extra_javascript = [
-    "javascripts/katex.js",
-    "javascripts/lazy-iframes.js",
-    "javascripts/reading-time.js",
-    "javascripts/draft-banner.js",
-    "https://unpkg.com/katex@0/dist/katex.min.js",
-    "https://unpkg.com/katex@0/dist/contrib/auto-render.min.js",
+    { path = "javascripts/ui/index.js", type = "module" },
 ]
 
 extra_css = [
-    "stylesheets/palette.css",
-    "stylesheets/layout.css",
-    "stylesheets/components.css",
-    "https://unpkg.com/katex@0/dist/katex.min.css",
+    "assets/katex/katex.min.css",
+    "stylesheets/tokens.css",
+    "stylesheets/theme.css",
+    "stylesheets/content.css",
+    "stylesheets/math.css",
+    "stylesheets/reference.css",
+    "stylesheets/home.css",
 ]
 
 nav = [
@@ -124,10 +126,10 @@ draft = "Draft"
 [project.theme]
 variant = "modern"
 custom_dir = "docs/overrides"
-logo = "assets/logo-alt.svg"
-favicon = "assets/logo-alt.png"
+logo = "assets/logo-mark.svg"
+favicon = "assets/favicon.ico"
 icon = { repo = "material/gitlab" }
-font = { text = "Inter", code = "JetBrains Mono" }
+font = { text = "Source Sans 3", code = "JetBrains Mono" }
 features = [
     "content.code.copy",
     "content.code.annotate",
@@ -148,21 +150,15 @@ features = [
 ]
 
 [[project.theme.palette]]
-scheme = "default"
-primary = "custom"
-accent = "custom"
-toggle = { icon = "material/brightness-7", name = "Switch to dark mode" }
-
-[[project.theme.palette]]
 scheme = "slate"
 primary = "custom"
 accent = "custom"
-toggle = { icon = "material/brightness-4", name = "Switch to light mode" }
 
 [project.plugins.search]
 
 [project.plugins.mkdocstrings.handlers.python.options]
 docstring_style = "google"
+extensions = ["dataclasses", "docs/extensions/signatures.py"]
 show_source = false
 show_root_heading = true
 show_root_full_path = false
@@ -172,9 +168,10 @@ members_order = "source"
 heading_level = 2
 show_signature_annotations = true
 separate_signature = true
-line_length = 80
+line_length = 60
 filters = [
-    "!^_",
+    "!^_[^_]",
+    "!^__(?!.*__$)",
     "!^__(?!init__|call__|getitem__|setitem__|len__|iter__).*__$",
 ]
 show_if_no_docstring = false

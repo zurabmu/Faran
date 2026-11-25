@@ -1,0 +1,20 @@
+import "@/backends/Backends.svelte";
+import "@/backends/BackendSwitch.svelte";
+import "@/citations/Citation.svelte";
+import "@/docsmap/DocsMap.svelte";
+import "@/entry/Entry.svelte";
+import "@/gallery/Gallery.svelte";
+import "@/install/Install.svelte";
+import "@/lab/Lab.svelte";
+import "@/live/Live.svelte";
+import "@/math/Equation.svelte";
+import "@/mark/Mark.svelte";
+import "@/replay/Replay.svelte";
+import "@/stage/Stage.svelte";
+import "@/variants/Variants.svelte";
+import "@/water/Water.svelte";
+import { highlightCodeBlocks } from "@/code";
+import { typesetMath } from "@/math";
+
+typesetMath(document.body);
+highlightCodeBlocks(document.body);

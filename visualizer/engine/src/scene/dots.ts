@@ -1,8 +1,8 @@
 import { type CircleGeometry, DynamicDrawUsage, Group, InstancedMesh, Matrix4, MeshBasicMaterial } from "three";
-import type { Point, Rendering } from "@/animation";
-import type { Layer, Viewport } from "@/scene/layer";
-import { paint } from "@/scene/paint";
-import { markWritten } from "@/scene/upload";
+import type { Point, Rendering } from "@engine/animation";
+import type { Layer, Viewport } from "@engine/scene/layer";
+import { paint } from "@engine/scene/paint";
+import { markWritten } from "@engine/scene/upload";
 
 const MATRIX_FLOATS = 16;
 const NO_POSITIONS: readonly Point[] = [];

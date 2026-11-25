@@ -1,4 +1,4 @@
-import type { Color, LinePattern } from "@/animation";
+import type { Color, LinePattern } from "@engine/animation";
 
 /**
  * The dash and gap lengths of a line, in screen points. A solid line has none.

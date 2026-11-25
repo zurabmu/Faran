@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { Animation } from "@/animation";
-    import type { Playback } from "@/playback.svelte";
-    import { cssColor } from "@/style";
-    import Controls from "@/player/Controls.svelte";
-    import Legend from "@/player/Legend.svelte";
-    import SceneView from "@/player/SceneView.svelte";
-    import SidePanel from "@/player/SidePanel.svelte";
-    import { PlayerView } from "@/player/view.svelte";
+    import type { Animation } from "@engine/animation";
+    import type { Playback } from "@engine/playback.svelte";
+    import { cssColor } from "@engine/style";
+    import Controls from "@engine/player/Controls.svelte";
+    import Legend from "@engine/player/Legend.svelte";
+    import SceneView from "@engine/player/SceneView.svelte";
+    import SidePanel from "@engine/player/SidePanel.svelte";
+    import { PlayerView } from "@engine/player/view.svelte";
 
     let { animation, playback, showsControls, legendOpen }: { animation: Animation; playback: Playback; showsControls: boolean; legendOpen: boolean } =
         $props();

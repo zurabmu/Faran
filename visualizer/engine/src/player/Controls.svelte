@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Playback } from "@/playback.svelte";
+    import type { Playback } from "@engine/playback.svelte";
 
     let { playback }: { playback: Playback } = $props();
 

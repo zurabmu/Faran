@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { boundsOf, cssColor, Playback } from "@faran/engine";
+import { boundsOf, cssColor, Playback } from "@engine";
 import { dots, lines, square } from "@test/dsl/renderings";
 import { StubFrames } from "@test/stubs/frames";
 

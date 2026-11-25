@@ -1,0 +1,143 @@
+.md-typeset .doc-object.doc-class,
+.md-typeset .doc-object.doc-function:not(.doc-children .doc-function) {
+  margin: 2rem 0;
+  padding: 1rem 1.2rem 0.6rem;
+  border: 1px solid var(--faran-rule);
+  border-radius: 2px;
+  background-color: var(--faran-surface);
+}
+
+.md-typeset .doc-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.7rem;
+  margin: 0 0 0.6rem;
+  padding: 0;
+  border: none;
+}
+
+.md-typeset h2.doc-heading::before,
+.md-typeset h2.doc-heading::after {
+  display: none;
+}
+
+.md-typeset .doc-heading .doc-object-name {
+  order: 1;
+  min-width: 0;
+  color: var(--faran-text);
+  font-family: var(--faran-font-code);
+  font-size: 0.95em;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.md-typeset .doc-heading code {
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.md-typeset .doc-symbol {
+  order: 2;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--faran-text-faint);
+  font-family: var(--faran-font-text);
+  font-size: 0.72rem;
+  font-weight: 400;
+}
+
+.md-typeset .doc-symbol::after {
+  content: var(--faran-symbol-kind);
+}
+
+.md-typeset .doc-symbol-class {
+  --faran-symbol-kind: "class";
+}
+
+.md-typeset .doc-symbol-method {
+  --faran-symbol-kind: "method";
+}
+
+.md-typeset .doc-symbol-function {
+  --faran-symbol-kind: "function";
+}
+
+.md-typeset .doc-symbol-attribute {
+  --faran-symbol-kind: "attribute";
+}
+
+.md-typeset .doc-symbol-module {
+  --faran-symbol-kind: "module";
+}
+
+.md-typeset .doc-heading .doc-labels {
+  order: 3;
+}
+
+.md-typeset .doc-heading .headerlink {
+  order: 4;
+}
+
+.md-typeset .doc-label {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--faran-text-faint);
+  font-family: var(--faran-font-text);
+  font-size: 0.72rem;
+  font-weight: 400;
+}
+
+.md-typeset .doc-label code {
+  border: none;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+}
+
+.md-typeset .doc-symbol-toc {
+  display: none;
+}
+
+.md-typeset .doc-signature {
+  margin: 0 0 0.8rem;
+}
+
+.md-typeset .doc-signature pre {
+  background-color: var(--faran-code-bg);
+}
+
+.md-typeset .doc-signature pre > code {
+  border-left: 2px solid var(--faran-end);
+  font-size: 0.74rem;
+}
+
+.md-typeset .doc-children .doc-object {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--faran-rule-strong);
+}
+
+.md-typeset .doc-children .doc-heading .doc-object-name {
+  font-size: 0.85em;
+}
+
+.md-typeset .doc-contents table:not([class]) {
+  font-size: 0.75rem;
+}
+
+.md-typeset .doc-section-title {
+  color: var(--faran-text-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+
+.md-typeset faran-backends > [slot] > .doc-object.doc-class {
+  margin: 0;
+  border-top-left-radius: 0;
+}

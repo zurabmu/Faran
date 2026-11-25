@@ -1,7 +1,7 @@
 import uPlot from "uplot";
-import type { Chart, ChartLine } from "@/animation";
-import type { SizeWatcher } from "@/size";
-import { cssColor, customPropertiesOf, dashesFor } from "@/style";
+import type { Chart, ChartLine } from "@engine/animation";
+import type { SizeWatcher } from "@engine/size";
+import { cssColor, customPropertiesOf, dashesFor } from "@engine/style";
 
 const LINEAR_DISTRIBUTION = 1;
 const LOG_DISTRIBUTION = 3;

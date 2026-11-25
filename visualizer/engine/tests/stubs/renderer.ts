@@ -1,5 +1,5 @@
 import type { Camera, Object3D } from "three";
-import type { SceneRenderer } from "@faran/engine";
+import type { SceneRenderer } from "@engine";
 
 /**
  * Records what a scene canvas asks its renderer to do, on a canvas whose size on screen the test

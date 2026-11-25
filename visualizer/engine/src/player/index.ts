@@ -1,1 +1,1 @@
-export { type MountedAnimation, mountAnimation } from "@/player/mount";
+export { type MountedAnimation, mountAnimation } from "@engine/player/mount";

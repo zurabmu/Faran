@@ -1,6 +1,6 @@
 import type { Group } from "three";
-import type { Rendering } from "@/animation";
-import type { CameraBox } from "@/view";
+import type { Rendering } from "@engine/animation";
+import type { CameraBox } from "@engine/view";
 
 /**
  * The area of the scene a draw shows, and the canvas size in CSS pixels.

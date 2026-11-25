@@ -1,6 +1,6 @@
-import type { Animation, Frame, Rendering } from "@/animation";
-import type { Playback } from "@/playback.svelte";
-import { type Bounds, boundsOf } from "@/view";
+import type { Animation, Frame, Rendering } from "@engine/animation";
+import type { Playback } from "@engine/playback.svelte";
+import { type Bounds, boundsOf } from "@engine/view";
 
 /**
  * What the player shows of an animation at the playback's step.

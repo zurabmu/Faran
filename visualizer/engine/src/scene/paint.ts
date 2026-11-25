@@ -1,7 +1,7 @@
 import { SRGBColorSpace } from "three";
 import type { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import type { MeshBasicMaterial } from "three";
-import type { Color } from "@/animation";
+import type { Color } from "@engine/animation";
 
 /**
  * Sets the color and opacity of a material to an RGBA color with channels from 0 to 255.

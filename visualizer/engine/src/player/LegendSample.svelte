@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { LineMark, Mark } from "@/animation";
-    import { cssColor, dashesFor } from "@/style";
+    import type { LineMark, Mark } from "@engine/animation";
+    import { cssColor, dashesFor } from "@engine/style";
 
     const WIDTH = 28;
     const HEIGHT = 14;

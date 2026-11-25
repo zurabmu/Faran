@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type { Chart } from "@/animation";
-    import { ChartPlot, chartThemeOf } from "@/player/charts";
-    import { ChartReadout } from "@/player/readout.svelte";
-    import { sizeWatcherOf } from "@/size";
+    import type { Chart } from "@engine/animation";
+    import { ChartPlot, chartThemeOf } from "@engine/player/charts";
+    import { ChartReadout } from "@engine/player/readout.svelte";
+    import { sizeWatcherOf } from "@engine/size";
 
     let { chart, step, seek }: { chart: Chart; step: number; seek: (step: number) => void } = $props();
 

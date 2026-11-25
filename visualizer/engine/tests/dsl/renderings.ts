@@ -1,4 +1,4 @@
-import type { Color, LinePattern, Point, Rendering } from "@faran/engine";
+import type { Color, LinePattern, Point, Rendering } from "@engine";
 
 const WHITE: Color = [255, 255, 255, 255];
 

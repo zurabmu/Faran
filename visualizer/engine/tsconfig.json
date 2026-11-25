@@ -11,8 +11,8 @@
         "skipLibCheck": true,
         "types": ["svelte", "node", "vite/client"],
         "paths": {
-            "@faran/engine": ["./src/index.ts"],
-            "@/*": ["./src/*"],
+            "@engine": ["./src/index.ts"],
+            "@engine/*": ["./src/*"],
             "@test/*": ["./tests/*"]
         }
     },
