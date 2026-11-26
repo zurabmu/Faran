@@ -4,31 +4,29 @@ status: draft
 
 # Gaussian Sampler
 
-i.i.d. zero-mean Gaussian perturbations per timestep:
+i.i.d. zero-mean Gaussian perturbations per timestep, the sampling distribution of the original MPPI[@Williams2017], distributed as equation [](#equation-gaussian-perturbation) shows.
+
+/// equation | equation-gaussian-perturbation
 
 $$
 \boldsymbol{\epsilon}_t^{(m)} \sim \mathcal{N}(\mathbf{0},\, \operatorname{diag}(\boldsymbol{\sigma}^2))
 $$
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `standard_deviation` | array / sequence | — | Per-dimension $\boldsymbol{\sigma}$ |
-| `rollout_count` | `int` | — | Number of samples $M$ |
-| `to_batch` | batch creator | — | Wraps raw array into typed batch |
-| `seed` | `int` | — | RNG seed (NumPy) |
-| `key` | `PRNGKeyArray \| None` | `None` | JAX PRNG key (JAX only, alternative to `seed`) |
+- $\boldsymbol{\epsilon}_t^{(m)}$ is the perturbation of rollout $m$ at time step $t$.
+- $\boldsymbol{\sigma}$ is the per-dimension standard deviation.
+
+///
+
+/// live | Gaussian rollouts
+    still: true
 
 ```python
-from faran.numpy import sampler, types
-import numpy as np
-
-control_sampler = sampler.gaussian(
-    standard_deviation=np.array([0.5, 0.2]),
-    rollout_count=256,
-    to_batch=types.bicycle.control_input_batch.create,
-    seed=42,
-)
+--8<-- "docs/snippets/gaussian.py"
 ```
+
+///
+
+/// backends
 
 ::: faran.samplers.gaussian.basic.NumPyGaussianSampler
     options:
@@ -43,3 +41,7 @@ control_sampler = sampler.gaussian(
       heading_level: 2
       members:
         - create
+
+///
+
+\bibliography

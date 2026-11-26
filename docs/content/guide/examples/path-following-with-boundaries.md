@@ -56,15 +56,15 @@ asyncio.run(visualize(result))
 
 The visualization shows the reference path with a 1.5 m corridor on each side:
 
-<iframe src="../../viewer/index.html?visualization=../visualizations/mpcc-simulation/doc-path-following-with-boundary.frn" width="100%" height="800" frameborder="0"></iframe>
+/// replay | Path following with boundaries
+    recording: doc-path-following-with-boundary
+    notebook: 02_path_following_with_boundaries
 
-??? note "Full example"
+```python title="02_path_following_with_boundaries.py"
+--8<-- "docs/examples/02_path_following_with_boundaries.py"
+```
 
-    ```python
-    --8<-- "docs/examples/02_path_following_with_boundaries.py"
-    ```
-
-You can also run this example on Binder → [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/zurabmu/faran/main?filepath=notebooks/02_path_following_with_boundaries.ipynb){ .binder-badge }
+///
 
 ## Next Steps
 

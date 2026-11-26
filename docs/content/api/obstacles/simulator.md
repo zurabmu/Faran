@@ -10,13 +10,6 @@ Ground-truth obstacle generators for testing and simulation. In production, obse
 
 Obstacles with fixed positions that do not move.
 
-### Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `positions` | `(K, 2) array` | — | Obstacle positions |
-| `headings` | `(K,) array \| None` | `None` | Obstacle headings. Defaults to zero. |
-
 ### Usage
 
 ```python
@@ -28,6 +21,8 @@ simulator = obstacles.static(
 )
 ```
 
+/// backends
+
 ::: faran.obstacles.static.basic.NumPyStaticObstacleSimulator
     options:
       show_root_heading: true
@@ -38,16 +33,11 @@ simulator = obstacles.static(
       show_root_heading: true
       heading_level: 3
 
+///
+
 ## Dynamic Obstacle Simulator
 
 Obstacles moving with constant velocity. Heading is derived from velocity direction.
-
-### Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `positions` | `(K, 2) array` | Initial obstacle positions |
-| `velocities` | `(K, 2) array` | Constant velocity vectors $(v_x, v_y)$ per obstacle |
 
 ### Usage
 
@@ -58,6 +48,8 @@ simulator = obstacles.dynamic(
 )
 ```
 
+/// backends
+
 ::: faran.obstacles.dynamic.basic.NumPyDynamicObstacleSimulator
     options:
       show_root_heading: true
@@ -67,3 +59,5 @@ simulator = obstacles.dynamic(
     options:
       show_root_heading: true
       heading_level: 3
+
+///

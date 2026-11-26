@@ -73,15 +73,15 @@ asyncio.run(visualize(result))
 
 The visualization shows three obstacles placed at (20, 2.5), (35, 7.5), and (50, 2.5) along the reference path, with a 3.0 m corridor on each side:
 
-<iframe src="../../viewer/index.html?visualization=../visualizations/mpcc-simulation/doc-static-obstacles.frn" width="100%" height="800" frameborder="0"></iframe>
+/// replay | Obstacle avoidance
+    recording: doc-static-obstacles
+    notebook: 03_obstacle_avoidance
 
-??? note "Full example"
+```python title="03_obstacle_avoidance.py"
+--8<-- "docs/examples/03_obstacle_avoidance.py"
+```
 
-    ```python
-    --8<-- "docs/examples/03_obstacle_avoidance.py"
-    ```
-
-You can also run this example on Binder → [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/zurabmu/faran/main?filepath=notebooks/03_obstacle_avoidance.ipynb){ .binder-badge }
+///
 
 ## Next Steps
 

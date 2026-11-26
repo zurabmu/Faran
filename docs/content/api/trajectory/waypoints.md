@@ -4,31 +4,31 @@ status: draft
 
 # Waypoints Trajectory
 
-Cubic-spline path through a sequence of 2D waypoints. Cumulative arc lengths are computed from the waypoints to build natural cubic spline interpolants for $x(\phi)$ and $y(\phi)$. Heading is derived from the spline tangent:
+Cubic-spline path through a sequence of 2D waypoints. Cumulative arc lengths are computed from the waypoints to build natural cubic spline interpolants[@deBoor1978] for $x(\phi)$ and $y(\phi)$. Heading is derived from the spline tangent with equation [](#equation-waypoints-heading).
 
-$$\theta(\phi) = \operatorname{atan2}\!\bigl(y'(\phi),\; x'(\phi)\bigr)$$
+/// equation | equation-waypoints-heading
 
-Closest-point queries use a coarse KD-tree (NumPy) or brute-force (JAX) lookup followed by Newton refinement.
+$$
+\theta(\phi) = \operatorname{atan2}\!\bigl(y'(\phi),\; x'(\phi)\bigr)
+$$
 
-## Parameters
+- $\theta(\phi)$ is the heading at arc length $\phi$.
+- $x'(\phi)$ and $y'(\phi)$ are the derivatives of the spline interpolants.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `points` | `(N, 2) array \| Sequence[tuple]` | — | Waypoint coordinates |
-| `path_length` | `float \| None` | `None` | Parameterization length $L$. Defaults to natural arc length. |
-| `coarse_search_samples` | `int` | `200` | Samples for the initial nearest-point lookup |
-| `refining_iterations` | `int` | `3` | Newton iterations for closest-point refinement |
+///
+
+Closest-point queries use a coarse KD-tree[@Bentley1975] (NumPy) or brute-force (JAX) lookup followed by Newton refinement[@Nocedal2006].
 
 ## Usage
 
-```python
-from faran.numpy import trajectory
+/// live | Waypoints trajectory
+    still: true
 
-reference = trajectory.waypoints(
-    points=[(0.0, 0.0), (5.0, 3.0), (10.0, 0.0)],
-    path_length=12.0,
-)
+```python
+--8<-- "docs/snippets/waypoints.py"
 ```
+
+///
 
 ## NumPy
 
@@ -49,3 +49,5 @@ reference = trajectory.waypoints(
       members:
         - create
         - query
+
+\bibliography

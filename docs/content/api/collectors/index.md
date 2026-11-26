@@ -51,14 +51,4 @@ states = registry.data(access.states.require())
 controls = registry.data(access.controls.optional())
 ```
 
-| Accessor | Type | Key |
-|----------|------|-----|
-| `access.states` | `StateSequence` | `"states"` |
-| `access.controls` | `Sequence[Control]` | `"controls"` |
-| `access.risks` | `Sequence[Risk]` | `"risks"` |
-| `access.trajectories` | `Sequence[StateTrajectories]` | `"trajectories"` |
-| `access.obstacle_states` | `ObstacleStates` | `"obstacle_states"` |
-| `access.obstacle_observations` | `ObstacleStates` | `"obstacle_observations"` |
-| `access.obstacle_forecasts` | `Sequence[ObstacleStates]` | `"obstacle_forecasts"` |
-
-Use `.require()` to raise if data was not collected, or `.optional()` if it may not be available.
+Use `.require()` to raise if data was not collected, or `.optional()` if it may not be available. The [`access`](registry.md#faran.collectors.access) namespace lists every accessor and the collector that records its data.

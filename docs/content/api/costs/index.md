@@ -4,7 +4,7 @@ status: draft
 
 # Cost Functions
 
-Cost functions score each rollout at every time step. MPPI sums costs over the horizon and applies softmax weighting — lower total cost is better.
+Cost functions score each rollout at every time step. MPPI sums costs over the horizon and weights rollouts with a softmax over their total costs[@Williams2018], so a lower total cost is better.
 
 | Category | Functions | Purpose |
 |----------|-----------|---------|
@@ -41,3 +41,5 @@ total = costs.combined(
       heading_level: 3
 
 Any callable matching the `CostFunction` protocol can be passed to `costs.combined`.
+
+\bibliography

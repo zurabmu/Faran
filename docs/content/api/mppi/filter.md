@@ -10,32 +10,31 @@ Filters post-process the weighted-average optimal control sequence produced by t
 
 Fits a low-degree polynomial to successive windows of the optimal control sequence via least squares[@Savitzky1964][@Williams2018], then takes the fitted value at each window center as the smoothed output. Applied independently to each control dimension.
 
-Given a half-window size $w$ and polynomial degree $p$ (with $p < 2w + 1$), the smoothed value at time step $t$ is:
+Given a half-window size $w$ and polynomial degree $p$ (with $p < 2w + 1$), equation [](#equation-savitzky-golay) gives the smoothed value at time step $t$.
+
+/// equation | equation-savitzky-golay
 
 $$
 \hat{y}_t = \sum_{j=-w}^{w} c_j \, y_{t+j}
 $$
 
-where $\{c_j\}$ are convolution coefficients determined solely by $w$ and $p$, precomputed once.
+- $\hat{y}_t$ is the smoothed value at time step $t$.
+- $y_{t+j}$ is the unsmoothed value at time step $t + j$.
+- $c_j$ are the convolution coefficients, which depend only on $w$ and $p$ and are computed once.
 
-| Parameter | Type | Constraint | Description |
-|-----------|------|------------|-------------|
-| `window_length` | `int` | Must be odd | Number of time steps in the smoothing window ($2w + 1$) |
-| `polynomial_order` | `int` | $0 \leq p < \text{window\_length}$ | Degree of the fitting polynomial |
+///
 
-```python
-from faran.numpy import filters
-
-sg_filter = filters.savgol(window_length=11, polynomial_order=3)
-```
-
-Pass to any [MPPI factory](index.md) via `filter_function`:
+/// live | Savitzky-Golay filter
 
 ```python
-from faran.numpy import mppi
-
-planner = mppi.base(..., filter_function=sg_filter)
+--8<-- "docs/snippets/savgol.py"
 ```
+
+///
+
+Pass the filter to any [MPPI factory](index.md) as `filter_function`.
+
+/// backends
 
 ::: faran.mppi.savgol.basic.NumPySavGolFilter
     options:
@@ -50,6 +49,8 @@ planner = mppi.base(..., filter_function=sg_filter)
       heading_level: 3
       members:
         - create
+
+///
 
 ## No Filter
 

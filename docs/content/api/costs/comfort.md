@@ -6,15 +6,19 @@ status: draft
 
 ## Control Smoothing Cost
 
-Penalizes rate of change between consecutive control inputs[@Liniger2015]:
+Penalizes rate of change between consecutive control inputs[@Liniger2015]. Equation [](#equation-control-smoothing) gives the cost.
+
+/// equation | equation-control-smoothing
 
 $$
 J_s = \sum_{d} w_d \, (\mathbf{u}_{t,d} - \mathbf{u}_{t-1,d})^2
 $$
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `weights` | array of shape $(D_u,)$ | Per-dimension weight $w_d$ |
+- $J_s$ is the smoothing cost at time step $t$.
+- $w_d$ is the weight of control dimension $d$.
+- $\mathbf{u}_{t,d}$ is control input $d$ at time step $t$.
+
+///
 
 ```python
 from faran.numpy import costs
@@ -24,6 +28,8 @@ smoothing = costs.comfort.control_smoothing(
     weights=np.array([5.0, 20.0, 5.0]),
 )
 ```
+
+/// backends
 
 ::: faran.costs.basic.NumPyControlSmoothingCost
     options:
@@ -39,23 +45,31 @@ smoothing = costs.comfort.control_smoothing(
       members:
         - create
 
+///
+
 ## Control Effort Cost
 
-Penalizes control input magnitudes[@Williams2017]:
+Penalizes control input magnitudes[@Williams2017]. Equation [](#equation-control-effort) gives the cost.
+
+/// equation | equation-control-effort
 
 $$
 J_n = \sum_{d} w_d \, \mathbf{u}_{t,d}^2
 $$
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `weights` | array of shape $(D_u,)$ | Per-dimension weight $w_d$ |
+- $J_n$ is the effort cost at time step $t$.
+- $w_d$ is the weight of control dimension $d$.
+- $\mathbf{u}_{t,d}$ is control input $d$ at time step $t$.
+
+///
 
 ```python
 effort = costs.comfort.control_effort(
     weights=np.array([0.1, 0.5, 0.1]),
 )
 ```
+
+/// backends
 
 ::: faran.costs.basic.NumPyControlEffortCost
     options:
@@ -70,5 +84,7 @@ effort = costs.comfort.control_effort(
       heading_level: 3
       members:
         - create
+
+///
 
 \bibliography

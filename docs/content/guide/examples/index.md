@@ -6,7 +6,7 @@ status: draft
 
 Complete [MPCC](../concepts/mpcc.md) planning scenarios, each building on the [Getting Started](../getting-started.md) example. Expand **Full example** for the entire runnable script.
 
-Each example can also be run as a Jupyter notebook via the Binder badge.
+Each example can also be run as a Jupyter notebook with the **Run on Binder** button under its replay.
 
 | Example                                                                       | What it adds                                      |
 |-------------------------------------------------------------------------------|---------------------------------------------------|

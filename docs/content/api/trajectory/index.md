@@ -15,11 +15,7 @@ Reference paths parameterized by arc length $\phi \in [0, L]$, where $L$ is the 
 
 ## Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `path_length` | `float` | User-specified parameterization length $L$ |
-| `natural_length` | `float` | Geometric arc length of the underlying curve |
-| `end` | `tuple[float, float]` | $(x, y)$ of the final point |
+Every trajectory has a `path_length`, a `natural_length` and an `end` point, which the [Trajectory Protocol](#trajectory-protocol) describes.
 
 ## Querying
 

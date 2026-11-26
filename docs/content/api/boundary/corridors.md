@@ -6,20 +6,20 @@ status: draft
 
 ## Fixed-Width Boundary
 
-Constant corridor width on each side of the reference path. The signed distance is:
+Constant corridor width on each side of the reference path. Equation [](#equation-fixed-width-distance) gives the signed distance to the corridor boundary.
 
-$$d = \min\bigl(w_\text{left} + e_\text{lat},\; w_\text{right} - e_\text{lat}\bigr)$$
+/// equation | equation-fixed-width-distance
 
-where $e_\text{lat}$ is the lateral offset from the reference and $w_\text{left}$, $w_\text{right}$ are the left and right widths. Positive $d$ means the vehicle is inside the corridor.
+$$
+d = \min\bigl(w_\text{left} + e_\text{lat},\; w_\text{right} - e_\text{lat}\bigr)
+$$
 
-### Parameters
+- $d$ is the signed distance, which is positive when the vehicle is inside the corridor.
+- $e_\text{lat}$ is the lateral offset from the reference path.
+- $w_\text{left}$ is the left corridor width.
+- $w_\text{right}$ is the right corridor width.
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `reference` | `Trajectory` | Reference trajectory defining the corridor center |
-| `position_extractor` | `PositionExtractor` | Extracts $(x, y)$ positions from states |
-| `left` | `float` | Left-side corridor width |
-| `right` | `float` | Right-side corridor width |
+///
 
 ### Usage
 
@@ -58,15 +58,7 @@ corridor = boundary.fixed_width(
 
 ## Piecewise Fixed-Width Boundary
 
-Width changes at arc-length breakpoints along the reference path. Between breakpoints, widths are constant. The distance formula is the same as fixed-width but uses segment-specific widths looked up by longitudinal position.
-
-### Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `reference` | `Trajectory` | Reference trajectory defining the corridor center |
-| `position_extractor` | `PositionExtractor` | Extracts $(x, y)$ positions from states |
-| `widths` | `dict[float, BoundaryWidths]` | Mapping from arc-length breakpoints to `{"left": float, "right": float}` |
+Width changes at arc-length breakpoints along the reference path. Between breakpoints, widths are constant. The signed distance follows equation [](#equation-fixed-width-distance), with the widths of the segment that contains the vehicle's longitudinal position.
 
 ### Usage
 

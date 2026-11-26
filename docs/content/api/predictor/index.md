@@ -15,16 +15,6 @@ Obstacle motion predictors estimate future obstacle states. Two predictors are a
 
 Forward-propagates obstacle states using a [motion model](../model/index.md) and [state estimator](../estimation/index.md). With Kalman filter-based estimators, covariance is propagated automatically[@Schubert2008].
 
-### Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `horizon` | `int` | — | Prediction horizon $T$ |
-| `model` | `ObstacleModel` | — | Motion model for forward propagation |
-| `estimator` | `ObstacleStateEstimator` | — | Estimates current state and inputs from history |
-| `prediction` | `PredictionCreator` | — | Converts propagated state sequences to obstacle states |
-| `assumptions` | `InputAssumptionProvider \| None` | `None` | Overrides estimated inputs before propagation. Defaults to identity (no change). |
-
 ### Usage
 
 ```python
@@ -50,23 +40,11 @@ provider = obstacles.provider.predicting(
 
 Replicates the last observed state over the prediction horizon.
 
-### Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `horizon` | `int` | Prediction horizon $T$ |
-
 ## Predicting Obstacle State Provider
 
 Combines a predictor with a running state history. Observations are appended via `observe()`, and predictions are retrieved by calling the provider.
 
 ### Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `predictor` | `ObstacleMotionPredictor` | — | Predictor to use |
-| `history` | `ObstacleStatesRunningHistory` | — | Running observation history |
-| `id_assignment` | `ObstacleIdAssignment \| None` | `None` | ID matching strategy. Defaults to no-op. |
 
 ::: faran.obstacles.PredictingObstacleStateProvider
     options:

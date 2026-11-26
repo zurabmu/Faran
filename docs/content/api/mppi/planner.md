@@ -28,6 +28,8 @@ Factory functions and concrete classes for the [MPPI](index.md) planner. See the
 
 ## MPCC Factory
 
+/// backends
+
 ::: faran.mpcc.basic.NumPyMpccMppi
     options:
       show_root_heading: true
@@ -42,17 +44,47 @@ Factory functions and concrete classes for the [MPPI](index.md) planner. See the
       members:
         - create
 
+///
+
+## Augmented Factory
+
+/// backends
+
+::: faran.states.augmented.mppi.basic.NumPyAugmentedMppi
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members:
+        - create
+
+::: faran.states.augmented.mppi.accelerated.JaxAugmentedMppi
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members:
+        - create
+
+///
+
+## MPCC Configuration
+
+::: faran.mpcc.basic.NumPyMpccWeightConfig
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members: false
+
+::: faran.mpcc.basic.NumPyMpccVirtualStateConfig
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members: false
+
 ## Supporting Types
 
 ### Control
 
 The return type of `planner.step()`.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `optimal` | `ControlInputSequence` | Weighted-average optimal control sequence |
-| `nominal` | `ControlInputSequence` | Shifted sequence for warm-starting the next step |
-| `debug` | `DebugData` | Contains `trajectory_weights` ($w_m$ for each rollout) |
 
 ::: faran.types.Control
     options:
@@ -60,11 +92,6 @@ The return type of `planner.step()`.
       heading_level: 4
 
 ### Update Functions
-
-| Class | Behavior |
-|-------|----------|
-| `UseOptimalControlUpdate` | Sets nominal to the optimal input (default) |
-| `NoUpdate` | Keeps the nominal input unchanged |
 
 ::: faran.mppi.common.UseOptimalControlUpdate
     options:

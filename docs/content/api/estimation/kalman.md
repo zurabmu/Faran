@@ -8,41 +8,43 @@ Linear state estimator for the [integrator](../model/integrator.md) model[@Thrun
 
 ## Equations
 
-**Predict:**
+The filter predicts the belief with equation [](#equation-kalman-predict) and then updates it with the observation $\mathbf{z}_t$ using equation [](#equation-kalman-update).
+
+/// equation | equation-kalman-predict
 
 $$
-\hat{\boldsymbol{\mu}}_t = A \, \boldsymbol{\mu}_{t-1}, \quad
-\hat{\boldsymbol{\Sigma}}_t = A \, \boldsymbol{\Sigma}_{t-1} \, A^\top + R
+\begin{aligned}
+\hat{\boldsymbol{\mu}}_t &= A \, \boldsymbol{\mu}_{t-1} \\
+\hat{\boldsymbol{\Sigma}}_t &= A \, \boldsymbol{\Sigma}_{t-1} \, A^\top + R
+\end{aligned}
 $$
 
-**Update:**
+- $\hat{\boldsymbol{\mu}}_t$ is the predicted state mean.
+- $\hat{\boldsymbol{\Sigma}}_t$ is the predicted state covariance.
+- $A$ is the state transition matrix, built from `time_step_size`.
+- $R$ is the process noise covariance.
+
+///
+
+/// equation | equation-kalman-update
 
 $$
-K_t = \hat{\boldsymbol{\Sigma}}_t \, H^\top \bigl(H \, \hat{\boldsymbol{\Sigma}}_t \, H^\top + Q\bigr)^{-1}
+\begin{aligned}
+K_t &= \hat{\boldsymbol{\Sigma}}_t \, H^\top \bigl(H \, \hat{\boldsymbol{\Sigma}}_t \, H^\top + Q\bigr)^{-1} \\
+\boldsymbol{\mu}_t &= \hat{\boldsymbol{\mu}}_t + K_t \bigl(\mathbf{z}_t - H \, \hat{\boldsymbol{\mu}}_t\bigr) \\
+\boldsymbol{\Sigma}_t &= (I - K_t H) \, \hat{\boldsymbol{\Sigma}}_t
+\end{aligned}
 $$
 
-$$
-\boldsymbol{\mu}_t = \hat{\boldsymbol{\mu}}_t + K_t \bigl(\mathbf{z}_t - H \, \hat{\boldsymbol{\mu}}_t\bigr), \quad
-\boldsymbol{\Sigma}_t = (I - K_t H) \, \hat{\boldsymbol{\Sigma}}_t
-$$
+- $K_t$ is the Kalman gain.
+- $H$ is the observation matrix, which maps the full state to the observed positions.
+- $Q$ is the observation noise covariance.
+- $\mathbf{z}_t$ is the observation at time step $t$.
+- $I$ is the identity matrix.
 
-| Symbol | Description |
-|--------|-------------|
-| $A$ | State transition matrix (built from `time_step_size`) |
-| $H$ | Observation matrix (maps full state to observed positions) |
-| $R$ | Process noise covariance |
-| $Q$ | Observation noise covariance |
+///
 
 ## Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `time_step_size` | `float` | — | Integration step $\Delta t$ |
-| `process_noise_covariance` | scalar / 1D / 2D | — | $R$ — model deviation |
-| `observation_noise_covariance` | scalar / 1D / 2D | — | $Q$ — sensor noise |
-| `initial_state_covariance` | 2D array \| `None` | `None` | $\Sigma_0$ — initial uncertainty |
-| `observation_dimension` | `int \| None` | `None` | Required when covariances are scalar |
-| `noise_model` | provider \| `None` | `None` | [Adaptive noise](noise.md) provider |
 
 ```python
 from faran.numpy import model
@@ -53,6 +55,8 @@ estimator = model.integrator.estimator.kf(
     observation_noise_covariance=1e-2,
 )
 ```
+
+/// backends
 
 ::: faran.models.integrator.basic.NumPyKfIntegratorStateEstimator
     options:
@@ -67,6 +71,8 @@ estimator = model.integrator.estimator.kf(
       heading_level: 2
       members:
         - create
+
+///
 
 For nonlinear models (bicycle, unicycle), use the [EKF](ekf.md) or [UKF](ukf.md).
 

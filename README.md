@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://risk-metrics.gitlab.io/faran/">
-        <img src="./assets/logo.png" width="500" alt="Faran Logo">
+        <img src="https://risk-metrics.gitlab.io/faran/assets/logo.svg" width="160" alt="Faran logo">
     </a>
 </p>
 
@@ -17,7 +17,7 @@ The library includes implementations of [MPPI](https://risk-metrics.gitlab.io/fa
 Faran also provides an optional visualization package, [`faran-visualizer`](https://pypi.org/project/faran-visualizer/), which can generate standalone HTML files for interactive visualizations of simulation results.
 
 <p align="center">
-    <img src="./assets/readme-example.gif" width="700" alt="Animated visualization of a trajectory planner navigating through traffic">
+    <img src="https://gitlab.com/risk-metrics/faran/-/raw/main/assets/readme-example.gif" width="700" alt="Animated visualization of a trajectory planner navigating through traffic">
 </p>
 
 > Faran is being actively developed. That means some features may be missing, there are [some gotchas](https://risk-metrics.gitlab.io/faran/guide/gotchas/), and some of the API might change. See the [roadmap](https://risk-metrics.gitlab.io/faran/guide/features/) for what's available and what's coming. You can help by [reporting issues](https://gitlab.com/risk-metrics/faran/-/issues) or contributing fixes and features.
@@ -144,7 +144,7 @@ configure(output_directory=".")
 asyncio.run(visualizer.mpcc()(result, key="quickstart"))
 ```
 
-![Quickstart visualization](./assets/quickstart.gif)
+![Quickstart visualization](https://gitlab.com/risk-metrics/faran/-/raw/main/assets/quickstart.gif)
 
 </details>
 

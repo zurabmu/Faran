@@ -8,19 +8,9 @@ One of the goals of Faran is to get you to work on the problem you care about as
 
 ## Installation
 
-```bash
-pip install faran          # NumPy only
-pip install faran[jax]     # NumPy + JAX (CPU)
-pip install faran[cuda]    # NumPy + JAX with GPU support (Linux)
-```
+Pick a backend. The visualizer is a separate package, optional but recommended.
 
-Requires Python 3.13+. 
-
-The visualizer is a separate package (optional, but recommended dependency):
-
-```bash
-pip install faran-visualizer
-```
+<faran-install></faran-install>
 
 ## Your First Planner
 
@@ -112,18 +102,17 @@ import asyncio
 asyncio.run(visualize(result))
 ```
 
-Voilà! This produces a visualization for your viewing pleasure. You can open it with `faran-visualizer view mpcc-simulation/visualization.frn` and it should look like the one below:
+Voilà! This produces a visualization for your viewing pleasure. You can open it with `faran-visualizer view mpcc-simulation/visualization.json` and it should look like the one below:
 
-<iframe src="../viewer/index.html?visualization=../visualizations/mpcc-simulation/doc-basic-path-following.frn"
-        width="100%" height="700px" frameborder="0"></iframe>
+/// replay | Basic path following
+    recording: doc-basic-path-following
+    notebook: 01_basic_path_following
 
-??? note "Full example"
+```python title="01_basic_path_following.py"
+--8<-- "docs/examples/01_basic_path_following.py"
+```
 
-    ```python
-    --8<-- "docs/examples/01_basic_path_following.py"
-    ```
-
-You can also check out this example on Binder → [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/zurabmu/faran/main?filepath=notebooks/01_basic_path_following.ipynb){ .binder-badge }
+///
 
 ## How MPCC Works
 

@@ -30,9 +30,9 @@ The changes from [Obstacle Avoidance](obstacle-avoidance.md):
 | `risk.mean_variance(gamma=0.5, sample_count=10)`         | [Mean-variance risk metric](../../api/costs/risk.md) penalizes both expected collision cost and its variance                                           |
 | `metric=risk_collector` on `costs.safety.collision(...)` | Collision cost evaluates risk over 10 sampled obstacle poses rendered from the predicted distribution, not just the mean prediction                       |
 
-The EKF propagates covariance through the motion model at each prediction step. Its `process_noise_covariance` (1e-4) and `observation_noise_covariance` (1e-8) control the trust balance between the model and observations — low observation noise means the filter trusts observations heavily, while moderate process noise allows the model prediction to drift. The observation history was increased from 2 to 10 time steps (`horizon=10` in `obstacle_states_running_history`) to give the EKF more data for state estimation.
+The EKF propagates covariance through the motion model at each prediction step[@Thrun2005]. Its `process_noise_covariance` (1e-4) and `observation_noise_covariance` (1e-8) control the trust balance between the model and observations — low observation noise means the filter trusts observations heavily, while moderate process noise allows the model prediction to drift. The observation history was increased from 2 to 10 time steps (`horizon=10` in `obstacle_states_running_history`) to give the EKF more data for state estimation.
 
-The mean-variance metric converts the sampled collision costs into a single scalar: $\mathbb{E}[c] + \gamma \cdot \text{Var}(c)$. Higher `gamma` makes the planner more conservative — it penalizes *uncertain* near-misses more than *confident* near-misses. With `gamma=0.5`, the planner gives moderate weight to prediction uncertainty.
+The [mean-variance metric](../../api/costs/risk.md#mean-variance)[@Markowitz1952] converts the sampled collision costs into a single scalar. Higher `gamma` makes the planner more conservative — it penalizes *uncertain* near-misses more than *confident* near-misses. With `gamma=0.5`, the planner gives moderate weight to prediction uncertainty.
 
 ## Simulation Loop
 
@@ -63,18 +63,20 @@ asyncio.run(visualize(result))
 
 The visualization shows four obstacles — three moving with constant velocities of up to 2.5 m/s and one stationary — along a 100 m reference path with a 3.0 m corridor:
 
-<iframe src="../../viewer/index.html?visualization=../visualizations/mpcc-simulation/doc-dynamic-obstacles-uncertain.frn" width="100%" height="800" frameborder="0"></iframe>
+/// replay | Obstacle avoidance with uncertainty
+    recording: doc-dynamic-obstacles-uncertain
+    notebook: 04_obstacle_avoidance_with_uncertainty
 
-??? note "Full example"
+```python title="04_obstacle_avoidance_with_uncertainty.py"
+--8<-- "docs/examples/04_obstacle_avoidance_with_uncertainty.py"
+```
 
-    ```python
-    --8<-- "docs/examples/04_obstacle_avoidance_with_uncertainty.py"
-    ```
-
-You can also run this example on Binder → [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/zurabmu/faran/main?filepath=notebooks/04_obstacle_avoidance_with_uncertainty.ipynb){ .binder-badge }
+///
 
 ## Next Steps
 
 - **[Risk Metrics](../../api/costs/risk.md)** — Available risk metrics for uncertainty-aware cost evaluation.
 - **[State Estimation](../../api/estimation/index.md)** — KF, EKF, and UKF estimators with adaptive noise.
 - **[MPPI Planning](../../api/mppi/index.md)** — Customize the planner with different models, samplers, and costs.
+
+\bibliography

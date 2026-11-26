@@ -4,17 +4,26 @@ reading_time: true
 
 # Model Predictive Contouring Control
 
-Model Predictive Contouring Control (MPCC) is an MPC formulation for path following[@Liniger2015]. It introduces a virtual path parameter $\phi$ that moves independently along the reference trajectory, and decomposes tracking error into two components:
+Model Predictive Contouring Control (MPCC) is an MPC formulation for path following[@Lam2010][@Liniger2015]. It introduces a virtual path parameter $\phi$ that moves independently along the reference trajectory, and decomposes the tracking error into the contouring error and the lag error of equation [](#equation-tracking-errors).
 
-- **Contouring error** $e_c$ — perpendicular distance to the reference point (lateral deviation)
-- **Lag error** $e_l$ — longitudinal distance to the reference point (longitudinal deviation)
+/// equation | equation-tracking-errors
 
 $$
-e_c = \sin(\theta_\phi)(x - x_\phi) - \cos(\theta_\phi)(y - y_\phi) \\
-e_l = -\cos(\theta_\phi)(x - x_\phi) - \sin(\theta_\phi)(y - y_\phi)
+\begin{aligned}
+e_c &= \sin(\theta_\phi)(x - x_\phi) - \cos(\theta_\phi)(y - y_\phi) \\
+e_l &= -\cos(\theta_\phi)(x - x_\phi) - \sin(\theta_\phi)(y - y_\phi)
+\end{aligned}
 $$
 
-Where $(x_\phi, y_\phi)$ is the reference point along the path corresponding to $\phi$, and $\theta_\phi$ is the reference heading at that point. The trajectory components provided by Faran support querying by arc length, (see [Trajectory API reference](../../api/trajectory/index.md#trajectory)) so these errors can be computed easily.
+- $e_c$ is the contouring error, the perpendicular (lateral) distance to the reference point.
+- $e_l$ is the lag error, the longitudinal distance to the reference point.
+- $(x, y)$ is the vehicle position.
+- $(x_\phi, y_\phi)$ is the reference point along the path at $\phi$.
+- $\theta_\phi$ is the reference heading at that point.
+
+///
+
+The trajectory components provided by Faran support querying by arc length (see [Trajectory API reference](../../api/trajectory/index.md#trajectory)), so the errors in equation [](#equation-tracking-errors) can be computed easily.
 
 A progress cost pushes $\phi$ forward while contouring and lag costs pull the vehicle toward the reference point.
 

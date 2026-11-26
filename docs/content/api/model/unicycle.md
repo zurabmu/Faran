@@ -8,32 +8,35 @@ Three-state model representing a point robot with direct velocity and angular ve
 
 ## Dynamics
 
+The state is $[x, y, \theta]$ (position and heading), and the control input is $[v, \omega]$ (linear and angular velocity). Equation [](#equation-unicycle-transition) gives the state transition.
+
+/// equation | equation-unicycle-transition
+
 $$
-x_{t+1} = x_t + v_t \cos(\theta_t) \, \Delta t, \quad
-y_{t+1} = y_t + v_t \sin(\theta_t) \, \Delta t, \quad
-\theta_{t+1} = \theta_t + \omega_t \, \Delta t
+\begin{aligned}
+x_{t+1} &= x_t + v_t \cos(\theta_t) \, \Delta t \\
+y_{t+1} &= y_t + v_t \sin(\theta_t) \, \Delta t \\
+\theta_{t+1} &= \theta_t + \omega_t \, \Delta t
+\end{aligned}
 $$
 
-| Component | Variables | Description |
-|-----------|-----------|-------------|
-| State | $[x, y, \theta]$ | Position, heading |
-| Controls | $[v, \omega]$ | Linear velocity, angular velocity |
+- $(x_t, y_t)$ is the position at time step $t$.
+- $\theta_t$ is the heading.
+- $v_t$ is the linear velocity.
+- $\omega_t$ is the angular velocity.
+- $\Delta t$ is the time step size.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `time_step_size` | `float` | — | Integration step $\Delta t$ (seconds) |
-| `speed_limits` | `tuple[float, float] \| None` | `None` | Clamp bounds on $v$ |
-| `angular_velocity_limits` | `tuple[float, float] \| None` | `None` | Clamp bounds on $\omega$ |
+///
+
+/// live | Unicycle
 
 ```python
-from faran.numpy import model
-
-unicycle = model.unicycle.dynamical(
-    time_step_size=0.1,
-    speed_limits=(-5.0, 5.0),
-    angular_velocity_limits=(-1.0, 1.0),
-)
+--8<-- "docs/snippets/unicycle.py"
 ```
+
+///
+
+/// backends
 
 ::: faran.models.unicycle.basic.NumPyUnicycleModel
     options:
@@ -49,9 +52,13 @@ unicycle = model.unicycle.dynamical(
       members:
         - create
 
+///
+
 ## Obstacle Model
 
 Propagates obstacle states forward using unicycle kinematics. Follows the CTRV (Constant Turn Rate & Velocity) assumption[@Schubert2008]: state $\mathsf{x} = [x, y, \theta, v, \omega]$ with $v$ and $\omega$ held constant over the prediction horizon.
+
+/// backends
 
 ::: faran.models.unicycle.basic.NumPyUnicycleObstacleModel
     options:
@@ -66,5 +73,7 @@ Propagates obstacle states forward using unicycle kinematics. Follows the CTRV (
       heading_level: 3
       members:
         - create
+
+///
 
 \bibliography

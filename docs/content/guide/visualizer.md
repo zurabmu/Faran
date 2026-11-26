@@ -9,10 +9,10 @@ status: draft
 ## Installation
 
 ```bash
-pip install faran-visualizer
+pip install faran-visualizer[rerun]
 ```
 
-If you want to show visualizations in Jupyter notebooks as well, install `faran-visualizer[notebook]` instead.
+The `rerun` extra installs the Rerun viewer. Without it, only the canvas renderer works (see [Renderers](#renderers)). If you want to show visualizations in Jupyter notebooks as well, install `faran-visualizer[notebook]` instead.
 
 In order to view a visualization, you need to open it in the same version of `faran-visualizer` that was used to create it.
 
@@ -22,12 +22,32 @@ In order to view a visualization, you need to open it in the same version of `fa
 2. You call a visualizer factory (e.g. `visualizer.simulation()` or `visualizer.mpcc()`) to create a visualizer.
 3. The visualizer creates a visualization from the scene.
 
-The output will be in the configured directory (default: `visualizations` in the current working directory), as a `<key>.frn` file. You can view it in the viewer with `faran-visualizer view <key>.frn`, or in the browser with `faran-visualizer view <key>.frn --browser`. In a Jupyter notebook, `faran_visualizer.show("<key>.frn")` shows it in the cell output.
+The output will be in the configured directory (default: `visualizations` in the current working directory), as a `<key>.json` file with the default renderer. You can open it in the browser with `faran-visualizer view <key>.json`. In a Jupyter notebook, `faran_visualizer.show("<key>.json")` shows it in the cell output.
 
 ```python
 from faran_visualizer import configure
 configure(output_directory="./results")
 ```
+
+## Renderers
+
+A renderer saves the visualization and opens it again. There are two:
+
+| Renderer | Saves | Opens it in |
+|----------|-------|-------------|
+| `CanvasRenderer()` (default) | `<key>.json` | A page in your browser, drawn by the canvas engine that this site also uses |
+| `RerunRenderer()` | `<key>.frn` | The Rerun viewer, which needs the `rerun` extra. `faran-visualizer view --browser` opens the Rerun web viewer instead |
+
+Set the renderer for every visualizer with `configure`, or for one visualizer with its factory:
+
+```python
+from faran_visualizer import RerunRenderer, configure, visualizer
+
+configure(output_directory="./results", renderer=RerunRenderer())
+visualize = visualizer.mpcc(renderer=RerunRenderer())
+```
+
+`faran-visualizer view` and `faran_visualizer.show` pick the renderer from the file's extension, so both kinds of files open the same way. The canvas renderer needs no packages beyond the visualizer's own, so it also works in [Pyodide](https://pyodide.org).
 
 ## MPCC Visualization
 
@@ -50,41 +70,11 @@ configure(output_directory=".")
 asyncio.run(visualizer.mpcc()(result, key="my-simulation"))
 ```
 
-### Required Fields
-
-| Field               | Type            | Description                                 |
-|---------------------|-----------------|---------------------------------------------|
-| `reference`         | `Trajectory`    | The reference path used by MPCC             |
-| `states`            | `StateSequence` | Augmented state history from collectors     |
-| `contouring_errors` | `array`         | Contouring errors from `metrics.mpcc_error` |
-| `lag_errors`        | `array`         | Lag errors from `metrics.mpcc_error`        |
-| `time_step_size`    | `float`         | Simulation time step (seconds)              |
-| `wheelbase`         | `float`         | Length of the rendered boxes (meters)          |
-
-### Optional Fields
-
-| Field                  | Description                                                        |
-|------------------------|--------------------------------------------------------------------|
-| `obstacles`            | Obstacle state history for rendering obstacles                     |
-| `obstacle_forecasts`   | Predicted obstacle trajectories                                    |
-| `boundary`             | Corridor boundary to render                                          |
-| `controls`             | Control input history                                              |
-| `risks`                | Risk metric values over time                                       |
-| `optimal_trajectories` | Best trajectory at each step                                       |
-| `nominal_trajectories` | Nominal (warm-started) trajectory at each step                     |
-| `vehicle_width`        | Width of the rendered boxes (meters), required when boxes are rendered   |
-| `vehicle_type`         | `"car"` or `"triangle"` renders the ego as a box, `"circle"` as a circle |
-| `vehicle_radius`       | Radius of the ego when rendered as a circle (meters)                  |
-| `obstacle_shape`       | `"rectangle"` renders obstacles as boxes, `"circle"` as circles      |
-| `obstacle_radius`      | Radius of obstacles when rendered as circles (meters)                 |
-| `max_contouring_error` | TODO                                                               |
-| `max_lag_error`        | TODO                                                               |
-| `network`              | Lanes to render, as a `Road.Network`                                 |
-| `plots`                | TODO, see [Custom Plots](#custom-plots)                            |
+The fields of [`MpccSimulationResult`](../api/visualizer/index.md#faran_visualizer.MpccSimulationResult) say what each one renders and which ones are required.
 
 ## Generic Visualization
 
-For any other simulation, describe what to show as a `Scene`. The renderings come from the `render` namespace. `background` holds the renderings shown at every step, and `at_step` returns the renderings of one step. Every step must return renderings with the same names, in the same order. The name of a rendering is also its name in the viewer.
+For any other simulation, describe what to show as a `Scene`. The renderings come from the `render` namespace. `background` holds the renderings shown at every step, and `at_step` returns the renderings of one step. Every step must return renderings with the same names, in the same order. The name of a rendering is also its name in the viewer. The label of a rendering is its entry in the legend, and renderings with the same label, such as a plan and its points, share one entry.
 
 ```python
 import asyncio
@@ -94,11 +84,11 @@ scene = Scene(
     time_step=0.05,
     step_count=len(positions),
     background=[
-        render.dots(name="waypoints", positions=waypoints, color="#457b9d", size=6.0),
+        render.dots(name="waypoints", label="Waypoints", positions=waypoints, color="#457b9d", size=6.0),
     ],
     at_step=lambda step: [
-        render.lines(name="drone/path", strips=[positions[: step + 1]], color="#e63946"),
-        render.lines(name="drone/plan", strips=[plans[step]], color="#e63946", pattern="dashed"),
+        render.lines(name="drone/path", label="Traveled path", strips=[positions[: step + 1]], color="#e63946"),
+        render.lines(name="drone/plan", label="Plan", strips=[plans[step]], color="#e63946", pattern="dashed"),
     ],
     plots=[Plot.line(name="Thrust", values=thrust, unit="N")],
     info=[Info(label="Altitude", values=altitudes, unit="m")],

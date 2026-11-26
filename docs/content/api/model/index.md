@@ -10,11 +10,11 @@ All models perform Euler integration with a fixed time step $\Delta t$.
 
 ## Available Models
 
-| Model | State $\mathsf{x}$ | Controls $\mathsf{u}$ | Parameters |
-|-------|---------------------|------------------------|------------|
-| [Bicycle](bicycle.md) | $[x, y, \theta, v]$ | $[a, \delta]$ | Wheelbase $L$, rear axle distance $l_r$ |
-| [Unicycle](unicycle.md) | $[x, y, \theta]$ | $[v, \omega]$ | — |
-| [Integrator](integrator.md) | $[x_1, \ldots, x_n]$ | $[u_1, \ldots, u_n]$ | — |
+| Model | State $\mathsf{x}$ | Controls $\mathsf{u}$ |
+| ------- | --------------------- | ------------------------ |
+| [Bicycle](bicycle.md) | $[x, y, \theta, v]$ | $[a, \delta]$ |
+| [Unicycle](unicycle.md) | $[x, y, \theta]$ | $[v, \omega]$ |
+| [Integrator](integrator.md) | $[x_1, \ldots, x_n]$ | $[u_1, \ldots, u_n]$ |
 
 ## State and Input Limits
 

@@ -8,15 +8,6 @@ status: draft
 
 Decorator that injects zero-mean Gaussian noise into obstacle state observations before delegating to the inner observer. Useful for testing estimator robustness.
 
-### Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `observer` | `ObstacleStateObserver` | — | Inner observer to delegate to |
-| `to_states` | `ObstacleStateCreator` | — | Wraps noisy arrays back into state objects |
-| `sigma` | `(D_o,) array` | — | Per-component standard deviation $\boldsymbol{\sigma}$ |
-| `seed` | `int` | `0` | Random seed |
-
 ### Usage
 
 ```python
@@ -43,14 +34,7 @@ observer = obstacles.observer.noisy(
 
 ### Hungarian Algorithm
 
-Matches detected obstacles to tracked IDs across frames using the Hungarian algorithm on position distances. Detections beyond a configurable cutoff distance are assigned new IDs.
-
-### Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `position_extractor` | position/orientation extractors | Extracts positions from obstacle states |
-| `cutoff` | `float` | Maximum distance for ID matching; beyond this, new IDs are assigned |
+Matches detected obstacles to tracked IDs across frames using the Hungarian algorithm[@Kuhn1955][@Munkres1957] on position distances. Detections beyond a configurable cutoff distance are assigned new IDs.
 
 ### Usage
 
@@ -60,6 +44,8 @@ id_assignment = obstacles.id_assignment.hungarian(
     cutoff=5.0,
 )
 ```
+
+/// backends
 
 ::: faran.obstacles.assignment.basic.NumPyHungarianObstacleIdAssignment
     options:
@@ -75,9 +61,13 @@ id_assignment = obstacles.id_assignment.hungarian(
       members:
         - create
 
+///
+
 ### ID Assignment Protocol
 
 ::: faran.types.ObstacleIdAssignment
     options:
       show_root_heading: true
       heading_level: 3
+
+\bibliography

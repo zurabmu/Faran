@@ -8,49 +8,52 @@ Four-state model representing a wheeled vehicle with acceleration and steering c
 
 ## Dynamics
 
-The slip angle $\beta$ at the reference point:
+The state is $[x, y, \theta, v]$ (position, heading and speed), and the control input is $[a, \delta]$ (acceleration and steering angle). Equation [](#equation-slip-angle) gives the slip angle $\beta$ at the reference point, and equation [](#equation-bicycle-transition) gives the state transition.
+
+/// equation | equation-slip-angle
 
 $$
 \beta = \arctan\!\left(\frac{l_r}{L} \tan(\delta)\right)
 $$
 
-State transition ($\Delta t$ = time step):
+- $\beta$ is the slip angle at the reference point.
+- $l_r$ is the distance from the reference point to the rear axle.
+- $L$ is the wheelbase.
+- $\delta$ is the steering angle.
+
+///
+
+/// equation | equation-bicycle-transition
 
 $$
-x_{t+1} = x_t + v_t \cos(\theta_t + \beta) \, \Delta t, \quad
-y_{t+1} = y_t + v_t \sin(\theta_t + \beta) \, \Delta t
+\begin{aligned}
+x_{t+1} &= x_t + v_t \cos(\theta_t + \beta) \, \Delta t \\
+y_{t+1} &= y_t + v_t \sin(\theta_t + \beta) \, \Delta t \\
+\theta_{t+1} &= \theta_t + \frac{v_t}{L} \cos(\beta) \tan(\delta_t) \, \Delta t \\
+v_{t+1} &= v_t + a_t \, \Delta t
+\end{aligned}
 $$
 
-$$
-\theta_{t+1} = \theta_t + \frac{v_t}{L} \cos(\beta) \tan(\delta_t) \, \Delta t, \quad
-v_{t+1} = v_t + a_t \, \Delta t
-$$
+- $(x_t, y_t)$ is the position of the reference point at time step $t$.
+- $\theta_t$ is the heading.
+- $v_t$ is the speed.
+- $a_t$ is the acceleration.
+- $\delta_t$ is the steering angle.
+- $\Delta t$ is the time step size.
 
-When $l_r = 0$, $\beta = 0$ and the equations reduce to the standard rear-axle model.
+///
 
-| Component | Variables | Description |
-|-----------|-----------|-------------|
-| State | $[x, y, \theta, v]$ | Position, heading, speed |
-| Controls | $[a, \delta]$ | Acceleration, steering angle |
+When $l_r = 0$, equation [](#equation-slip-angle) gives $\beta = 0$, and equation [](#equation-bicycle-transition) reduces to the standard rear-axle model.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `time_step_size` | `float` | — | Integration step $\Delta t$ (seconds) |
-| `wheelbase` | `float` | `1.0` | Distance between axles $L$ |
-| `rear_axle_distance` | `float` | `0.0` | Distance from reference point to rear axle $l_r$ |
-| `speed_limits` | `tuple[float, float] \| None` | `None` | Clamp bounds on $v$ |
-| `steering_limits` | `tuple[float, float] \| None` | `None` | Clamp bounds on $\delta$ |
-| `acceleration_limits` | `tuple[float, float] \| None` | `None` | Clamp bounds on $a$ |
+/// live | Kinematic bicycle
 
 ```python
-from faran.numpy import model
-
-bicycle = model.bicycle.dynamical(
-    time_step_size=0.1, wheelbase=2.5, rear_axle_distance=1.0,
-    speed_limits=(0.0, 15.0), steering_limits=(-0.5, 0.5),
-    acceleration_limits=(-3.0, 3.0),
-)
+--8<-- "docs/snippets/bicycle.py"
 ```
+
+///
+
+/// backends
 
 ::: faran.models.bicycle.basic.NumPyBicycleModel
     options:
@@ -66,11 +69,15 @@ bicycle = model.bicycle.dynamical(
       members:
         - create
 
+///
+
 ## Obstacle Model
 
 Propagates obstacle states forward using bicycle kinematics. Paired with a [state estimator](../estimation/index.md) and [predictor](../predictor/index.md) for obstacle tracking.
 
 The obstacle model follows the CSAA (Constant Steering Angle & Acceleration) assumption[@Schubert2008]: state $\mathsf{x} = [x, y, \theta, v, a, \delta]$ with $a$ and $\delta$ held constant over the prediction horizon.
+
+/// backends
 
 ::: faran.models.bicycle.basic.NumPyBicycleObstacleModel
     options:
@@ -85,5 +92,7 @@ The obstacle model follows the CSAA (Constant Steering Angle & Acceleration) ass
       heading_level: 3
       members:
         - create
+
+///
 
 \bibliography

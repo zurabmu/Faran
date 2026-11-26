@@ -6,20 +6,20 @@ status: draft
 
 ## Collision Cost
 
-Hinge-loss collision avoidance[@Schulman2013]. Activates when any vehicle part's signed distance falls below its threshold:
+Hinge-loss collision avoidance[@Schulman2013]. The cost in equation [](#equation-collision) activates when any vehicle part's signed distance falls below its threshold.
+
+/// equation | equation-collision
 
 $$
 J_{\text{col}} = \sum_{i=1}^{V} k_{\text{col}} \max(0,\; d_0^{(i)} - d_i)
 $$
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `obstacle_states` | state provider | Predicted obstacle states |
-| `sampler` | obstacle sampler | Renders position samples from belief |
-| `distance` | distance extractor | Computes signed distances |
-| `distance_threshold` | array of shape $(V,)$ | Per-part threshold $d_0^{(i)}$ |
-| `weight` | `float` | $k_{\text{col}}$ |
-| `metric` | risk metric \| `None` | [Risk metric](risk.md) for uncertainty-aware evaluation |
+- $V$ is the number of vehicle parts.
+- $d_i$ is the signed distance of vehicle part $i$.
+- $d_0^{(i)}$ is the distance threshold of vehicle part $i$.
+- $k_{\text{col}}$ is the collision weight.
+
+///
 
 ```python
 from faran.numpy import costs, obstacles, risk
@@ -35,6 +35,8 @@ collision = costs.safety.collision(
 )
 ```
 
+/// backends
+
 ::: faran.costs.collision.basic.NumPyCollisionCost
     options:
       show_root_heading: true
@@ -49,15 +51,13 @@ collision = costs.safety.collision(
       members:
         - create
 
+///
+
 ## Boundary Cost
 
-Same hinge-loss formulation applied to corridor boundary distances. See [Boundary](../boundary/index.md) for available boundary types.
+Applies the hinge loss of equation [](#equation-collision) to the distance from the corridor boundary, with threshold $d_0$ and weight $k_{\text{boundary}}$. See [Boundary](../boundary/index.md) for available boundary types.
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `distance` | boundary distance extractor | Computes lateral boundary distance |
-| `distance_threshold` | `float` | Activation threshold $d_0$ |
-| `weight` | `float` | $k_{\text{boundary}}$ |
+/// backends
 
 ::: faran.costs.boundary.basic.NumPyBoundaryCost
     options:
@@ -73,11 +73,15 @@ Same hinge-loss formulation applied to corridor boundary distances. See [Boundar
       members:
         - create
 
+///
+
 ## Distance Functions
 
 ### Circle Distance
 
 Pairwise signed distances between circular approximations of ego and obstacle[@Tolksdorf2024].
+
+/// backends
 
 ::: faran.costs.distance.circles.basic.NumPyCircleDistanceExtractor
     options:
@@ -93,9 +97,13 @@ Pairwise signed distances between circular approximations of ego and obstacle[@T
       members:
         - create
 
+///
+
 ### SAT Distance
 
 Signed distances between convex polygons via the Separating Axis Theorem[@Gottschalk1997].
+
+/// backends
 
 ::: faran.costs.distance.sat.basic.NumPySatDistanceExtractor
     options:
@@ -110,5 +118,7 @@ Signed distances between convex polygons via the Separating Axis Theorem[@Gottsc
       heading_level: 4
       members:
         - create
+
+///
 
 \bibliography

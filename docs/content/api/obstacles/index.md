@@ -98,9 +98,7 @@ collision = costs.safety.collision(
 
 Renders samples from predicted obstacle state distributions parameterized by covariance matrices. Used for risk-aware collision cost evaluation.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `seed` | `int` | `42` | Random seed |
+/// backends
 
 ::: faran.obstacles.sampler.basic.NumPyGaussianObstacle2dPoseSampler
     options:
@@ -115,5 +113,7 @@ Renders samples from predicted obstacle state distributions parameterized by cov
       heading_level: 3
       members:
         - create
+
+///
 
 \bibliography

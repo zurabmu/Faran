@@ -16,11 +16,11 @@ Recovers unobserved state variables and quantifies uncertainty from noisy pose o
 
 ## Estimator Summary
 
-| Estimator | Applicable Models | Covariance | Parameters |
-|-----------|-------------------|------------|------------|
-| [Finite Difference](finite-difference.md) | All | No | `time_step_size` |
-| [Kalman Filter](kalman.md) | Integrator (linear) | Yes | $R$, $Q$ |
-| [EKF](ekf.md) | Bicycle, Unicycle | Yes | $R$, $Q$ |
-| [UKF](ukf.md) | Bicycle, Unicycle | Yes | $R$, $Q$, $\alpha$, $\beta$ |
+| Estimator | Applicable Models | Covariance |
+| ----------- | ------------------- | ------------ |
+| [Finite Difference](finite-difference.md) | All | No |
+| [Kalman Filter](kalman.md) | Integrator (linear) | Yes |
+| [EKF](ekf.md) | Bicycle, Unicycle | Yes |
+| [UKF](ukf.md) | Bicycle, Unicycle | Yes |
 
 All Kalman-family estimators accept an optional [noise model](noise.md) for adaptive covariance tuning.

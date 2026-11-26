@@ -112,10 +112,10 @@ uv run pytest -m integration -k <test> --visualize   # Run integration tests and
 ### Documentation
 
 ```bash
-just docs-serve
+just docs-watch
 ```
 
-Visit `http://127.0.0.1:8000/faran/` to preview.
+Visit `http://127.0.0.1:8000/faran/` to preview. See [docs/README.md](docs/README.md) for the other preview commands and for more details on how to write the documentation.
 
 ## Further Reading
 

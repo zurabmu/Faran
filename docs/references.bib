@@ -42,7 +42,7 @@
 }
 @article{Savitzky1964,
   author        = {Savitzky, Abraham. and Golay, M. J. E.},
-  title         = {Smoothing and Differentiation of Data by Simplified Least Squares Procedures.},
+  title         = {Smoothing and Differentiation of Data by Simplified Least Squares Procedures},
   journal       = {Analytical Chemistry},
   volume        = {36},
   number        = {8},
@@ -55,7 +55,8 @@
 @article{Halton1960,
   title         = "On the efficiency of certain quasi-random sequences of points in evaluating multi-dimensional integrals",
   author        = "Halton, J H",
-  journal       = "Numer. Math. (Heidelb.)",
+  journal       = "Numerische Mathematik",
+  doi           = "10.1007/BF01386213",
   publisher     = "Springer Nature",
   volume        = 2,
   number        = 1,
@@ -120,18 +121,18 @@
   number        = {5},
   pages         = {628--647},
   keywords      = {autonomous racing, vehicle control, drift control, fast model predictive control, nonlinear model predictive control, nonlinear receding horizon control},
-  doi           = {https://doi.org/10.1002/oca.2123},
+  doi           = {10.1002/oca.2123},
   url           = {https://onlinelibrary.wiley.com/doi/abs/10.1002/oca.2123},
   eprint        = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/oca.2123},
   abstract      = {Summary This paper describes autonomous racing of RC race cars based on mathematical optimization. Using a dynamical model of the vehicle, control inputs are computed by receding horizon based controllers, where the objective is to maximize progress on the track subject to the requirement of staying on the track and avoiding opponents. Two different control formulations are presented. The first controller employs a two-level structure, consisting of a path planner and a nonlinear model predictive controller (NMPC) for tracking. The second controller combines both tasks in one nonlinear optimization problem (NLP) following the ideas of contouring control. Linear time varying models obtained by linearization are used to build local approximations of the control NLPs in the form of convex quadratic programs (QPs) at each sampling time. The resulting QPs have a typical MPC structure and can be solved in the range of milliseconds by recent structure exploiting solvers, which is key to the real-time feasibility of the overall control scheme. Obstacle avoidance is incorporated by means of a high-level corridor planner based on dynamic programming, which generates convex constraints for the controllers according to the current position of opponents and the track layout. The control performance is investigated experimentally using 1:43 scale RC race cars, driven at speeds of more than 3\hspace{0.167em}m/s and in operating regions with saturated rear tire forces (drifting). The algorithms run at 50\hspace{0.167em}Hz sampling rate on embedded computing platforms, demonstrating the real-time feasibility and high performance of optimization-based approaches for autonomous racing. Copyright \textcopyright{} 2014 John Wiley \& Sons, Ltd.},
   year          = {2015}
 }
-@article{Schulman2013,
+@inproceedings{Schulman2013,
   title         = {Finding Locally Optimal, Collision-Free Trajectories with Sequential Convex Optimization},
-  author        = {John Schulman and Jonathan Ho and Alex X. Lee and Ibrahim Awwal and Henry Bradlow and P. Abbeel},
-  journal       = {Robotics: Science and Systems IX},
+  author        = {John Schulman and Jonathan Ho and Alex X. Lee and Ibrahim Awwal and Henry Bradlow and Pieter Abbeel},
+  booktitle     = {Robotics: Science and Systems IX},
   year          = {2013},
-  url           = {https://api.semanticscholar.org/CorpusID:2393365}
+  doi           = {10.15607/RSS.2013.IX.031}
 }
 @inproceedings{Schubert2008,
   author        = {Schubert, Robin and Richter, Eric and Wanielik, Gerd},
@@ -165,14 +166,12 @@
   keywords      = {Estimation error;Uncertainty;Monte Carlo methods;Shape;Intelligent vehicles;Kinematics;Probability density function;autonomous vehicles;probability of collision;collision detection;risk assessment;collision avoidance;collision probability estimation},
   doi           = {10.1109/IV55156.2024.10588731}
 }
-@article{Gottschalk1997,
-  author        = {Gottschalk, S. and Lin, Ming and Manocha, Dinesh},
-  year          = {1997},
-  month         = {10},
-  pages         = {},
+@inproceedings{Gottschalk1997,
+  author        = {Gottschalk, S. and Lin, M. C. and Manocha, D.},
   title         = {OBBTree: A Hierarchical Structure for Rapid Interference Detection},
-  volume        = {30},
-  journal       = {Computer Graphics},
+  booktitle     = {Proceedings of the 23rd Annual Conference on Computer Graphics and Interactive Techniques (SIGGRAPH '96)},
+  year          = {1996},
+  pages         = {171--180},
   doi           = {10.1145/237170.237244}
 }
 @book{Thrun2005,
@@ -202,7 +201,7 @@
 }
 @inproceedings{Wan2000,
   author        = {Wan, E.A. and Van Der Merwe, R.},
-  booktitle     = {Proceedings of the IEEE 2000 Adaptive Systems for Signal Processing, Communications, and Control Symposium (Cat. No.00EX373)},
+  booktitle     = {Proceedings of the IEEE 2000 Adaptive Systems for Signal Processing, Communications, and Control Symposium},
   title         = {The unscented Kalman filter for nonlinear estimation},
   year          = {2000},
   volume        = {},
@@ -224,19 +223,20 @@
 }
 @inproceedings{Merwe2001,
   author        = {Van der Merwe, R. and Wan, E.A.},
-  booktitle     = {2001 IEEE International Conference on Acoustics, Speech, and Signal Processing. Proceedings (Cat. No.01CH37221)},
+  booktitle     = {2001 IEEE International Conference on Acoustics, Speech, and Signal Processing. Proceedings},
   title         = {The square-root unscented Kalman filter for state and parameter-estimation},
   year          = {2001},
   volume        = {6},
   number        = {},
-  pages         = {3461--3464 vol.6},
+  pages         = {3461--3464},
   keywords      = {State estimation;Parameter estimation;Nonlinear systems;Machine learning algorithms;Machine learning;Nonlinear dynamical systems;Neural networks;Estimation error;Computational complexity;Equations},
   doi           = {10.1109/ICASSP.2001.940586}
 }
 @article{Mohamed1999,
   title         = "Adaptive Kalman Filtering for {INS/GPS}",
   author        = "Mohamed, A H and Schwarz, K P",
-  journal       = "J. Geod.",
+  journal       = "Journal of Geodesy",
+  doi           = "10.1007/s001900050236",
   publisher     = "Springer Science and Business Media LLC",
   volume        = 73,
   number        = 4,
@@ -256,7 +256,7 @@
 }
 @book{Camacho2004,
   title         = {Model Predictive Control},
-  author        = {Camacho, Eduardo F and Alba, Carlos Bordons},
+  author        = {Camacho, Eduardo F. and Bordons, Carlos},
   publisher     = {Springer},
   series        = {Advanced Textbooks in Control and Signal Processing},
   edition       = 2,
@@ -264,4 +264,193 @@
   year          = 2004,
   address       = {London, England},
   language      = {en}
+}
+@article{Markowitz1952,
+  author        = {Markowitz, Harry},
+  title         = {Portfolio Selection},
+  journal       = {The Journal of Finance},
+  volume        = {7},
+  number        = {1},
+  pages         = {77--91},
+  year          = {1952},
+  doi           = {10.1111/j.1540-6261.1952.tb01525.x}
+}
+@article{Duffie1997,
+  author        = {Duffie, Darrell and Pan, Jun},
+  title         = {An Overview of Value at Risk},
+  journal       = {The Journal of Derivatives},
+  volume        = {4},
+  number        = {3},
+  pages         = {7--49},
+  year          = {1997},
+  doi           = {10.3905/jod.1997.407971}
+}
+@article{Rockafellar2000,
+  author        = {Rockafellar, R. Tyrrell and Uryasev, Stanislav},
+  title         = {Optimization of conditional value-at-risk},
+  journal       = {The Journal of Risk},
+  volume        = {2},
+  number        = {3},
+  pages         = {21--41},
+  year          = {2000},
+  doi           = {10.21314/JOR.2000.038}
+}
+@article{Follmer2002,
+  author        = {F{\"o}llmer, Hans and Schied, Alexander},
+  title         = {Convex measures of risk and trading constraints},
+  journal       = {Finance and Stochastics},
+  volume        = {6},
+  number        = {4},
+  pages         = {429--447},
+  year          = {2002},
+  doi           = {10.1007/s007800200072}
+}
+@incollection{Majumdar2020,
+  author        = {Majumdar, Anirudha and Pavone, Marco},
+  title         = {How Should a Robot Assess Risk? Towards an Axiomatic Theory of Risk in Robotics},
+  booktitle     = {Robotics Research},
+  series        = {Springer Proceedings in Advanced Robotics},
+  publisher     = {Springer},
+  address       = {Cham},
+  pages         = {75--84},
+  year          = {2020},
+  doi           = {10.1007/978-3-030-28619-4_10}
+}
+@inproceedings{Yin2023,
+  author        = {Yin, Ji and Zhang, Zhiyuan and Tsiotras, Panagiotis},
+  title         = {Risk-Aware Model Predictive Path Integral Control Using Conditional Value-at-Risk},
+  booktitle     = {2023 IEEE International Conference on Robotics and Automation (ICRA)},
+  pages         = {7937--7943},
+  year          = {2023},
+  doi           = {10.1109/ICRA48891.2023.10161100}
+}
+@article{Hart1968,
+  author        = {Hart, Peter E. and Nilsson, Nils J. and Raphael, Bertram},
+  title         = {A Formal Basis for the Heuristic Determination of Minimum Cost Paths},
+  journal       = {IEEE Transactions on Systems Science and Cybernetics},
+  volume        = {4},
+  number        = {2},
+  pages         = {100--107},
+  year          = {1968},
+  doi           = {10.1109/TSSC.1968.300136}
+}
+@article{LaValle2001,
+  author        = {LaValle, Steven M. and Kuffner, James J.},
+  title         = {Randomized Kinodynamic Planning},
+  journal       = {The International Journal of Robotics Research},
+  volume        = {20},
+  number        = {5},
+  pages         = {378--400},
+  year          = {2001},
+  doi           = {10.1177/02783640122067453}
+}
+@book{LaValle2006,
+  author        = {LaValle, Steven M.},
+  title         = {Planning Algorithms},
+  publisher     = {Cambridge University Press},
+  address       = {Cambridge, U.K.},
+  year          = {2006},
+  doi           = {10.1017/CBO9780511546877}
+}
+@article{Paden2016,
+  author        = {Paden, Brian and {\v{C}}{\'a}p, Michal and Yong, Sze Zheng and Yershov, Dmitry and Frazzoli, Emilio},
+  title         = {A Survey of Motion Planning and Control Techniques for Self-Driving Urban Vehicles},
+  journal       = {IEEE Transactions on Intelligent Vehicles},
+  volume        = {1},
+  number        = {1},
+  pages         = {33--55},
+  year          = {2016},
+  doi           = {10.1109/TIV.2016.2578706}
+}
+@article{Betts1998,
+  author        = {Betts, John T.},
+  title         = {Survey of Numerical Methods for Trajectory Optimization},
+  journal       = {Journal of Guidance, Control, and Dynamics},
+  volume        = {21},
+  number        = {2},
+  pages         = {193--207},
+  year          = {1998},
+  doi           = {10.2514/2.4231}
+}
+@article{Mayne2000,
+  author        = {Mayne, D. Q. and Rawlings, J. B. and Rao, C. V. and Scokaert, P. O. M.},
+  title         = {Constrained model predictive control: Stability and optimality},
+  journal       = {Automatica},
+  volume        = {36},
+  number        = {6},
+  pages         = {789--814},
+  year          = {2000},
+  doi           = {10.1016/S0005-1098(99)00214-9}
+}
+@inproceedings{Li2004,
+  author        = {Li, Weiwei and Todorov, Emanuel},
+  title         = {Iterative Linear Quadratic Regulator Design for Nonlinear Biological Movement Systems},
+  booktitle     = {Proceedings of the First International Conference on Informatics in Control, Automation and Robotics},
+  pages         = {222--229},
+  year          = {2004},
+  doi           = {10.5220/0001143902220229}
+}
+@inproceedings{Tassa2012,
+  author        = {Tassa, Yuval and Erez, Tom and Todorov, Emanuel},
+  title         = {Synthesis and stabilization of complex behaviors through online trajectory optimization},
+  booktitle     = {2012 IEEE/RSJ International Conference on Intelligent Robots and Systems},
+  pages         = {4906--4913},
+  year          = {2012},
+  doi           = {10.1109/IROS.2012.6386025}
+}
+@book{Nocedal2006,
+  author        = {Nocedal, Jorge and Wright, Stephen J.},
+  title         = {Numerical Optimization},
+  edition       = {2},
+  publisher     = {Springer},
+  address       = {New York, NY},
+  year          = {2006},
+  doi           = {10.1007/978-0-387-40065-5}
+}
+@inproceedings{Lam2010,
+  author        = {Lam, Denise and Manzie, Chris and Good, Malcolm},
+  title         = {Model predictive contouring control},
+  booktitle     = {49th IEEE Conference on Decision and Control (CDC)},
+  pages         = {6137--6142},
+  year          = {2010},
+  doi           = {10.1109/CDC.2010.5717042}
+}
+@article{Kuhn1955,
+  author        = {Kuhn, H. W.},
+  title         = {The Hungarian method for the assignment problem},
+  journal       = {Naval Research Logistics Quarterly},
+  volume        = {2},
+  number        = {1--2},
+  pages         = {83--97},
+  year          = {1955},
+  doi           = {10.1002/nav.3800020109}
+}
+@article{Munkres1957,
+  author        = {Munkres, James},
+  title         = {Algorithms for the Assignment and Transportation Problems},
+  journal       = {Journal of the Society for Industrial and Applied Mathematics},
+  volume        = {5},
+  number        = {1},
+  pages         = {32--38},
+  year          = {1957},
+  doi           = {10.1137/0105003}
+}
+@article{Bentley1975,
+  author        = {Bentley, Jon Louis},
+  title         = {Multidimensional binary search trees used for associative searching},
+  journal       = {Communications of the ACM},
+  volume        = {18},
+  number        = {9},
+  pages         = {509--517},
+  year          = {1975},
+  doi           = {10.1145/361002.361007}
+}
+@book{deBoor1978,
+  author        = {de Boor, Carl},
+  title         = {A Practical Guide to Splines},
+  series        = {Applied Mathematical Sciences},
+  publisher     = {Springer},
+  address       = {New York, NY},
+  year          = {1978},
+  doi           = {10.1007/978-1-4612-6333-3}
 }

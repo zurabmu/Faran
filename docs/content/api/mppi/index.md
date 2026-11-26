@@ -13,26 +13,35 @@ Given a dynamical model $f$, cost function $\mathbf{J}$, sampling distribution $
 1. Sample $M$ control perturbations around the nominal sequence: $\mathbf{u}_m = \text{sample}(\mathbf{u}, \boldsymbol{\mathcal{Z}})$
 2. Simulate each through the dynamics: $\mathbf{x}_m = \text{simulate}(\mathbf{u}_m, \mathsf{x}_0, f)$
 3. Evaluate costs: $\mathbf{J}_m = \mathbf{J}(\mathbf{u}_m, \mathbf{x}_m)$
-4. Compute the optimal control via softmax-weighted averaging:
+4. Compute the softmax weights with equation [](#equation-mppi-weights) and the optimal control as their weighted average with equation [](#equation-mppi-control).
+
+/// equation | equation-mppi-weights
 
 $$
 w_m = \frac{1}{\eta} \exp\!\left(-\frac{1}{\lambda}(\mathbf{J}_m - \mathbf{J}_{\min})\right), \quad \eta = \sum_{m=1}^{M} \exp\!\left(-\frac{1}{\lambda}(\mathbf{J}_m - \mathbf{J}_{\min})\right)
 $$
 
+- $w_m$ is the importance weight of rollout $m$.
+- $\mathbf{J}_m$ is the cost of rollout $m$.
+- $\mathbf{J}_{\min}$ is the minimum cost across all rollouts.
+- $\lambda$ is the temperature, which sets how strongly the weights favor low-cost rollouts.
+- $\eta$ is the normalization constant.
+
+///
+
+/// equation | equation-mppi-control
+
 $$
 \mathbf{u}_{\text{opt}} = \text{filter}\!\left(\sum_{m=1}^{M} w_m \, \mathbf{u}_m\right)
 $$
 
-After computing $\mathbf{u}_{\text{opt}}$, the nominal sequence is updated, the first $P$ actions are executed, and the sequence is shifted forward with zero-padding.
+- $\mathbf{u}_{\text{opt}}$ is the optimal control sequence.
+- $\mathbf{u}_m$ is the control sequence of rollout $m$.
+- $\text{filter}$ is the [filter](filter.md) applied to the weighted average.
 
-| Symbol | Meaning |
-|--------|---------|
-| $T$ | Time horizon (planning steps) |
-| $M$ | Rollout count |
-| $P$ | Planning interval (steps executed before replanning) |
-| $\lambda$ | Temperature (softmax sharpness) |
-| $\mathbf{J}_{\min}$ | Minimum cost across all rollouts |
-| $w_m$ | Importance weight for rollout $m$ |
+///
+
+After computing $\mathbf{u}_{\text{opt}}$, the nominal sequence is updated, the first $P$ actions are executed, and the sequence is shifted forward with zero-padding.
 
 ## Configuration Levels
 
@@ -40,7 +49,7 @@ Three factory functions provide increasing levels of abstraction.
 
 ### `mppi.base`
 
-Assembles a planner from a [model](../model/index.md), [cost function](../costs/index.md), and [sampler](../sampler/index.md).
+Assembles a planner from a [model](../model/index.md), [cost function](../costs/index.md), and [sampler](../sampler/index.md). [`NumPyMppi.create`](planner.md#faran.mppi.basic.NumPyMppi.create) documents its parameters.
 
 ```python
 from faran.numpy import mppi, model, sampler, costs, types
@@ -58,19 +67,9 @@ planner = mppi.base(
 )
 ```
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `model` | `DynamicalModel` | — | Dynamics for simulating rollouts |
-| `cost_function` | `CostFunction` | — | Scores each rollout at every time step |
-| `sampler` | `Sampler` | — | Generates $M$ control perturbations |
-| `planning_interval` | `int` | `1` | Steps executed before replanning ($P$) |
-| `update_function` | `UpdateFunction \| None` | `UseOptimalControlUpdate` | How `nominal` is updated from `optimal` |
-| `padding_function` | `PaddingFunction \| None` | `ZeroPadding` | Fills shifted-out time steps |
-| `filter_function` | `FilterFunction \| None` | `NoFilter` | Post-processes the optimal sequence (e.g. [Savitzky-Golay](filter.md)) |
-
 ### `mppi.augmented`
 
-Composes separate physical and virtual models into a single augmented planner. Used when the state space needs extension (e.g. adding a path parameter for [MPCC](../../guide/concepts/mpcc.md)).
+Composes separate physical and virtual models into a single augmented planner. Used when the state space needs extension (e.g. adding a path parameter for [MPCC](../../guide/concepts/mpcc.md)). [`NumPyAugmentedMppi.create`](planner.md#faran.states.augmented.mppi.basic.NumPyAugmentedMppi.create) documents its parameters.
 
 ```python
 from faran.numpy import mppi, model, sampler, costs, types
@@ -88,25 +87,11 @@ setup = mppi.augmented(
 planner = setup.mppi
 ```
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `models` | `tuple[DynamicalModel, DynamicalModel]` | — | Physical and virtual dynamics |
-| `samplers` | `tuple[Sampler, Sampler]` | — | Separate samplers per sub-model |
-| `cost` | `CostFunction` | — | Cost over the augmented state |
-| `state` | type | — | Augmented state constructor |
-| `state_sequence` | type | — | Augmented state sequence constructor |
-| `state_batch` | type | — | Augmented state batch constructor |
-| `input_batch` | type | — | Augmented control input batch constructor |
-| `planning_interval` | `int` | `1` | Steps executed before replanning |
-| `update_function` | `UpdateFunction \| None` | `UseOptimalControlUpdate` | Nominal update strategy |
-| `padding_function` | `PaddingFunction \| None` | `ZeroPadding` | Fills shifted-out steps |
-| `filter_function` | `FilterFunction \| None` | `NoFilter` | Post-processing filter |
-
 ### `mppi.mpcc`
 
 Highest-level factory for [MPCC](../../guide/concepts/mpcc.md) path following. Automatically constructs the augmented state space with a virtual path parameter $\phi$, and configures [contouring, lag, and progress costs](../costs/tracking.md).
 
-Returns a `NamedTuple` of `(mppi, model, contouring_cost, lag_cost)`.
+Returns a `NamedTuple` of `(mppi, model, contouring_cost, lag_cost)`. [`NumPyMpccMppi.create`](planner.md#faran.mpcc.basic.NumPyMpccMppi.create) documents its parameters.
 
 ```python
 from faran.numpy import mppi, model, sampler, costs, types, extract, filters
@@ -137,33 +122,9 @@ planner, augmented_model, contouring_cost, lag_cost = mppi.mpcc(
 )
 ```
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `model` | `DynamicalModel` | — | Physical dynamics model |
-| `sampler` | `Sampler` | — | Sampler for the physical control inputs |
-| `reference` | `Trajectory` | — | Reference path for MPCC tracking |
-| `position_extractor` | `PositionExtractor` | — | Extracts $(x, y)$ from the augmented state batch |
-| `costs` | `tuple[CostFunction, ...]` | `()` | Additional cost terms appended to tracking costs |
-| `config` | `MpccConfig.Partial \| None` | See defaults | Weight and virtual-state configuration |
-| `planning_interval` | `int` | `1` | Steps executed before replanning |
-| `update_function` | `UpdateFunction \| None` | `UseOptimalControlUpdate` | Nominal update strategy |
-| `padding_function` | `PaddingFunction \| None` | `ZeroPadding` | Fills shifted-out steps |
-| `filter_function` | `FilterFunction \| None` | `NoFilter` | Post-processing filter |
-
 #### MPCC Configuration Defaults
 
-The `config` dict is deep-merged with these defaults:
-
-| Key | Default | Description |
-|-----|---------|-------------|
-| `weights.contouring` | `20.0` | Contouring cost weight $k_c$ |
-| `weights.lag` | `10.0` | Lag cost weight $k_l$ |
-| `weights.progress` | `500.0` | Progress cost weight $k_p$ |
-| `virtual.state_limits` | `(0.0, reference.path_length)` | Bounds on $\phi$ |
-| `virtual.velocity_limits` | `(0.0, 15.0)` | Bounds on $\dot{\phi}$ |
-| `virtual.sampling_standard_deviation` | `1.0` | $\sigma$ for the virtual sampler |
-| `virtual.sampling_seed` | `0` | RNG seed for the virtual sampler |
-| `virtual.periodic` | `False` | Wrap $\phi$ at limits (for looped paths) |
+The `config` dict is deep-merged with the defaults that [`NumPyMpccWeightConfig`](planner.md#faran.mpcc.basic.NumPyMpccWeightConfig) and [`NumPyMpccVirtualStateConfig`](planner.md#faran.mpcc.basic.NumPyMpccVirtualStateConfig) list.
 
 ## Planning Loop
 
@@ -179,13 +140,7 @@ for step in range(max_steps):
     nominal = control.nominal
 ```
 
-`planner.step()` returns a `Control` with:
-
-| Field | Description |
-|-------|-------------|
-| `control.optimal` | Weighted-average control sequence for this step |
-| `control.nominal` | Shifted sequence for warm-starting the next step |
-| `control.debug.trajectory_weights` | Softmax weights $w_m$ for all $M$ rollouts |
+`planner.step()` returns a [`Control`](planner.md#faran.types.Control) with the optimal and the nominal control sequence and the rollout weights.
 
 ## Mppi Protocol
 

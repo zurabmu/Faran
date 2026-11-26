@@ -4,17 +4,19 @@ status: draft
 
 # Line Trajectory
 
-Straight-line reference path between two endpoints. Heading is constant along the path:
+Straight-line reference path between two endpoints. Heading is constant along the path and given by equation [](#equation-line-heading).
 
-$$\theta = \operatorname{atan2}(y_\text{end} - y_\text{start},\; x_\text{end} - x_\text{start})$$
+/// equation | equation-line-heading
 
-## Parameters
+$$
+\theta = \operatorname{atan2}(y_\text{end} - y_\text{start},\; x_\text{end} - x_\text{start})
+$$
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `start` | `tuple[float, float]` | — | Starting point $(x_0, y_0)$ |
-| `end` | `tuple[float, float]` | — | Ending point $(x_1, y_1)$ |
-| `path_length` | `float \| None` | `None` | Parameterization length $L$. Defaults to Euclidean distance between endpoints. |
+- $\theta$ is the heading of the path.
+- $(x_\text{start}, y_\text{start})$ is the starting point.
+- $(x_\text{end}, y_\text{end})$ is the ending point.
+
+///
 
 ## Usage
 

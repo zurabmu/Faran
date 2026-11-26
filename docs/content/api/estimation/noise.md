@@ -6,10 +6,7 @@ status: draft
 
 All Kalman-family estimators ([KF](kalman.md), [EKF](ekf.md), [UKF](ukf.md)) require process and observation noise covariances.
 
-| Parameter | Symbol | Meaning |
-|-----------|--------|---------|
-| `process_noise_covariance` | $R$ | Model deviation from true dynamics |
-| `observation_noise_covariance` | $Q$ | Sensor noise |
+The process noise covariance $R$ describes how far the true dynamics deviate from the model, and the observation noise covariance $Q$ describes the sensor noise.
 
 Both accept a scalar (isotropic), 1D array (diagonal), or 2D array (full matrix).
 
@@ -32,15 +29,13 @@ covariances = noise.covariances(
 
 Innovation-based Adaptive Estimation (IAE)[@Mohamed1999] adapts covariances online from the innovation sequence over a sliding window.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `window_size` | `int` | — | Past observations used for adaptation |
-
 ```python
 from faran.numpy import noise
 
 adaptive = noise.adaptive(window_size=10)
 ```
+
+/// backends
 
 ::: faran.filters.noise.basic.NumPyAdaptiveNoiseProvider
     options:
@@ -56,15 +51,11 @@ adaptive = noise.adaptive(window_size=10)
       members:
         - create
 
+///
+
 ## Clamped Noise
 
 Decorator that clamps eigenvalues of an inner noise model's output to a floor and/or ceiling, preventing overconfidence.
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `inner` | noise provider | — | Provider to wrap |
-| `floor` | `NoiseCovarianceBounds \| None` | `None` | Minimum eigenvalue bounds |
-| `ceiling` | `NoiseCovarianceBounds \| None` | `None` | Maximum eigenvalue bounds |
 
 ```python
 clamped = noise.clamped(
@@ -72,6 +63,8 @@ clamped = noise.clamped(
     floor=noise.covariance_bounds(process=1e-5, observation=1e-5),
 )
 ```
+
+/// backends
 
 ::: faran.filters.noise.basic.NumPyClampedNoiseProvider
     options:
@@ -86,6 +79,8 @@ clamped = noise.clamped(
       heading_level: 3
       members:
         - decorate
+
+///
 
 ## Identity Noise
 
