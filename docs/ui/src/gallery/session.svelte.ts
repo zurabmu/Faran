@@ -6,6 +6,7 @@ import { Timeout } from "@/shared/timeout";
 
 const ADVANCE_INTERVAL = 8000;
 const WASH_DURATION = 900;
+const DROP_LEAD = 150;
 const NOT_CHANGING = -1;
 const AWAY_SPEED = 1.4;
 const FORMING_SPEED = 1.25;
@@ -13,19 +14,20 @@ const BLUR_PER_WASH = 2;
 
 /**
  * Which section of a gallery is shown, and the change between sections. It advances to the
- * next section on its own while the reader does not engage with it, and calls `onChange` on
- * every change.
+ * next section on its own while the reader does not engage with it, and calls `beforeChange`
+ * with the index of the next section shortly before every change.
  */
 export class GallerySession {
     shown = $state(0);
     outgoing = $state(NOT_CHANGING);
     #held = false;
     readonly #advance = new Timeout();
+    readonly #change = new Timeout();
     readonly #wash = new Tween(0, { duration: WASH_DURATION, easing: cubicInOut });
 
     constructor(
         private readonly count: number,
-        private readonly onChange: () => void,
+        private readonly beforeChange: (index: number) => void,
     ) {}
 
     /**
@@ -73,7 +75,10 @@ export class GallerySession {
      */
     start(): () => void {
         this.#schedule();
-        return () => this.#advance.cancel();
+        return () => {
+            this.#advance.cancel();
+            this.#change.cancel();
+        };
     }
 
     /**
@@ -91,13 +96,21 @@ export class GallerySession {
     };
 
     show(index: number): void {
-        const canChange = index !== this.shown && !this.#isChanging;
+        const canChange = index !== this.shown && !this.#isChanging && !this.#change.pending;
         if (!canChange) return;
         this.#schedule();
+        if (prefersReducedMotion.current) {
+            this.shown = index;
+            return;
+        }
+        this.beforeChange(index);
+        this.#change.start(DROP_LEAD, () => this.#washTo(index));
+    }
+
+    #washTo(index: number): void {
         const outgoing = this.shown;
         this.shown = index;
-        this.onChange();
-        if (!prefersReducedMotion.current) void this.#washAway(outgoing);
+        void this.#washAway(outgoing);
     }
 
     #schedule(): void {

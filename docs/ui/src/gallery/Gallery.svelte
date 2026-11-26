@@ -1,15 +1,15 @@
 <svelte:options customElement={{ tag: "faran-gallery" }} />
 
 <script lang="ts">
-    import { dropBeside } from "@/gallery/ripples";
+    import { dropOnColumnsOf } from "@/gallery/ripples";
     import { GallerySession } from "@/gallery/session.svelte";
     import { Tabs } from "@/shared/tabs.svelte";
-    import { tabsOf } from "@/gallery/sections";
+    import { sectionOf, tabsOf } from "@/gallery/sections";
     import WashFilters from "@/gallery/WashFilters.svelte";
 
     const element = $host();
     const names = tabsOf(element);
-    const session = new GallerySession(names.length, () => dropBeside(element));
+    const session = new GallerySession(names.length, (index) => dropOnColumnsOf(sectionOf(element, index)));
     const id = $props.id();
     const tabs = new Tabs({ id, value: () => String(session.shown), choose: (value) => session.show(Number(value)) });
 

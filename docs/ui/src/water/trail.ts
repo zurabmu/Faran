@@ -1,8 +1,8 @@
 import type { ViewportGrid, ViewportPoint } from "@/water/grid";
 
 const SPACING = 2;
-const STRENGTH = 0.0016;
-const LIMIT = 0.09;
+const STRENGTH = 0.0048;
+const LIMIT = 0.27;
 const RADIUS = 1.4;
 
 /**

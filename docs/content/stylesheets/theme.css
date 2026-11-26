@@ -416,8 +416,7 @@
 .md-typeset .highlight .faran-after-imports {
   display: inline-block;
   width: 100%;
-  margin-top: 0.35em;
-  padding-top: 0.35em;
+  margin-top: -1px;
   border-top: 1px dashed var(--faran-rule-strong);
 }
 

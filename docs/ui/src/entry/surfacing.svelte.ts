@@ -2,12 +2,13 @@ import { cubicOut } from "svelte/easing";
 import { Tween } from "svelte/motion";
 import { Timeout } from "@/shared/timeout";
 
-const DELAY = 400;
+const DELAY = 100;
+const DROP_LEAD = 150;
 const DURATION = 1800;
 
 /**
  * How far an element has surfaced since it came fully into view, from 0 to 1. Calls `onRipple`
- * when it starts to rise.
+ * shortly before it starts to rise.
  */
 export class Surfacing {
     readonly #progress = new Tween(0, { duration: DURATION, easing: cubicOut });
@@ -43,7 +44,7 @@ export class Surfacing {
 
     #rise(element: Element): void {
         this.onRipple(element);
-        void this.#progress.set(1);
+        this.#rising.start(DROP_LEAD, () => void this.#progress.set(1));
     }
 
     #sink(): void {

@@ -1,14 +1,27 @@
 import { dropOnWater } from "@/water";
 
-const DROP_STRENGTH = 1.5;
+const DROP_STRENGTH = 3;
 
 /**
- * Lets one drop fall on the water at the left edge of `element` and one at its right edge, both
- * at its vertical middle.
+ * Drops at the center of each column. `grid` must use CSS grid layout.
  */
-export function dropBeside(element: Element): void {
-    const { left, right, top, height } = element.getBoundingClientRect();
+export function dropOnColumnsOf(grid: Element): void {
+    const { left, top, height } = grid.getBoundingClientRect();
     const middle = top + height / 2;
-    dropOnWater({ x: left, y: middle, strength: DROP_STRENGTH });
-    dropOnWater({ x: right, y: middle, strength: DROP_STRENGTH });
+    for (const center of columnCentersOf(grid)) {
+        dropOnWater({ x: left + center, y: middle, strength: DROP_STRENGTH });
+    }
+}
+
+function columnCentersOf(grid: Element): number[] {
+    const style = getComputedStyle(grid);
+    const widths = style.gridTemplateColumns.split(" ").map(Number.parseFloat);
+    const gap = Number.parseFloat(style.columnGap);
+    const centers: number[] = [];
+    let start = 0;
+    for (const width of widths) {
+        centers.push(start + width / 2);
+        start += width + gap;
+    }
+    return centers;
 }
