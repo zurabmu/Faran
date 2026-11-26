@@ -1,36 +1,50 @@
 import type { CodeSpan } from "@/code/spans";
 import { CODE_STYLES, type CodeStyle } from "@/code/styles";
-import type { BlockText } from "@/code/text";
+import { BlockText } from "@/code/text";
 
-/**
- * The ranges to color with each code style, collected over several code blocks.
- */
+interface ColoredRange {
+    readonly highlight: Highlight;
+    readonly range: Range;
+}
+
+/** One CSS highlight per code style. */
 export class StyleHighlights {
-    private readonly ranges = new Map<CodeStyle, Range[]>(CODE_STYLES.map((style) => [style, []]));
+    private readonly highlights = new Map<CodeStyle, Highlight>(CODE_STYLES.map((style) => [style, new Highlight()]));
 
-    /**
-     * Adds the ranges of `spans` in the code block whose text is `text`.
-     */
-    addSpans(spans: readonly CodeSpan[], text: BlockText): void {
-        for (const span of spans) {
-            this.rangesOf(span.style).push(text.rangeOf(span));
-        }
+    /** Recolors `code` whenever the theme replaces its text nodes. */
+    colorBlock(code: HTMLElement, spans: readonly CodeSpan[]): void {
+        let colored = this.color(code, spans);
+        const recolor = () => {
+            this.uncolor(colored);
+            colored = this.color(code, spans);
+        };
+        new MutationObserver(recolor).observe(code, { childList: true, subtree: true, characterData: true });
     }
 
-    /**
-     * Colors the collected ranges on the page.
-     */
     applyToDocument(): void {
-        for (const [style, ranges] of this.ranges) {
-            CSS.highlights.set(style.name, new Highlight(...ranges));
+        for (const [style, highlight] of this.highlights) {
+            CSS.highlights.set(style.name, highlight);
         }
         adoptHighlightColors();
     }
 
-    private rangesOf(style: CodeStyle): Range[] {
-        const ranges = this.ranges.get(style);
-        if (ranges === undefined) throw new Error(`Expected the code style "${style.name}" to be one of CODE_STYLES, but it is not.`);
-        return ranges;
+    private color(code: HTMLElement, spans: readonly CodeSpan[]): ColoredRange[] {
+        const text = new BlockText(code);
+        return spans.map((span) => {
+            const colored = { highlight: this.highlightOf(span.style), range: text.rangeOf(span) };
+            colored.highlight.add(colored.range);
+            return colored;
+        });
+    }
+
+    private uncolor(colored: readonly ColoredRange[]): void {
+        for (const { highlight, range } of colored) highlight.delete(range);
+    }
+
+    private highlightOf(style: CodeStyle): Highlight {
+        const highlight = this.highlights.get(style);
+        if (highlight === undefined) throw new Error(`Expected the code style "${style.name}" to be one of CODE_STYLES, but it is not.`);
+        return highlight;
     }
 }
 

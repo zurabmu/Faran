@@ -2,7 +2,7 @@ import type { Frame } from "@engine";
 import { proxy } from "comlink";
 import { prefersReducedMotion } from "svelte/motion";
 import { pythonAssetsUrl } from "@/shared/site";
-import { ConnectedWorker, failureMessage } from "@/shared/worker";
+import { type ConnectedWorker, failureMessage, RestartingWorker } from "@/shared/worker";
 import type { MapLayout } from "@/docsmap/layout";
 import type { NavigationLayout, NavigationStep } from "@/docsmap/messages";
 import { MotionPlayback } from "@/docsmap/playback";
@@ -11,8 +11,7 @@ import type { NavigationWorker } from "@/docsmap/worker";
 const EMPTY_FRAME: Frame = { renderings: [], info: [] };
 
 /**
- * Runs the docs map's planner in a web worker that `start` starts. Aiming at a place before the
- * planner is ready aims at it once it is.
+ * Runs the docs map's planner. Aiming at a place before the planner is ready aims at it once it is.
  */
 export class MapSession {
     background: Frame = $state.raw(EMPTY_FRAME);
@@ -24,7 +23,7 @@ export class MapSession {
     aimedAt = $state(-1);
     stepMilliseconds = $state(0);
 
-    #worker: ConnectedWorker<NavigationWorker> | undefined = undefined;
+    readonly #worker = new RestartingWorker<NavigationWorker>({ create: createNavigationWorker, onStart: (worker) => void this.#loadPlanner(worker) });
     readonly #playback = new MotionPlayback((frame) => (this.motion = frame));
     readonly #showStatusProxy = proxy((text: string) => this.#showStatus(text));
     readonly #showStepProxy = proxy((step: NavigationStep) => this.#showStep(step));
@@ -32,14 +31,10 @@ export class MapSession {
     constructor(private readonly layout: MapLayout) {}
 
     /**
-     * Starts the worker and loads Pyodide and Faran in it, unless that has already started.
+     * Loads the planner, unless that has already started.
      */
     start(): void {
-        const hasStarted = this.#worker !== undefined;
-        if (hasStarted) return;
-        this.status = "Loading Faran in your browser…";
-        this.#worker = startNavigationWorker();
-        void this.#loadPlanner(this.#worker);
+        this.#worker.start();
     }
 
     /**
@@ -52,18 +47,34 @@ export class MapSession {
         if (this.ready) this.#sendAim();
     }
 
+    /** Returns a function that stops following. */
+    followPage(): () => void {
+        return this.#worker.followPage();
+    }
+
     stop(): void {
-        this.#worker?.terminate();
+        this.#worker.stop();
         this.#playback.stop();
     }
 
     async #loadPlanner(worker: ConnectedWorker<NavigationWorker>): Promise<void> {
-        const options = plannerOptions(this.layout);
+        this.#reset();
+        this.status = "Loading Faran in your browser…";
         try {
-            this.#becomeReady(await worker.call((exposed) => exposed.start(options, this.#showStatusProxy)));
+            this.#becomeReady(await worker.call((exposed) => exposed.start(plannerOptions(this.layout), this.#showStatusProxy)));
         } catch (error: unknown) {
             this.#fail(failureMessage(error));
         }
+    }
+
+    #reset(): void {
+        this.#playback.stop();
+        this.background = EMPTY_FRAME;
+        this.frame = EMPTY_FRAME;
+        this.motion = EMPTY_FRAME;
+        this.ready = false;
+        this.failed = false;
+        this.stepMilliseconds = 0;
     }
 
     #showStatus(text: string): void {
@@ -87,7 +98,7 @@ export class MapSession {
     #sendAim(): void {
         const aim = { place: this.aimedAt, instantly: prefersReducedMotion.current };
         this.#connected()
-            .call((worker) => worker.aim(aim, this.#showStepProxy))
+            .call((exposed) => exposed.aim(aim, this.#showStepProxy))
             .catch((error: unknown) => this.#fail(failureMessage(error)));
     }
 
@@ -95,16 +106,18 @@ export class MapSession {
         this.failed = true;
         this.status = "The planner could not start in this browser.";
         console.error(`The docs map planner failed: ${message}`);
+        this.#worker.restartOnReturn();
     }
 
     #connected(): ConnectedWorker<NavigationWorker> {
-        if (this.#worker === undefined) throw new Error("The docs map planner was aimed before its worker started.");
-        return this.#worker;
+        const worker = this.#worker.current;
+        if (worker === undefined) throw new Error("The docs map planner was aimed before its worker started.");
+        return worker;
     }
 }
 
-function startNavigationWorker(): ConnectedWorker<NavigationWorker> {
-    return new ConnectedWorker(new Worker(new URL("./worker.ts", import.meta.url), { type: "module" }));
+function createNavigationWorker(): Worker {
+    return new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
 }
 
 function plannerOptions(layout: MapLayout): { assetsUrl: string; layout: NavigationLayout } {

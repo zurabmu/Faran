@@ -26,22 +26,22 @@ from faran.numpy import trajectory
 reference = trajectory.line(start=(0.0, 0.0), end=(10.0, 0.0), path_length=10.0)
 ```
 
-## NumPy
+/// backends
 
 ::: faran.trajectories.line.basic.NumPyLineTrajectory
     options:
       show_root_heading: true
-      heading_level: 3
+      heading_level: 2
       members:
         - create
         - query
-
-## JAX
 
 ::: faran.trajectories.line.accelerated.JaxLineTrajectory
     options:
       show_root_heading: true
-      heading_level: 3
+      heading_level: 2
       members:
         - create
         - query
+
+///

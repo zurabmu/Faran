@@ -10,10 +10,12 @@
     const { layout, session, homePress } = view;
 
     $effect(() => () => view.stop());
+    $effect(() => session.followPage());
 </script>
 
 <div
     class="map"
+    class:tall={view.tall}
     style:aspect-ratio="{layout.width} / {layout.height}"
     {@attach (element) => view.startWhenVisible(element)}
 >
@@ -25,11 +27,13 @@
         class="destination home upper"
         class:aimed={session.aimedAt === view.home}
         class:pressed={homePress.pressed}
-        style:left={view.homePosition.left}
-        style:top={view.homePosition.top}
+        style:left={view.homePlacement.position.left}
+        style:top={view.homePlacement.position.top}
+        style:padding-left={view.homePlacement.indent}
+        style:--room={view.homePlacement.room}
         aria-current="page"
-        onpointerenter={() => session.aim(view.home)}
-        onfocus={() => session.aim(view.home)}
+        onpointerenter={(event) => view.aimAtPointer(event, view.home)}
+        onfocus={(event) => view.aimAtFocus(event.currentTarget, view.home)}
         onclick={(event) => view.pressHome(event)}
         onanimationend={() => homePress.end()}
     >
@@ -37,7 +41,7 @@
         <span class="title">Home</span>
         <span class="description">You are here</span>
     </button>
-    {#each view.markers as { destination, index, position, room, upper, endAligned } (destination.href)}
+    {#each view.markers as { destination, index, position, room, indent, upper, endAligned } (destination.href)}
         <a
             class="destination"
             class:aimed={session.aimedAt === index}
@@ -47,8 +51,10 @@
             style:left={position.left}
             style:top={position.top}
             style:--room={room}
-            onpointerenter={() => session.aim(index)}
-            onfocus={() => session.aim(index)}
+            style:padding-left={indent}
+            onpointerenter={(event) => view.aimAtPointer(event, index)}
+            onfocus={(event) => view.aimAtFocus(event.currentTarget, index)}
+            onclick={(event) => view.aimOrFollow(event, index)}
         >
             <span class="marker"></span>
             <span class="title">{destination.title}</span>
@@ -111,7 +117,7 @@
         transform: translate(calc(-100% + 0.35rem), calc(-100% + 0.35rem));
     }
 
-    .home {
+    .map:not(.tall) .home {
         width: 7rem;
     }
 
@@ -191,30 +197,19 @@
         }
     }
 
-    @media screen and (max-width: 44.984375em) {
-        .map {
-            aspect-ratio: auto !important;
-        }
+    .tall .destination {
+        box-sizing: border-box;
+        width: calc(var(--room) + 0.35rem);
+    }
 
-        .scene,
-        .home {
-            display: none;
-        }
+    .tall .marker {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
 
-        .destination,
-        .destination:not(.upper),
-        .destination.end,
-        .destination.end:not(.upper) {
-            position: static;
-            width: auto;
-            margin-bottom: 0.9rem;
-            justify-items: start;
-            text-align: left;
-            transform: none;
-        }
-
-        .destination:not(.upper) .marker {
-            order: 0;
-        }
+    .tall .title {
+        margin-top: 0;
+        line-height: 0.7rem;
     }
 </style>

@@ -21,7 +21,7 @@
 
 <style>
     .transport {
-        flex: 1 1 0;
+        flex: 1 1 18rem;
         min-width: 0;
         container-type: inline-size;
     }
@@ -48,6 +48,7 @@
 
     .readouts {
         display: flex;
+        flex-wrap: wrap;
         grid-area: readouts;
         justify-content: flex-end;
         gap: 0.4rem;
@@ -59,6 +60,20 @@
                 "scrubber scrubber"
                 "buttons readouts";
             grid-template-columns: auto 1fr;
+        }
+    }
+
+    @container (max-width: 24rem) {
+        .layout {
+            grid-template-areas:
+                "scrubber"
+                "buttons"
+                "readouts";
+            grid-template-columns: 1fr;
+        }
+
+        .readouts {
+            justify-content: flex-start;
         }
     }
 </style>

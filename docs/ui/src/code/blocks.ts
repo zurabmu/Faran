@@ -3,7 +3,6 @@ import { StyleHighlights } from "@/code/highlights";
 import { importLineMarks } from "@/code/imports";
 import { markLines } from "@/code/lines";
 import { codeSpans } from "@/code/spans";
-import { BlockText } from "@/code/text";
 
 const PYTHON_BLOCKS = ".language-python.highlight code";
 
@@ -26,7 +25,7 @@ export function highlightCodeBlocks(root: ParentNode): void {
 function highlightBlock(code: HTMLElement, highlights: StyleHighlights): void {
     const source = code.textContent ?? "";
     const tree = parser.parse(source);
-    highlights.addSpans(codeSpans(tree), new BlockText(code));
+    highlights.colorBlock(code, codeSpans(tree));
     markLines(code, importLineMarks(tree, source));
     code.classList.add("faran-highlighted");
 }

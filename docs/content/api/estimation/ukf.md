@@ -23,12 +23,23 @@ $$
 
 ///
 
+/// backends
+
 ::: faran.filters.ukf.basic.NumPyUnscentedKalmanFilter
     options:
       show_root_heading: true
       heading_level: 3
       members:
         - create
+
+::: faran.filters.ukf.accelerated.JaxUnscentedKalmanFilter
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members:
+        - create
+
+///
 
 ## Bicycle
 

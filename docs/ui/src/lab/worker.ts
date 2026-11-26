@@ -42,7 +42,7 @@ const labWorker = {
 };
 
 /**
- * The demo runner that `lab/worker.ts` exposes with Comlink.
+ * The demo runner that `lab/worker.ts` exposes.
  */
 export type LabWorker = typeof labWorker;
 

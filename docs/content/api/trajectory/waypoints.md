@@ -30,24 +30,24 @@ Closest-point queries use a coarse KD-tree[@Bentley1975] (NumPy) or brute-force 
 
 ///
 
-## NumPy
+/// backends
 
 ::: faran.trajectories.waypoints.basic.NumPyWaypointsTrajectory
     options:
       show_root_heading: true
-      heading_level: 3
+      heading_level: 2
       members:
         - create
         - query
-
-## JAX
 
 ::: faran.trajectories.waypoints.accelerated.JaxWaypointsTrajectory
     options:
       show_root_heading: true
-      heading_level: 3
+      heading_level: 2
       members:
         - create
         - query
+
+///
 
 \bibliography

@@ -636,11 +636,6 @@ html {
   white-space: nowrap;
 }
 
-.md-container {
-  position: relative;
-  z-index: 1;
-}
-
 .md-footer-meta__inner {
   justify-content: center;
 }

@@ -38,23 +38,23 @@ corridor = boundary.fixed_width(
 )
 ```
 
-### NumPy
+/// backends
 
 ::: faran.costs.boundary.basic.NumPyFixedWidthBoundary
     options:
       show_root_heading: true
-      heading_level: 4
+      heading_level: 3
       members:
         - create
-
-### JAX
 
 ::: faran.costs.boundary.accelerated.JaxFixedWidthBoundary
     options:
       show_root_heading: true
-      heading_level: 4
+      heading_level: 3
       members:
         - create
+
+///
 
 ## Piecewise Fixed-Width Boundary
 
@@ -74,20 +74,20 @@ corridor = boundary.piecewise_fixed_width(
 )
 ```
 
-### NumPy
+/// backends
 
 ::: faran.costs.boundary.basic.NumPyPiecewiseFixedWidthBoundary
     options:
       show_root_heading: true
-      heading_level: 4
+      heading_level: 3
       members:
         - create
-
-### JAX
 
 ::: faran.costs.boundary.accelerated.JaxPiecewiseFixedWidthBoundary
     options:
       show_root_heading: true
-      heading_level: 4
+      heading_level: 3
       members:
         - create
+
+///

@@ -52,7 +52,7 @@ const navigationWorker = {
 };
 
 /**
- * The docs map planner that `docsmap/worker.ts` exposes with Comlink.
+ * The docs map planner that `docsmap/worker.ts` exposes.
  */
 export type NavigationWorker = typeof navigationWorker;
 

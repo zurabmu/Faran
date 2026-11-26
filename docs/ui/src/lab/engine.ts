@@ -14,7 +14,7 @@ export interface LabCallbacks extends LabReceiver {
 }
 
 /**
- * Runs Faran demos in a Pyodide web worker, which it starts on the first run.
+ * Runs Faran demos.
  */
 export class LabEngine {
     #worker: ConnectedWorker<LabWorker> | undefined;

@@ -6,25 +6,25 @@ status: draft
 
 Factory functions and concrete classes for the [MPPI](index.md) planner. See the [parent page](index.md) for the algorithm description, equations, and configuration-level overview.
 
-## NumPyMppi
+/// backends
 
 ::: faran.mppi.basic.NumPyMppi
     options:
       show_root_heading: true
-      heading_level: 3
+      heading_level: 2
       members:
         - create
         - step
-
-## JaxMppi
 
 ::: faran.mppi.accelerated.JaxMppi
     options:
       show_root_heading: true
-      heading_level: 3
+      heading_level: 2
       members:
         - create
         - step
+
+///
 
 ## MPCC Factory
 
@@ -68,17 +68,37 @@ Factory functions and concrete classes for the [MPPI](index.md) planner. See the
 
 ## MPCC Configuration
 
+/// backends
+
 ::: faran.mpcc.basic.NumPyMpccWeightConfig
     options:
       show_root_heading: true
       heading_level: 3
       members: false
 
+::: faran.mpcc.accelerated.JaxMpccWeightConfig
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members: false
+
+///
+
+/// backends
+
 ::: faran.mpcc.basic.NumPyMpccVirtualStateConfig
     options:
       show_root_heading: true
       heading_level: 3
       members: false
+
+::: faran.mpcc.accelerated.JaxMpccVirtualStateConfig
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members: false
+
+///
 
 ## Supporting Types
 

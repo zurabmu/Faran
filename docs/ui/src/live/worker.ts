@@ -20,7 +20,7 @@ const snippetWorker = {
 };
 
 /**
- * The snippet runner that `live/worker.ts` exposes with Comlink.
+ * The snippet runner that `live/worker.ts` exposes.
  */
 export type SnippetWorker = typeof snippetWorker;
 
