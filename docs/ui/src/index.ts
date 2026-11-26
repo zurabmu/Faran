@@ -14,7 +14,9 @@ import "@/stage/Stage.svelte";
 import "@/variants/Variants.svelte";
 import "@/water/Water.svelte";
 import { highlightCodeBlocks } from "@/code";
+import { markPageLoaded } from "@/loading";
 import { typesetMath } from "@/math";
 
 typesetMath(document.body);
 highlightCodeBlocks(document.body);
+markPageLoaded();

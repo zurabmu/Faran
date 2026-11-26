@@ -1,4 +1,4 @@
-import { type Frame, formatPoint, piece, type Point, type Stroke, stroke } from "@/geometry";
+import { type Frame, formatPoint, piece, type Point, smoothstep, type Stroke, stroke } from "@/geometry";
 import { brand } from "@/shared/brand";
 
 export interface Body {
@@ -37,11 +37,6 @@ interface TaperedStroke {
     readonly color: string;
 }
 
-const ease = (x: number) => {
-    const clamped = Math.min(1, Math.max(0, x));
-    return clamped * clamped * (3 - 2 * clamped);
-};
-
 interface Edges {
     readonly left: Point;
     readonly right: Point;
@@ -72,7 +67,7 @@ function widthAt({ stroke: path, startTaper, endTaper }: TaperedStroke, distance
 }
 
 function taperedWidth(progress: number): number {
-    return HAIRLINE + (WIDTH - HAIRLINE) * ease(progress);
+    return HAIRLINE + (WIDTH - HAIRLINE) * smoothstep(progress);
 }
 
 function offsetSideways({ point, tangent }: Frame, offset: number): Point {

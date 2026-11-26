@@ -1,6 +1,7 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { faviconSvg } from "@/favicon/drawing";
+import { loadingSpinnerSvg } from "@/loading/spinner";
 import { markSvg } from "@/mark/static";
 import { icoFile, renderPng } from "./icons";
 
@@ -17,3 +18,4 @@ write("logo-mark.svg", faviconSvg({ tile: false }));
 write("favicon.svg", favicon);
 write("favicon.ico", await icoFile(favicon, [16, 32, 48]));
 write("apple-touch-icon.png", renderPng(favicon, 180));
+write("loading.svg", loadingSpinnerSvg());

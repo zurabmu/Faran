@@ -1,0 +1,66 @@
+:is(.md-content, .md-sidebar--secondary, .md-footer) {
+  transition:
+    opacity 0.5s var(--faran-ease-water),
+    translate 0.5s var(--faran-ease-water);
+}
+
+/* Shows the page after a while even when the component script fails to run. */
+html:not([data-faran-loaded]) :is(.md-content, .md-sidebar--secondary, .md-footer) {
+  opacity: 0;
+  translate: 0 0.4rem;
+  animation: faran-show-without-script 0s 2s forwards;
+}
+
+@keyframes faran-show-without-script {
+  to {
+    opacity: 1;
+    translate: none;
+  }
+}
+
+/* The spinner fades in when loading takes longer than 0.3 s, and fades out once the page is ready. */
+.md-main {
+  position: relative;
+}
+
+.md-main::before {
+  content: "";
+  position: absolute;
+  top: 6rem;
+  left: 50%;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin-left: -1.4rem;
+  background: url("../assets/loading.svg") center / contain no-repeat;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--faran-ease-water);
+}
+
+html:not([data-faran-loaded]) .md-main::before {
+  opacity: 1;
+  transition-delay: 0.3s;
+  animation: faran-hide-without-script 0s 2s forwards;
+}
+
+@starting-style {
+  html:not([data-faran-loaded]) .md-main::before {
+    opacity: 0;
+  }
+}
+
+@keyframes faran-hide-without-script {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.md-content, .md-sidebar--secondary, .md-footer) {
+    transition: none;
+  }
+
+  html:not([data-faran-loaded]) :is(.md-content, .md-sidebar--secondary, .md-footer) {
+    translate: none;
+  }
+}

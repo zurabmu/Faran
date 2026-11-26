@@ -1,3 +1,25 @@
+/* Arial scaled to the width, ascent and descent of Source Sans 3, so that text keeps its
+   layout when the web font replaces it. Measure the numbers again when the text font changes. */
+@font-face {
+  font-family: "Source Sans 3 Fallback";
+  src: local("Arial");
+  font-weight: 100 500;
+  size-adjust: 93.8%;
+  ascent-override: 108.7%;
+  descent-override: 42.6%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Source Sans 3 Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT");
+  font-weight: 501 900;
+  size-adjust: 92.3%;
+  ascent-override: 110.5%;
+  descent-override: 43.3%;
+  line-gap-override: 0%;
+}
+
 :root {
   --faran-bg: #0f0d17;
   --faran-surface: #17141f;
@@ -28,7 +50,7 @@
 
   --faran-ease-water: cubic-bezier(0.22, 0.61, 0.36, 1);
 
-  --faran-font-text: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --faran-font-text: "Source Sans 3", "Source Sans 3 Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
   --faran-font-code: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
 

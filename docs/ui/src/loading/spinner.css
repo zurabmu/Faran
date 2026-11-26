@@ -1,0 +1,87 @@
+svg {
+  --flow: 2s cubic-bezier(0.55, 0.1, 0.35, 0.95) infinite both;
+}
+
+* {
+  transform-origin: 0 0;
+}
+
+.arc {
+  fill: none;
+  stroke-dasharray: 100 100;
+  animation: flow var(--flow);
+}
+
+.head {
+  animation: head var(--flow);
+}
+
+.tail {
+  animation: tail var(--flow);
+}
+
+.inner :is(.arc, .head, .tail) {
+  animation-delay: -1s;
+}
+
+.spin {
+  animation: spin linear infinite;
+}
+
+.outer.spin {
+  animation-duration: 6.5s;
+}
+
+.inner.spin {
+  animation-duration: 4.3s;
+  animation-delay: -1.7s;
+}
+
+@keyframes flow {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  48%,
+  52% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -100;
+  }
+}
+
+@keyframes head {
+  0% {
+    rotate: 0deg;
+  }
+  48%,
+  100% {
+    rotate: 360deg;
+  }
+}
+
+@keyframes tail {
+  0%,
+  52% {
+    rotate: 0deg;
+  }
+  100% {
+    rotate: 360deg;
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+  }
+
+  .arc {
+    stroke-dashoffset: 0;
+  }
+}

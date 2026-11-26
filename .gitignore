@@ -52,6 +52,7 @@ docs/content/assets/logo-mark.svg
 docs/content/assets/favicon.svg
 docs/content/assets/favicon.ico
 docs/content/assets/apple-touch-icon.png
+docs/content/assets/loading.svg
 docs/content/assets/katex/
 
 # Canvas engine bundle, built from visualizer/engine with `just visualizer-engine`
