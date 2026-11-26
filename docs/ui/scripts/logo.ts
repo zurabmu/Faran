@@ -1,4 +1,4 @@
-import { writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { faviconSvg } from "@/favicon/drawing";
 import { loadingSpinnerSvg } from "@/loading/spinner";
@@ -12,6 +12,7 @@ function write(name: string, content: string | Buffer): void {
     console.log(`Wrote docs/content/assets/${name}`);
 }
 
+mkdirSync(ASSETS, { recursive: true });
 const favicon = faviconSvg({ tile: true });
 write("logo.svg", markSvg());
 write("logo-mark.svg", faviconSvg({ tile: false }));

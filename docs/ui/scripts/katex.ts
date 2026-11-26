@@ -1,4 +1,4 @@
-import { cpSync } from "node:fs";
+import { cpSync, mkdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 
@@ -9,6 +9,7 @@ function isNotLegacyFont(path: string): boolean {
     return !/\.(woff|ttf)$/.test(path);
 }
 
+mkdirSync(TARGET, { recursive: true });
 cpSync(join(DIST, "katex.min.css"), join(TARGET, "katex.min.css"));
 cpSync(join(DIST, "fonts"), join(TARGET, "fonts"), { recursive: true, filter: isNotLegacyFont });
 cpSync(join(DIST, "..", "LICENSE"), join(TARGET, "LICENSE"));

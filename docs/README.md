@@ -66,7 +66,7 @@ Write a module in [`extensions/`](extensions/) with a block class and a `makeExt
 ## Check your changes
 
 - `just docs-build` builds the whole site and fails on any warning, such as a broken link.
-- `uv run pytest tests/test_documentation` runs the tests in [`tests/test_documentation/`](../tests/test_documentation/).
+- `uv run pytest tests/test_docsite` runs the tests of the extensions in [`tests/test_docsite/`](../tests/test_docsite/).
 - `uv run pytest -m docs` runs every snippet and example.
 - `pnpm build` in [`ui/`](ui/) checks the components with svelte-check before it builds them.
 

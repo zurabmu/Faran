@@ -19,7 +19,13 @@ def install_test_environment(session: nox.Session, *extras: str) -> None:
 @nox.session(python="3.13")
 def test_without_jax(session: nox.Session) -> None:
     install_test_environment(session)
-    session.run("pytest", "--tb=short", "--ignore=tests/benchmarks", *session.posargs)
+    session.run(
+        "pytest",
+        "--tb=short",
+        "--ignore=tests/benchmarks",
+        "--ignore=tests/test_docsite",
+        *session.posargs,
+    )
 
 
 @nox.session(python="3.13")
@@ -29,6 +35,7 @@ def test_full(session: nox.Session) -> None:
         "pytest",
         "--tb=short",
         "--ignore=tests/benchmarks",
+        "--ignore=tests/test_docsite",
         *session.posargs,
         env={"NEEDY_STRICT": "true"},
     )
